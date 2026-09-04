@@ -40,6 +40,20 @@ class ProjectCreate(ProjectBase):
     pass
 
 
+class ProjectListItem(ProjectBase):
+    """Lightweight shape for GET /projects (list view).
+
+    Excludes heavy JSONB detail fields (dataset, model, deployment,
+    results_visualization, etc.) that are only needed on the project detail
+    page, to keep the homepage payload small. `metrics` is kept because
+    ProjectCard renders the top 2 metrics as badges on the list view.
+    """
+
+    id: int
+    metrics: Optional[Any]
+    model_config = {"from_attributes": True, "alias_generator": to_camel, "populate_by_name": True}
+
+
 class ProjectOut(ProjectBase):
     id: int
     # include all detail fields stored in DB so project detail by slug returns full data
@@ -72,6 +86,38 @@ class PublicationBase(BaseModel):
 
 class PublicationCreate(PublicationBase):
     pass
+
+
+class PublicationListItem(PublicationBase):
+    """Lightweight shape for GET /publications (list view).
+
+    Keeps everything PublicationCard / AllPublicationsPage actually render
+    or filter/search on (summary, key results, paper/doi links) but drops
+    the heavier detail-only fields (event_photos, methodology, architecture,
+    experiments, results_visualization, deployment, challenges, insights,
+    dataset) that are only needed on the single-publication detail page.
+    """
+
+    id: int
+    contribution_summary: Optional[str]
+    tldr: Optional[str]
+    problem: Optional[str]
+    key_results: Optional[Any]
+    doi_url: Optional[str]
+    paper_url: Optional[str]
+    authors: Optional[List[str]]
+    model_config = {"from_attributes": True, "alias_generator": to_camel, "populate_by_name": True}
+
+
+class PublicationNeighbor(BaseModel):
+    slug: str
+    title: str
+    model_config = {"from_attributes": True, "alias_generator": to_camel, "populate_by_name": True}
+
+
+class PublicationNeighbors(BaseModel):
+    previous: Optional[PublicationNeighbor] = None
+    next: Optional[PublicationNeighbor] = None
 
 
 class PublicationOut(PublicationBase):

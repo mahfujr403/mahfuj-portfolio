@@ -2,7 +2,8 @@ import { Badge } from "./ui/badge";
 import { Clock, ArrowUpRight, PenLine } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "react-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import type { Blog } from "../../types/blog";
 import { fetchArticles } from "../../services/articlesApi";
 
@@ -21,25 +22,10 @@ function formatDate(dateStr: string) {
 }
 
 export default function Articles() {
-  const [list, setList] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    fetchArticles()
-      .then((res) => {
-        if (mounted) setList(res ?? []);
-      })
-      .catch(() => {
-        setList([]);
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const { data: list = [], isLoading: loading } = useQuery({
+    queryKey: ["blogs"],
+    queryFn: fetchArticles,
+  });
 
   return (
     <section id="articles" className="py-32 relative">

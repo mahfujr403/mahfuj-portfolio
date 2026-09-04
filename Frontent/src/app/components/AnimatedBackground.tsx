@@ -172,13 +172,36 @@ export default function AnimatedBackground() {
       drawOutcomePanel(time);
       drawConnectors();
 
-      rafRef.current = requestAnimationFrame(animate);
+      // Skip scheduling the next frame while the tab is hidden - a
+      // requestAnimationFrame loop keeps running (at a throttled rate) on
+      // background tabs otherwise, burning CPU/battery for no visible
+      // benefit.
+      if (!document.hidden) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
     };
 
-    rafRef.current = requestAnimationFrame(animate);
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) {
+      // Draw a single static frame instead of animating.
+      animate(0);
+    } else {
+      rafRef.current = requestAnimationFrame(animate);
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      } else if (!prefersReducedMotion) {
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }

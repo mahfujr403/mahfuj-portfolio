@@ -1,24 +1,14 @@
 import ProjectCard from "../components/ProjectCard";
 import { listProjects } from "../../services/projectsApi";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 
 export default function Projects() {
 
-    const [projectsList, setProjectsList] = useState<any[]>([]); 
-
-
-    useEffect(() => {
-        let mounted = true;
-        listProjects(6, 0)
-        .then((res) => {
-            if (mounted) setProjectsList(res ?? []);
-        })
-        .catch(() => setProjectsList([]));
-        return () => {
-        mounted = false;
-        };
-    }, []);
+    const { data: projectsList = [] } = useQuery({
+        queryKey: ["projects", 6, 0],
+        queryFn: () => listProjects(6, 0),
+    });
 
     return (
         <section id="projects" className="py-32 relative">

@@ -95,6 +95,10 @@ export default function About() {
                 <img
                   src={profile.profileImage}
                   alt={profile.name}
+                  width={320}
+                  height={320}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </div>

@@ -1,15 +1,12 @@
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchSkills } from "../../services/skillsApi";
 
 export default function Skills() {
-  const [skills, setSkills] = useState<any[]>([]);
-
-  useEffect(() => {
-    let mounted = true;
-    fetchSkills().then((res) => { if (mounted) setSkills(res ?? []); }).catch(() => {});
-    return () => { mounted = false; };
-  }, []);
+  const { data: skills = [] } = useQuery({
+    queryKey: ["skills"],
+    queryFn: fetchSkills,
+  });
   return (
     <section id="skills" className="py-32 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

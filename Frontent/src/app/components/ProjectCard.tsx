@@ -35,6 +35,10 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <img
               src={project.imageUrl}
               alt={project.title}
+              width={640}
+              height={224}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
 

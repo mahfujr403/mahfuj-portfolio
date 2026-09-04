@@ -59,7 +59,7 @@ export default function ProjectDetailPage() {
 
         {project.imageUrl && (
           <div className="w-full h-96 rounded-2xl overflow-hidden mb-8 border border-white/10">
-            <img src={project.imageUrl} alt={project.title} className="w-full h-full object-cover" />
+            <img src={project.imageUrl} alt={project.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           </div>
         )}
 

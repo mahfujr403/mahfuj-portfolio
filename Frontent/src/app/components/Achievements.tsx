@@ -1,22 +1,18 @@
 import { Badge } from "./ui/badge";
 import { Award, Image, FileText, Trophy, X, ExternalLink, Calendar, Building2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
 import { listAchievements } from "../../services/achievementsApi";
 
 export default function Achievements() {
   const [selected, setSelected] = useState<any | null>(null);
-  const [achievements, setAchievements] = useState<any[]>([]);
+  const { data: achievements = [] } = useQuery({
+    queryKey: ["achievements", 50, 0],
+    queryFn: () => listAchievements(50, 0),
+  });
   const visibleAchievements = achievements.slice(0, 2);
   const isSingleAchievement = visibleAchievements.length === 1;
-
-  useEffect(() => {
-    let mounted = true;
-    listAchievements(50, 0).then((res) => {
-      if (mounted) setAchievements(res ?? []);
-    }).catch(() => {});
-    return () => { mounted = false; };
-  }, []);
 
 
   return (
@@ -95,6 +91,8 @@ export default function Achievements() {
                                   <img
                                     src={achievement.event_image_url}
                                     alt={achievement.title}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="h-40 sm:h-44 w-full object-cover"
                                   />
                                 </div>
@@ -246,6 +244,8 @@ export default function Achievements() {
                       <img
                         src={selected.event_image_url.trim()}
                         alt={selected.title}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-56 object-cover group-hover/img:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#050814]/60 to-transparent" />

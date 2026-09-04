@@ -83,4 +83,11 @@ export async function getPublicationBySlug(slug: string) {
   return normalizePublication(publication);
 }
 
-export default { listPublications, getPublicationBySlug };
+export async function getPublicationNeighbors(slug: string) {
+  return await apiFetch<{
+    previous: { slug: string; title: string } | null;
+    next: { slug: string; title: string } | null;
+  }>(`api/v1/publications/${slug}/neighbors`);
+}
+
+export default { listPublications, getPublicationBySlug, getPublicationNeighbors };

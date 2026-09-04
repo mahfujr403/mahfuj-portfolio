@@ -149,6 +149,8 @@ export default function PublicationDetailPage() {
                             <img
                               src={photo}
                               alt={`Event photo ${idx + 1}`}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
@@ -174,6 +176,8 @@ export default function PublicationDetailPage() {
                         <img
                           src={publication.certificateUrl}
                           alt="Certificate"
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">

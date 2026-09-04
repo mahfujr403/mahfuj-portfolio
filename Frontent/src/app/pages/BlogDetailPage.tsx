@@ -118,7 +118,7 @@ export default function BlogDetailPage() {
 
         {blog.imageUrl && (
           <div className="w-full h-96 rounded-2xl overflow-hidden mb-8 border border-white/10">
-            <img src={blog.imageUrl} alt={blog.title} className="w-full h-full object-cover" />
+            <img src={blog.imageUrl} alt={blog.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           </div>
         )}
 

@@ -159,6 +159,11 @@ export default function Hero() {
                 <img
                   src={profile.profileImage}
                   alt={profile.name}
+                  width={320}
+                  height={320}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </motion.div>
