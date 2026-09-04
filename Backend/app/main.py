@@ -31,7 +31,7 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 # "https://mahfuj-portfolio.vercel.app,http://localhost:5173"
 _allowed_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:4000, https://md-mahfujur-rahman.vercel.app/",
+    "http://localhost:5173,http://localhost:4000, https://md-mahfujur-rahman.vercel.app",
 ).split(",")
 
 app.add_middleware(
@@ -78,7 +78,7 @@ def upsert_profile(data: schemas.ProfileOut, db: Session = Depends(get_db), _=De
 @app.get("/api/v1/projects", response_model=List[schemas.ProjectListItem])
 def list_projects(
     response: Response,
-    limit: int = Query(10, ge=1, le=50),
+    limit: int = Query(10, ge=1, le=1000),
     offset: int = 0,
     techStack: Optional[str] = None,
     db: Session = Depends(get_db),
@@ -132,7 +132,7 @@ def delete_project(slug: str, db: Session = Depends(get_db), _=Depends(require_a
 
 
 @app.get("/api/v1/publications", response_model=List[schemas.PublicationListItem])
-def list_publications(response: Response, limit: int = Query(10, ge=1, le=50), offset: int = 0, db: Session = Depends(get_db)):
+def list_publications(response: Response, limit: int = Query(10, ge=1, le=1000), offset: int = 0, db: Session = Depends(get_db)):
     response.headers["Cache-Control"] = _LIST_CACHE
     pubs = db.query(models.Publication).offset(offset).limit(limit).all()
     return pubs
