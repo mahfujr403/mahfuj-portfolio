@@ -18,9 +18,23 @@ function normalizeProfile(p: any) {
   };
 }
 
-export async function fetchProfile(): Promise<any> {
-  const raw = await apiFetch<any>("api/v1/profile");
-  return normalizeProfile(raw);
+let profilePromise: Promise<any> | null = null;
+
+export function fetchProfile(): Promise<any> {
+  // Deduplicate concurrent calls at the service boundary. This guarantees a
+  // single HTTP request even if multiple independently mounted components ask
+  // for the profile before React Query has populated its cache.
+  if (!profilePromise) {
+    profilePromise = apiFetch<any>("api/v1/profile")
+      .then(normalizeProfile)
+      .catch((error) => {
+        // Do not permanently cache failures; a later query should be able to retry.
+        profilePromise = null;
+        throw error;
+      });
+  }
+
+  return profilePromise;
 }
 
 export async function upsertProfile(data: any): Promise<any> {
