@@ -1,7 +1,6 @@
 import { Github, Linkedin, Mail, Phone, Download, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { fetchProfile } from "../../services/profileApi";
+import { useProfile } from "../hooks/useProfile";
 import { toast } from "sonner";
 import { downloadAndOpen } from "../../utils/download";
 import { Typewriter } from "./TypeWriter";
@@ -16,15 +15,7 @@ export default function Hero() {
     scholar: GraduationCap,
   };
 
-  const [profile, setProfile] = useState<any>({ socialLinks: [] });
-
-  useEffect(() => {
-    let mounted = true;
-    fetchProfile()
-      .then((p) => { if (mounted && p) setProfile(p); })
-      .catch(() => {})
-    return () => { mounted = false; };
-  }, []);
+  const { data: profile = { socialLinks: [] } } = useProfile();
 
   return (
     <section id="hero" className="relative py-16 lg:py-24 overflow-hidden">

@@ -159,7 +159,16 @@ export default function AnimatedBackground() {
       }
     };
 
+    let lastFrame = 0;
+    const frameInterval = 1000 / 30;
     const animate = (now: number) => {
+      // This decorative canvas does not benefit visually from 60–144 FPS.
+      // Capping it at 30 FPS substantially reduces continuous CPU/GPU use.
+      if (now - lastFrame < frameInterval) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrame = now - ((now - lastFrame) % frameInterval);
       const time = now * 0.001;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);

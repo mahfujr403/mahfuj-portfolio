@@ -1,7 +1,8 @@
 import { Mail, Phone, Linkedin, Github, Send } from "lucide-react";
 import { motion } from "motion/react";
-import { useState, useEffect } from "react";
-import { fetchProfile } from "../../services/profileApi";
+import { useState } from "react";
+import { useProfile } from "../hooks/useProfile";
+import { submitContact } from "../../services/contactApi";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -14,13 +15,7 @@ import { toast } from "sonner";
 
 
 export default function Contact() {
-  const [profile, setProfile] = useState<any>({ socialLinks: [] });
-
-  useEffect(() => {
-    let mounted = true;
-    fetchProfile().then((p) => { if (mounted && p) setProfile(p); }).catch(() => {});
-    return () => { mounted = false; };
-  }, []);
+  const { data: profile = { socialLinks: [] } } = useProfile();
 
   const contactMethods = [
     { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
@@ -62,20 +57,7 @@ export default function Contact() {
 
   try {
     setSubmitting(true);
-    const response = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/api/v1/contact`,{
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(contactForm),
-    });
-
-    if (!response.ok) {
-  const error = await response.json();
-  toast.error(error.detail?.[0]?.msg || "Failed to send message");
-  return;
-}
+    await submitContact(contactForm);
 
     toast.success("Message sent successfully!");
 

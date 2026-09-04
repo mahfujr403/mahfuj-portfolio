@@ -1,28 +1,17 @@
 import { motion } from "motion/react";
 import { BookOpen, FolderGit2, Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
-import { fetchProfile } from "../../services/profileApi";
-import { listPublications } from "../../services/publicationsApi";
-import { listProjects } from "../../services/projectsApi";
+import { useQuery } from "@tanstack/react-query";
+import { useProfile } from "../hooks/useProfile";
+import { fetchPortfolioStats } from "../../services/statsApi";
 
 export default function About() {
-  const [profile, setProfile] = useState<any>({});
-  const [publicationCount, setPublicationCount] = useState(0);
-  const [projectCount, setProjectCount] = useState(0);
-
-  useEffect(() => {
-    let mounted = true;
-    Promise.all([fetchProfile(), listPublications(1000, 0), listProjects(1000, 0)])
-      .then(([profileData, publicationData, projectData]) => {
-        if (!mounted) return;
-
-        if (profileData) setProfile(profileData);
-        setPublicationCount(Array.isArray(publicationData) ? publicationData.length : 0);
-        setProjectCount(Array.isArray(projectData) ? projectData.length : 0);
-      })
-      .catch(() => {})
-    return () => { mounted = false; };
-  }, []);
+  const { data: profile = {} } = useProfile();
+  const { data: stats } = useQuery({
+    queryKey: ["portfolio-stats"],
+    queryFn: fetchPortfolioStats,
+  });
+  const publicationCount = stats?.publications ?? 0;
+  const projectCount = stats?.projects ?? 0;
   const highlights = [
     {
       icon: BookOpen,

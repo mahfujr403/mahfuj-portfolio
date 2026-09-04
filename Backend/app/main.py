@@ -52,6 +52,16 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/api/v1/stats")
+def get_portfolio_stats(response: Response, db: Session = Depends(get_db)):
+    """Return aggregate counts without transferring every project/publication row."""
+    response.headers["Cache-Control"] = _LIST_CACHE
+    return {
+        "projects": db.query(models.Project).count(),
+        "publications": db.query(models.Publication).count(),
+    }
+
+
 @app.get("/api/v1/profile", response_model=schemas.ProfileOut)
 def get_profile(response: Response, db: Session = Depends(get_db)):
     response.headers["Cache-Control"] = _DETAIL_CACHE
