@@ -31,7 +31,7 @@ app.add_middleware(GZipMiddleware, minimum_size=500)
 # "https://mahfuj-portfolio.vercel.app,http://localhost:5173"
 _allowed_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:4000",
+    "http://localhost:5173,http://localhost:4000, https://md-mahfujur-rahman.vercel.app/",
 ).split(",")
 
 app.add_middleware(
