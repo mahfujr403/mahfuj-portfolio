@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Github, ExternalLink, ArrowRight, TrendingUp, Zap } from "lucide-react";
+import { Github, ExternalLink, ArrowRight, Sparkles, Folder } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
 
@@ -8,8 +8,7 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
-  // Get top metrics for preview
-  const topMetrics = project.metrics?.slice(0, 2) || [];
+  const isFeatured = project.tag === "featured";
 
   return (
     <motion.div
@@ -42,34 +41,31 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
 
-            {/* Top metrics overlay */}
-            {topMetrics.length > 0 && (
-              <div className="absolute bottom-3 left-3 right-3 z-20 flex gap-2">
-                {topMetrics.map((metric, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="glass px-3 py-1.5 rounded-lg border border-white/20 backdrop-blur-md"
-                  >
-                    <div className="flex items-center gap-1.5">
-                      {idx === 0 ? (
-                        <TrendingUp size={12} className="text-[#00f2fe]" />
-                      ) : (
-                        <Zap size={12} className="text-[#8b5cf6]" />
-                      )}
-                      <span className="text-xs text-gray-300 font-medium">
-                        {metric.name}
-                      </span>
-                      <span className="text-xs font-bold gradient-text">
-                        {metric.value}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
+            {/* Tag badge */}
+            <div className="absolute top-3 left-3 z-20">
+              <div
+                className={
+                  isFeatured
+                    ? "flex items-center gap-1.5 glass px-3 py-1.5 rounded-lg border border-[#00f2fe]/40 backdrop-blur-md"
+                    : "flex items-center gap-1.5 glass px-3 py-1.5 rounded-lg border border-white/15 backdrop-blur-md"
+                }
+              >
+                {isFeatured ? (
+                  <Sparkles size={12} className="text-[#00f2fe]" />
+                ) : (
+                  <Folder size={12} className="text-gray-400" />
+                )}
+                <span
+                  className={
+                    isFeatured
+                      ? "text-xs font-semibold text-[#00f2fe]"
+                      : "text-xs font-medium text-gray-300"
+                  }
+                >
+                  {isFeatured ? "Featured" : "Other"}
+                </span>
               </div>
-            )}
+            </div>
           </div>
         )}
 

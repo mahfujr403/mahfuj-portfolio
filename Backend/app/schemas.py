@@ -34,6 +34,8 @@ class ProjectBase(BaseModel):
     github_url: Optional[str]
     live_demo_url: Optional[str]
     image_url: Optional[str]
+    # "featured" | "other" — rendered as a badge over the card image.
+    tag: Optional[str] = "other"
 
 
 class ProjectCreate(ProjectBase):
@@ -47,6 +49,8 @@ class ProjectListItem(ProjectBase):
     results_visualization, etc.) that are only needed on the project detail
     page, to keep the homepage payload small. `metrics` is kept because
     ProjectCard renders the top 2 metrics as badges on the list view.
+    `tag` ("featured" | "other") drives the badge shown over the card image —
+    do not reuse `metrics` entries to fake this anymore.
     """
 
     id: int

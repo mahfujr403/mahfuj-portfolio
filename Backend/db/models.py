@@ -54,6 +54,10 @@ class Project(Base):
     github_url = Column(Text)
     live_demo_url = Column(Text)
     image_url = Column(Text)
+    # Card category tag shown over the project image on the homepage list view.
+    # Replaces the old convention of stuffing {name: "Featured", value: "Project"}
+    # into `metrics` to fake a badge. Expected values: "featured" | "other".
+    tag = Column(Text, nullable=False, server_default="other")
     problem_statement = Column(Text)
     dataset = Column(JSONB)
     model = Column(JSONB)
