@@ -1,5 +1,14 @@
 import type { IconType } from "react-icons";
-import { Sparkles, Cloud } from "lucide-react";
+import {
+  Sparkles,
+  Cloud,
+  BrainCircuit,
+  Layers,
+  ArrowLeftRight,
+  Filter,
+  Database,
+  PenTool,
+} from "lucide-react";
 import {
   SiReact,
   SiNextdotjs,
@@ -66,6 +75,8 @@ import {
   SiApachehadoop,
   SiApachehive,
   SiApachecassandra,
+  SiLatex,
+  SiGithub,
 } from "react-icons/si";
 
 export type SkillMeta = {
@@ -75,8 +86,16 @@ export type SkillMeta = {
 
 // Normalize an incoming skill name into a lookup key:
 // lowercase, strip anything that isn't a letter or digit.
+//
+// Symbol-only names need special-casing *before* that strip, otherwise
+// "C++" and "C#" both collapse to the same "c" key (the "+"/"#" just get
+// dropped) and collide with each other instead of reaching their own
+// SKILL_MAP entries.
 function normalize(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const lower = name.toLowerCase().trim();
+  if (lower === "c++") return "cpp";
+  if (lower === "c#") return "csharp";
+  return lower.replace(/[^a-z0-9]/g, "");
 }
 
 const SKILL_MAP: Record<string, SkillMeta> = {
@@ -113,9 +132,10 @@ const SKILL_MAP: Record<string, SkillMeta> = {
   vuejs: { Icon: SiVuedotjs, color: "#4FC08D" },
   angular: { Icon: SiAngular, color: "#DD0031" },
   java: { Icon: SiOpenjdk, color: "#437291" },
-  "c++": { Icon: SiCplusplus, color: "#00599C" },
+  // Reached via normalize("C++") -> "cpp" (see the normalize() special-case
+  // above). A literal "c++" key here would never be hit.
   cpp: { Icon: SiCplusplus, color: "#00599C" },
-  "c#": { Icon: SiSharp, color: "#512BD4" },
+  // Reached via normalize("C#") -> "csharp".
   csharp: { Icon: SiSharp, color: "#512BD4" },
   pytorch: { Icon: SiPytorch, color: "#EE4C2C" },
   tensorflow: { Icon: SiTensorflow, color: "#FF6F00" },
@@ -173,6 +193,38 @@ const SKILL_MAP: Record<string, SkillMeta> = {
   hive: { Icon: SiApachehive, color: "#FDEE21" },
   apachecassandra: { Icon: SiApachecassandra, color: "#4A9BD5" },
   cassandra: { Icon: SiApachecassandra, color: "#4A9BD5" },
+
+  // --- Aliases: same underlying tech, different display name ---
+  // "TensorFlow Lite" -> normalize() gives "tensorflowlite", which is a
+  // distinct key from "tensorflow" above, so it needs its own entry.
+  tensorflowlite: { Icon: SiTensorflow, color: "#FF6F00" },
+  tflite: { Icon: SiTensorflow, color: "#FF6F00" },
+  // "Hugging Face Hub" -> "huggingfacehub", distinct from "huggingface".
+  huggingfacehub: { Icon: SiHuggingface, color: "#FFD21E" },
+  // "Computer Vision" (the field) reuses the OpenCV mark, the closest
+  // recognizable brand icon for the concept.
+  computervision: { Icon: SiOpencv, color: "#8A5CF6" },
+  // "Jupyter Notebook" -> "jupyternotebook", distinct from "jupyter".
+  jupyternotebook: { Icon: SiJupyter, color: "#F37626" },
+  // "Git & GitHub" is listed as a single skill; GitHub's mark reads best
+  // at this size and covers both halves of the name.
+  gitgithub: { Icon: SiGithub, color: "#F2F2F2" },
+
+  // --- Skills/tools with an official brand mark ---
+  latex: { Icon: SiLatex, color: "#008080" },
+  github: { Icon: SiGithub, color: "#F2F2F2" },
+  // Generic SQL (as opposed to a specific engine like MySQL/Postgres) has
+  // no simple-icons brand mark, so it gets a neutral database glyph.
+  sql: { Icon: Database, color: "#4479A1" },
+
+  // --- Concepts with no single official logo: neutral, semantic glyphs ---
+  datapreprocessing: { Icon: Filter, color: "#8b5cf6" },
+  deeplearning: { Icon: BrainCircuit, color: "#8b5cf6" },
+  transferlearning: { Icon: ArrowLeftRight, color: "#8b5cf6" },
+  cnn: { Icon: Layers, color: "#8b5cf6" },
+  convolutionalneuralnetworks: { Icon: Layers, color: "#8b5cf6" },
+  convolutionalneuralnetworkscnn: { Icon: Layers, color: "#8b5cf6" },
+  researchwriting: { Icon: PenTool, color: "#8b5cf6" },
 };
 
 // Falls back to a generic sparkle glyph so an unmapped skill name
