@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { Github, ExternalLink, ArrowRight, Sparkles, Folder } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
+import OptimizedImage from "./OptimizedImage";
 
 interface ProjectCardProps {
   project: any;
@@ -31,14 +32,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#050814]/80 to-transparent z-10" />
 
             {/* Image */}
-            <img
+            <OptimizedImage
               src={project.imageUrl}
               alt={project.title}
               width={640}
               height={224}
-              loading="lazy"
-              decoding="async"
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
 
             {/* Tag badge */}

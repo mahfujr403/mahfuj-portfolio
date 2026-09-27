@@ -10,6 +10,7 @@ import { CommentFormData } from "../../types/blog";
 import { fetchBlogBySlug, fetchCommentsByBlogId, postComment as apiPostComment } from "../../services/blogApi";
 import { toast } from "sonner";
 import DOMPurify from "dompurify";
+import OptimizedImage from "../components/OptimizedImage";
 
 export default function BlogDetailPage() {
   const { slug } = useParams();
@@ -118,7 +119,7 @@ export default function BlogDetailPage() {
 
         {blog.imageUrl && (
           <div className="w-full h-96 rounded-2xl overflow-hidden mb-8 border border-white/10">
-            <img src={blog.imageUrl} alt={blog.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+            <OptimizedImage src={blog.imageUrl} alt={blog.title} width={1280} height={384} className="w-full h-full object-cover" sizes="100vw" />
           </div>
         )}
 

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Github, ExternalLink, ArrowLeft, Database, Cpu, Rocket, Zap, AlertCircle, Lightbulb, Code } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
+import OptimizedImage from "../components/OptimizedImage";
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
@@ -59,7 +60,7 @@ export default function ProjectDetailPage() {
 
         {project.imageUrl && (
           <div className="w-full h-96 rounded-2xl overflow-hidden mb-8 border border-white/10">
-            <img src={project.imageUrl} alt={project.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+            <OptimizedImage src={project.imageUrl} alt={project.title} width={1280} height={384} className="w-full h-full object-cover" sizes="100vw" />
           </div>
         )}
 

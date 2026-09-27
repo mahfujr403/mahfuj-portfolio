@@ -3,6 +3,7 @@ import { BookOpen, FolderGit2, Trophy } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useProfile } from "../hooks/useProfile";
 import { fetchPortfolioStats } from "../../services/statsApi";
+import OptimizedImage from "./OptimizedImage";
 
 export default function About({ profile: propProfile, stats: propStats }: { profile?: any; stats?: { projects: number; publications: number } }) {
   const { data: hookProfile } = useProfile();
@@ -84,14 +85,13 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] rounded-3xl blur-2xl opacity-30" />
               <div className="relative w-80 h-80 rounded-3xl overflow-hidden glass border border-white/20 glow-cyan">
-                <img
+                <OptimizedImage
                   src={profile.profileImage}
                   alt={profile.name}
                   width={320}
                   height={320}
-                  loading="lazy"
-                  decoding="async"
                   className="w-full h-full object-cover"
+                  sizes="320px"
                 />
               </div>
               <motion.div

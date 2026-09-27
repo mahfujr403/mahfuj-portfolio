@@ -4,6 +4,7 @@ import { useProfile } from "../hooks/useProfile";
 import { toast } from "sonner";
 import { downloadAndOpen } from "../../utils/download";
 import { Typewriter } from "./TypeWriter";
+import OptimizedImage from "./OptimizedImage";
 
 export default function Hero({ profile: propProfile }: { profile?: any }) {
   const socialIcons = {
@@ -148,15 +149,14 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
                   ease: "easeInOut"
                 }}
               >
-                <img
+                <OptimizedImage
                   src={profile.profileImage}
                   alt={profile.name}
                   width={320}
                   height={320}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
+                  priority
                   className="w-full h-full object-cover"
+                  sizes="320px"
                 />
               </motion.div>
             </motion.div>
