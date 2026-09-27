@@ -7,7 +7,6 @@ import { ExternalLink, ArrowLeft, ArrowRight, FileText, Database, Beaker, Trendi
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../components/ui/dialog";
 import { usePublicationDetail } from "../hooks/usePublications";
-import OptimizedImage from "../components/OptimizedImage";
 
 export default function PublicationDetailPage() {
   const { slug } = useParams();
@@ -147,13 +146,12 @@ export default function PublicationDetailPage() {
                             onClick={() => setSelectedImage(photo)}
                             className="relative group cursor-pointer overflow-hidden rounded-xl border border-white/10 hover:border-[#00f2fe]/50 transition-all duration-300"
                           >
-                            <OptimizedImage
+                            <img
                               src={photo}
                               alt={`Event photo ${idx + 1}`}
-                              width={400}
-                              height={192}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
-                              sizes="(max-width: 768px) 50vw, 33vw"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                               <p className="text-white text-sm font-medium">View Photo</p>
@@ -175,13 +173,12 @@ export default function PublicationDetailPage() {
                         onClick={() => setSelectedImage(publication.certificateUrl!)}
                         className="relative group cursor-pointer overflow-hidden rounded-xl border border-white/10 hover:border-[#fbbf24]/50 transition-all duration-300 max-w-md"
                       >
-                        <OptimizedImage
+                        <img
                           src={publication.certificateUrl}
                           alt="Certificate"
-                          width={400}
-                          height={256}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                          sizes="(max-width: 768px) 100vw, 400px"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                           <p className="text-white text-sm font-medium">View Certificate</p>
@@ -518,13 +515,10 @@ export default function PublicationDetailPage() {
           </DialogHeader>
           <div className="p-6">
             {selectedImage && (
-              <OptimizedImage
+              <img
                 src={selectedImage}
                 alt="Full size preview"
-                width={1200}
-                height={800}
                 className="w-full h-auto rounded-lg border border-white/10"
-                sizes="100vw"
               />
             )}
           </div>

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
 import { listAchievements } from "../../services/achievementsApi";
-import OptimizedImage from "./OptimizedImage";
 
 export default function Achievements({ achievements: propAchievements }: { achievements?: any[] }) {
   const [selected, setSelected] = useState<any | null>(null);
@@ -90,13 +89,12 @@ export default function Achievements({ achievements: propAchievements }: { achie
                             <div className="space-y-3">
                               {achievement.event_image_url && (
                                 <div className="overflow-hidden rounded-2xl border border-white/10">
-                                  <OptimizedImage
+                                  <img
                                     src={achievement.event_image_url}
                                     alt={achievement.title}
-                                    width={640}
-                                    height={176}
+                                    loading="lazy"
+                                    decoding="async"
                                     className="h-40 sm:h-44 w-full object-cover"
-                                    sizes="(max-width: 640px) 100vw, 50vw"
                                   />
                                 </div>
                               )}
@@ -225,15 +223,13 @@ export default function Achievements({ achievements: propAchievements }: { achie
                       </span>
                     </div>
 
-                    <OptimizedImage
+                    <motion.img
                       src={selected.certificate_url.trim()}
                       alt={`${selected.title} Certificate`}
-                      width={800}
-                      height={600}
-                      className="w-full max-h-[700px] object-contain rounded-xl border border-white/10 bg-[#050814] cursor-zoom-in"
-                      wrapperClassName="cursor-zoom-in"
-                      sizes="(max-width: 768px) 100vw, 600px"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
                       onClick={() => window.open(selected.certificate_url.trim(), "_blank")}
+                      className="w-full max-h-[700px] object-contain rounded-xl border border-white/10 bg-[#050814] cursor-zoom-in"
                     />
                   </div>
                 )}
@@ -246,13 +242,12 @@ export default function Achievements({ achievements: propAchievements }: { achie
                       <span className="text-sm font-semibold text-gray-300">Event Photo</span>
                     </div> */}
                     <div className="rounded-xl overflow-hidden border border-white/10 relative group/img">
-                      <OptimizedImage
+                      <img
                         src={selected.event_image_url.trim()}
                         alt={selected.title}
-                        width={640}
-                        height={224}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-56 object-cover group-hover/img:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 600px"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#050814]/60 to-transparent" />
                     </div>
