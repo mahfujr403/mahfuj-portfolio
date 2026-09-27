@@ -1,16 +1,13 @@
 import Hero from "../components/Hero";
 import About from "../components/About";
-// import ProjectCard from "../components/ProjectCard";
-// import PublicationCard from "../components/PublicationCard";
 import Skills from "../components/Skills";
 import Achievements from "../components/Achievements";
 import Articles from "../components/Articles";
 import Contact from "../components/Contact";
-import { Link, useLocation, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
-// import { listProjects } from "../../services/projectsApi";
-import { usePublications } from "../hooks/usePublications";
-import { ArrowRight } from "lucide-react";
+import { useLocation, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchHomepageData } from "../../services/homepageApi";
 import { motion } from "motion/react";
 import Projects from "../components/Projects";
 import Publications from "../components/Publications";
@@ -20,6 +17,11 @@ export default function HomePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Single API call fetches all homepage data at once (7 requests → 1).
+  const { data: homepage } = useQuery({
+    queryKey: ["homepage"],
+    queryFn: fetchHomepageData,
+  });
 
   useEffect(() => {
     const target = (location.state as any)?.scrollTo as string | undefined;
@@ -47,14 +49,14 @@ export default function HomePage() {
 
   return (
     <div>
-      <Hero />
-      <About />
-      <Projects />
-      <Publications />
-      <Skills />
-      <Achievements />
-      <Articles />
-      <Contact />
+      <Hero profile={homepage?.profile} />
+      <About profile={homepage?.profile} stats={homepage?.stats} />
+      <Projects projects={homepage?.projects} />
+      <Publications publications={homepage?.publications} />
+      <Skills skills={homepage?.skills} />
+      <Achievements achievements={homepage?.achievements} />
+      <Articles articles={homepage?.blogs} />
+      <Contact profile={homepage?.profile} />
     </div>
   );
 }

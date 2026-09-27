@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { downloadAndOpen } from "../../utils/download";
 import { Typewriter } from "./TypeWriter";
 
-export default function Hero() {
+export default function Hero({ profile: propProfile }: { profile?: any }) {
   const socialIcons = {
     github: Github,
     linkedin: Linkedin,
@@ -15,7 +15,8 @@ export default function Hero() {
     scholar: GraduationCap,
   };
 
-  const { data: profile = { socialLinks: [] } } = useProfile();
+  const { data: hookProfile } = useProfile();
+  const profile = propProfile ?? hookProfile ?? { socialLinks: [] };
 
   return (
     <section id="hero" className="relative py-16 lg:py-24 overflow-hidden">

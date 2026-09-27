@@ -5,9 +5,10 @@ import { usePublications } from "../hooks/usePublications";
 import { Link } from "react-router";
 
 
-export default function Publications() {
+export default function Publications({ publications: propPublications }: { publications?: any[] }) {
 
-    const { data: featuredPublications } = usePublications(3, 0);
+    const { data: hookPublications } = usePublications(3, 0);
+    const featuredPublications = propPublications ?? hookPublications ?? [];
 
 
     return (

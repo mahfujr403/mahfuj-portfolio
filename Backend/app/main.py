@@ -52,6 +52,65 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/api/v1/homepage")
+def get_homepage(response: Response, db: Session = Depends(get_db)):
+    """Aggregated endpoint returning all homepage data in a single response.
+
+    Collapses 7 individual API calls (profile, stats, projects, publications,
+    skills, achievements, blogs) into 1 round-trip, dramatically reducing
+    latency — especially on slow connections or after a cold start.
+    """
+    response.headers["Cache-Control"] = _LIST_CACHE
+
+    # Profile
+    profile = db.query(models.Profile).first()
+
+    # Stats (counts only)
+    project_count = db.query(models.Project).count()
+    publication_count = db.query(models.Publication).count()
+
+    # Projects (homepage shows 6)
+    projects = db.query(models.Project).limit(6).all()
+
+    # Publications (homepage shows 3)
+    publications = db.query(models.Publication).limit(3).all()
+
+    # Skills (eager-load to avoid N+1)
+    cats = (
+        db.query(models.SkillCategory)
+        .options(selectinload(models.SkillCategory.skills))
+        .order_by(models.SkillCategory.id.asc())
+        .all()
+    )
+    skills_data = [
+        {"category": c.name, "skills": [{"name": s.name, "level": s.level} for s in c.skills]}
+        for c in cats
+    ]
+
+    # Achievements (homepage shows 2)
+    achievements = db.query(models.Achievement).limit(2).all()
+
+    # Blogs / Articles
+    blogs = db.query(models.Blog).limit(10).all()
+
+    return {
+        "profile": schemas.ProfileOut.model_validate(profile).model_dump(by_alias=True) if profile else None,
+        "stats": {"projects": project_count, "publications": publication_count},
+        "projects": [schemas.ProjectListItem.model_validate(p).model_dump(by_alias=True) for p in projects],
+        "publications": [schemas.PublicationListItem.model_validate(p).model_dump(by_alias=True) for p in publications],
+        "skills": skills_data,
+        "achievements": [
+            {
+                "id": a.id, "title": a.title, "organization": a.organization,
+                "year": a.year, "description": a.description, "category": a.category,
+                "certificate_url": a.certificate_url, "event_image_url": a.event_image_url,
+            }
+            for a in achievements
+        ],
+        "blogs": [schemas.BlogOut.model_validate(b).model_dump(by_alias=True) for b in blogs],
+    }
+
+
 @app.get("/api/v1/stats")
 def get_portfolio_stats(response: Response, db: Session = Depends(get_db)):
     """Return aggregate counts without transferring every project/publication row."""

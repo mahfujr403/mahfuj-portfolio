@@ -4,12 +4,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useProfile } from "../hooks/useProfile";
 import { fetchPortfolioStats } from "../../services/statsApi";
 
-export default function About() {
-  const { data: profile = {} } = useProfile();
-  const { data: stats } = useQuery({
+export default function About({ profile: propProfile, stats: propStats }: { profile?: any; stats?: { projects: number; publications: number } }) {
+  const { data: hookProfile } = useProfile();
+  const profile = propProfile ?? hookProfile ?? {};
+  const { data: hookStats } = useQuery({
     queryKey: ["portfolio-stats"],
     queryFn: fetchPortfolioStats,
+    enabled: !propStats,
   });
+  const stats = propStats ?? hookStats;
   const publicationCount = stats?.publications ?? 0;
   const projectCount = stats?.projects ?? 0;
   const highlights = [

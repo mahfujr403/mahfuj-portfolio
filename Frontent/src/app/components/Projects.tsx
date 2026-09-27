@@ -3,12 +3,15 @@ import { listProjects } from "../../services/projectsApi";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
 
-export default function Projects() {
+export default function Projects({ projects: propProjects }: { projects?: any[] }) {
 
-    const { data: projectsList = [] } = useQuery({
+    const { data: hookProjects = [] } = useQuery({
         queryKey: ["projects", 6, 0],
         queryFn: () => listProjects(6, 0),
+        enabled: !propProjects,
     });
+
+    const projectsList = propProjects ?? hookProjects;
 
     return (
         <section id="projects" className="py-32 relative">

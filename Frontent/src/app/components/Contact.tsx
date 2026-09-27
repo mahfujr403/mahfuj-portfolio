@@ -14,8 +14,9 @@ import { toast } from "sonner";
 
 
 
-export default function Contact() {
-  const { data: profile = { socialLinks: [] } } = useProfile();
+export default function Contact({ profile: propProfile }: { profile?: any }) {
+  const { data: hookProfile } = useProfile();
+  const profile = propProfile ?? hookProfile ?? { socialLinks: [] };
 
   const contactMethods = [
     { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },

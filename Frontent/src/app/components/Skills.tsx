@@ -4,11 +4,14 @@ import { fetchSkills } from "../../services/skillsApi";
 import { getSkillMeta } from "./skillIcons";
 import { getCategoryMeta } from "./categoryIcons";
 
-export default function Skills() {
-  const { data: skills = [] } = useQuery({
+export default function Skills({ skills: propSkills }: { skills?: Array<{ category: string; skills: Array<{ name: string; level: number }> }> }) {
+  const { data: hookSkills = [] } = useQuery({
     queryKey: ["skills"],
     queryFn: fetchSkills,
+    enabled: !propSkills,
   });
+
+  const skills = propSkills ?? hookSkills;
 
   return (
     <section id="skills" className="py-32 relative overflow-hidden">

@@ -1,19 +1,10 @@
 import { Link } from "react-router";
 import { Github, Linkedin, Mail, Phone, ArrowUp, Sparkles, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
-import { fetchProfile } from "../../services/profileApi";
+import { useProfile } from "../hooks/useProfile";
 
 export default function Footer() {
-  const [profile, setProfile] = useState<any>({ socialLinks: [] });
-
-  useEffect(() => {
-    let mounted = true;
-    fetchProfile()
-      .then((p) => { if (mounted && p) setProfile(p); })
-      .catch(() => {})
-    return () => { mounted = false; };
-  }, []);
+  const { data: profile = { socialLinks: [] } } = useProfile();
 
   const otherLinks = [
     { label: "Home", href: "/" },

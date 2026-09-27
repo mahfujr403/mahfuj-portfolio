@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { fetchProfile } from "../../services/profileApi";
+import { useProfile } from "../hooks/useProfile";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { downloadAndOpen } from "../../utils/download";
@@ -29,17 +29,7 @@ export default function Navbar() {
     { label: "Contact", href: "/#contact" },
   ];
 
-  const [profile, setProfile] = useState<any>({ name: "", resumeUrl: "" });
-
-  useEffect(() => {
-    let mounted = true;
-    fetchProfile()
-      .then((p) => {
-        if (mounted && p) setProfile(p);
-      })
-      .catch(() => {})
-    return () => { mounted = false; };
-  }, []);
+  const { data: profile = { name: "", resumeUrl: "", socialLinks: [] } } = useProfile();
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     // If it's a hash link (section navigation)

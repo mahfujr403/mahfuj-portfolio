@@ -21,11 +21,13 @@ function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
-export default function Articles() {
-  const { data: list = [], isLoading: loading } = useQuery({
+export default function Articles({ articles: propArticles }: { articles?: any[] }) {
+  const { data: hookList = [], isLoading: loading } = useQuery({
     queryKey: ["blogs"],
     queryFn: fetchArticles,
+    enabled: !propArticles,
   });
+  const list = propArticles ?? hookList;
 
   return (
     <section id="articles" className="py-32 relative">

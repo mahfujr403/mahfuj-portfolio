@@ -5,13 +5,14 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "motion/react";
 import { listAchievements } from "../../services/achievementsApi";
 
-export default function Achievements() {
+export default function Achievements({ achievements: propAchievements }: { achievements?: any[] }) {
   const [selected, setSelected] = useState<any | null>(null);
-  const { data: achievements = [] } = useQuery({
-    queryKey: ["achievements", 50, 0],
-    queryFn: () => listAchievements(50, 0),
+  const { data: hookAchievements = [] } = useQuery({
+    queryKey: ["achievements", 2, 0],
+    queryFn: () => listAchievements(2, 0),
+    enabled: !propAchievements,
   });
-  const visibleAchievements = achievements.slice(0, 2);
+  const visibleAchievements = propAchievements ?? hookAchievements;
   const isSingleAchievement = visibleAchievements.length === 1;
 
 
