@@ -1,8 +1,8 @@
-fastapi
-uvicorn[standard]
-SQLAlchemy>=1.4
-psycopg2-binary
-pydantic
-email-validator
-python-dotenv
-slowapi
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+SQLAlchemy==2.0.36
+psycopg2-binary==2.9.10
+pydantic==2.13.5
+email-validator==2.2.0
+python-dotenv==1.0.1
+slowapi==0.1.10

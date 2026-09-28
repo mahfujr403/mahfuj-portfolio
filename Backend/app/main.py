@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from sqlalchemy.orm import Session, selectinload
 from typing import List, Optional
+import logging
 import os
+import time
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -18,6 +20,38 @@ from app.security import require_admin
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Portfolio API")
+
+# --- Structured logging ---
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("portfolio")
+
+
+@app.middleware("http")
+async def log_request_timing(request: Request, call_next):
+    """Log method, path, status code, and response time for every request."""
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = (time.perf_counter() - start) * 1000
+    path = request.url.path
+
+    # Skip noisy health-check pings from keep-alive crons.
+    if path == "/health":
+        return response
+
+    level = logging.WARNING if elapsed_ms > 1000 else logging.INFO
+    logger.log(
+        level,
+        "%s %s → %d (%.1fms)",
+        request.method,
+        path,
+        response.status_code,
+        elapsed_ms,
+    )
+    return response
 
 # --- Rate limiting (protects free-tier DB compute-hours from abuse) ---
 limiter = Limiter(key_func=get_remote_address)
