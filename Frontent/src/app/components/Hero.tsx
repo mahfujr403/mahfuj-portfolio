@@ -119,21 +119,21 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
               animate={{ y: [0, -8, 0] }}
             >
               {/* Rotating glow background - circular */}
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-[#00f2fe] via-[#8b5cf6] to-[#00f2fe] rounded-full blur-3xl opacity-20"
-                animate={{ 
+                animate={{
                   opacity: [0.15, 0.3, 0.15],
                   rotate: [0, 360],
                   scale: [1, 1.1, 1]
                 }}
-                transition={{ 
+                transition={{
                   opacity: { duration: 4, repeat: Infinity, ease: "easeInOut" },
                   rotate: { duration: 12, repeat: Infinity, ease: "linear" },
                   scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
                 }}
               />
               {/* Image container - circular */}
-              <motion.div 
+              <motion.div
                 className="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden glass border-2 border-white/30 glow-cyan"
                 animate={{
                   boxShadow: [
@@ -176,7 +176,7 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-[#00f2fe]/30 mb-6"
             >
               <Sparkles className="text-[#00f2fe]" size={16} />
-              <span className="text-sm text-gray-300">Assakamu Alaikum</span>
+              <span className="text-sm text-gray-300">Assalamu Alaikum</span>
             </motion.div>
 
             {/* Name from database */}
@@ -196,8 +196,8 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-2xl lg:text-3xl font-semibold text-[#00f2fe] mb-6"
             >
-              <Typewriter 
-                text={profile.tagline || "AI Engineer & Researcher"} 
+              <Typewriter
+                text={profile.tagline || "AI Engineer & Researcher"}
                 speed={80}
                 delay={400}
                 infinite={true}
@@ -207,7 +207,7 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
             </motion.div>
 
             {/* Headline */}
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
