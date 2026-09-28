@@ -96,19 +96,15 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] rounded-3xl blur-2xl opacity-30" />
               <div className="relative w-80 h-80 rounded-3xl overflow-hidden glass border border-white/20 glow-cyan">
-                {profile.profileImage ? (
-                  <img
-                    src={profile.profileImage}
-                    alt={profile.name || "About Md. Mahfujur Rahman"}
-                    width={320}
-                    height={320}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-tr from-[#00f2fe]/20 to-[#8b5cf6]/20 animate-pulse" />
-                )}
+                <img
+                  src={profile.profileImage || "/images/profile-default.jpg"}
+                  alt={profile.name || "About Md. Mahfujur Rahman"}
+                  width={320}
+                  height={320}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover"
+                />
               </div>
               {profile.tagline && (
                 <motion.div
