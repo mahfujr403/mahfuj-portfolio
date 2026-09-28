@@ -1,11 +1,12 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://mahfuj-portfolio.onrender.com/";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export function getApiBaseUrl() {
   return API_BASE_URL;
 }
 
 export async function apiFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE_URL.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+  const cleanPath = path.replace(/^\//, "");
+  const url = API_BASE_URL ? `${API_BASE_URL.replace(/\/$/, "")}/${cleanPath}` : `/${cleanPath}`;
   // Do not attach Content-Type to bodyless GET requests: it turns a simple
   // cross-origin request into an extra CORS preflight.
   const headers = new Headers(options.headers);

@@ -50,7 +50,11 @@ async def log_request_timing(request: Request, call_next):
         path,
         response.status_code,
         elapsed_ms,
-    )
+    if "Vary" not in response.headers:
+        response.headers["Vary"] = "Accept-Encoding"
+    elif "Accept-Encoding" not in response.headers["Vary"]:
+        response.headers["Vary"] += ", Accept-Encoding"
+
     return response
 
 # --- Rate limiting (protects free-tier DB compute-hours from abuse) ---
@@ -77,8 +81,10 @@ app.add_middleware(
 )
 
 # How long browsers/CDNs may cache public read endpoints before revalidating.
-_LIST_CACHE = "public, max-age=300, stale-while-revalidate=60"
-_DETAIL_CACHE = "public, max-age=600, stale-while-revalidate=120"
+# s-maxage instructs Vercel Edge CDN to cache responses globally at edge locations.
+_LIST_CACHE = "public, max-age=300, s-maxage=300, stale-while-revalidate=60"
+_DETAIL_CACHE = "public, max-age=600, s-maxage=600, stale-while-revalidate=120"
+
 
 
 @app.get("/health")
