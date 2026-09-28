@@ -50,9 +50,11 @@ export default function Footer() {
           >
             <h3 className="font-bold text-2xl mb-2 gradient-text flex items-center gap-2 justify-center">
               <Sparkles size={20} className="text-[#00f2fe]" />
-              {profile.name}
+              {profile.name || "Md. Mahfujur Rahman"}
             </h3>
-            <p className="text-gray-400 leading-relaxed mb-1 text-sm">{profile.tagline}</p>
+            <p className="text-gray-400 leading-relaxed mb-1 text-sm">
+              {profile.tagline || "Machine Learning Engineer & Researcher"}
+            </p>
             <p className="text-xs text-gray-500 italic">Powered by AI & Innovation</p>
           </motion.div>
 
@@ -122,17 +124,23 @@ export default function Footer() {
                 ) : null;
               })}
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400">
-              <p className="flex items-center gap-2">
-                <Mail size={12} className="text-[#00f2fe]" />
-                {profile.email}
-              </p>
-              <span className="text-gray-600">•</span>
-              <p className="flex items-center gap-2">
-                <Phone size={12} className="text-[#00f2fe]" />
-                {profile.phone}
-              </p>
-            </div>
+            {(profile.email || profile.phone) && (
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400">
+                {profile.email && (
+                  <p className="flex items-center gap-2">
+                    <Mail size={12} className="text-[#00f2fe]" />
+                    {profile.email}
+                  </p>
+                )}
+                {profile.email && profile.phone && <span className="text-gray-600">•</span>}
+                {profile.phone && (
+                  <p className="flex items-center gap-2">
+                    <Phone size={12} className="text-[#00f2fe]" />
+                    {profile.phone}
+                  </p>
+                )}
+              </div>
+            )}
           </motion.div>
         </div>
 
@@ -145,7 +153,7 @@ export default function Footer() {
               viewport={{ once: true }}
               className="text-gray-400 text-xs"
             >
-              &copy; {new Date().getFullYear()} {profile.name}. All rights reserved.
+              &copy; {new Date().getFullYear()} {profile.name || "Md. Mahfujur Rahman"}. All rights reserved.
             </motion.p>
 
             <motion.button

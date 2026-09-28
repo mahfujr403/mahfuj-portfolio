@@ -86,7 +86,7 @@ export default function Navbar() {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
-            {profile?.name ?? ""}
+            {profile?.name || "Md. Mahfujur Rahman"}
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
