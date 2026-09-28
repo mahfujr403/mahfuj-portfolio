@@ -49,12 +49,24 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="text-xl text-gray-300 mb-6 leading-relaxed font-medium">
-              {profile.impactStatement}
-            </p>
-            <p className="text-gray-400 leading-relaxed mb-8">
-              {profile.bio}
-            </p>
+            {profile.impactStatement ? (
+              <p className="text-xl text-gray-300 mb-6 leading-relaxed font-medium">
+                {profile.impactStatement}
+              </p>
+            ) : (
+              <div className="h-7 w-5/6 bg-white/10 rounded-lg animate-pulse mb-6" />
+            )}
+            {profile.bio ? (
+              <p className="text-gray-400 leading-relaxed mb-8">
+                {profile.bio}
+              </p>
+            ) : (
+              <div className="space-y-2 mb-8 animate-pulse">
+                <div className="h-4 w-full bg-white/5 rounded" />
+                <div className="h-4 w-5/6 bg-white/5 rounded" />
+                <div className="h-4 w-4/6 bg-white/5 rounded" />
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {highlights.map((item, index) => (
@@ -84,25 +96,31 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] rounded-3xl blur-2xl opacity-30" />
               <div className="relative w-80 h-80 rounded-3xl overflow-hidden glass border border-white/20 glow-cyan">
-                <img
-                  src={profile.profileImage}
-                  alt={profile.name}
-                  width={320}
-                  height={320}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
+                {profile.profileImage ? (
+                  <img
+                    src={profile.profileImage}
+                    alt={profile.name || "About Md. Mahfujur Rahman"}
+                    width={320}
+                    height={320}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-tr from-[#00f2fe]/20 to-[#8b5cf6]/20 animate-pulse" />
+                )}
               </div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.3 }}
-                className="absolute -bottom-6 -right-6 glass px-6 py-4 rounded-2xl border border-[#00f2fe]/30 glow-cyan"
-              >
-                <p className="font-semibold gradient-text">{profile.tagline}</p>
-              </motion.div>
+              {profile.tagline && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 }}
+                  className="absolute -bottom-6 -right-6 glass px-6 py-4 rounded-2xl border border-[#00f2fe]/30 glow-cyan"
+                >
+                  <p className="font-semibold gradient-text">{profile.tagline}</p>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </div>

@@ -148,16 +148,20 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
                   ease: "easeInOut"
                 }}
               >
-                <img
-                  src={profile.profileImage}
-                  alt={profile.name}
-                  width={320}
-                  height={320}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
+                {profile.profileImage ? (
+                  <img
+                    src={profile.profileImage}
+                    alt={profile.name || "Md. Mahfujur Rahman"}
+                    width={320}
+                    height={320}
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-tr from-[#00f2fe]/20 to-[#8b5cf6]/20 animate-pulse" />
+                )}
               </motion.div>
             </motion.div>
           </motion.div>

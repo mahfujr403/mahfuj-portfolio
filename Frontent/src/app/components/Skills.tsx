@@ -5,13 +5,14 @@ import { getSkillMeta } from "./skillIcons";
 import { getCategoryMeta } from "./categoryIcons";
 
 export default function Skills({ skills: propSkills }: { skills?: Array<{ category: string; skills: Array<{ name: string; level: number }> }> }) {
-  const { data: hookSkills = [] } = useQuery({
+  const { data: hookSkills = [], isLoading } = useQuery({
     queryKey: ["skills"],
     queryFn: fetchSkills,
     enabled: !propSkills,
   });
 
   const skills = propSkills ?? hookSkills;
+  const showSkeleton = isLoading && !propSkills;
 
   return (
     <section id="skills" className="py-32 relative overflow-hidden">
@@ -51,7 +52,21 @@ export default function Skills({ skills: propSkills }: { skills?: Array<{ catego
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {skills.map((skillCategory, index) => {
+          {showSkeleton
+            ? [1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-56 rounded-3xl border border-white/10 glass p-6 space-y-4 animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/10" />
+                    <div className="h-6 w-48 bg-white/10 rounded-lg" />
+                  </div>
+                  <div className="h-14 w-full bg-white/5 rounded-2xl" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-20 bg-white/5 rounded-full" />
+                    <div className="h-6 w-24 bg-white/5 rounded-full" />
+                  </div>
+                </div>
+              ))
+            : skills.map((skillCategory, index) => {
             const { Icon: CategoryIcon, accent } = getCategoryMeta(skillCategory.category, index);
             const duration = Math.max(18, skillCategory.skills.length * 4);
 

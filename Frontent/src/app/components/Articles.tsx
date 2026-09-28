@@ -52,8 +52,19 @@ export default function Articles({ articles: propArticles }: { articles?: any[] 
           <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-[#00f2fe]/40 via-[#8b5cf6]/40 to-[#ec4899]/40 hidden md:block" />
 
           <div className="flex flex-col divide-y divide-white/5">
-            {loading ? (
-              <div className="py-12 text-center text-gray-500">Loading articles...</div>
+            {loading && !propArticles ? (
+              <div className="space-y-6 py-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="md:pl-8 py-6 space-y-3 animate-pulse">
+                    <div className="flex gap-3">
+                      <div className="h-5 w-24 bg-white/5 rounded-full" />
+                      <div className="h-5 w-20 bg-white/5 rounded-full" />
+                    </div>
+                    <div className="h-6 w-3/4 bg-white/10 rounded-lg" />
+                    <div className="h-4 w-full bg-white/5 rounded" />
+                  </div>
+                ))}
+              </div>
             ) : (
               list.map((article, index) => {
                 const platform = (article as any).platform ?? article.category ?? "Blog";

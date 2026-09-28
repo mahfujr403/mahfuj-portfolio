@@ -7,13 +7,14 @@ import { listAchievements } from "../../services/achievementsApi";
 
 export default function Achievements({ achievements: propAchievements }: { achievements?: any[] }) {
   const [selected, setSelected] = useState<any | null>(null);
-  const { data: hookAchievements = [] } = useQuery({
+  const { data: hookAchievements = [], isLoading } = useQuery({
     queryKey: ["achievements", 2, 0],
     queryFn: () => listAchievements(2, 0),
     enabled: !propAchievements,
   });
   const visibleAchievements = propAchievements ?? hookAchievements;
   const isSingleAchievement = visibleAchievements.length === 1;
+  const showSkeleton = isLoading && !propAchievements;
 
 
   return (
@@ -35,7 +36,21 @@ export default function Achievements({ achievements: propAchievements }: { achie
           </motion.div>
 
           {/* Featured achievements */}
-          {visibleAchievements.length > 0 ? (
+          {showSkeleton ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2].map((i) => (
+                <div key={i} className="h-64 rounded-3xl border border-white/10 glass p-6 space-y-4 animate-pulse">
+                  <div className="flex justify-between items-center">
+                    <div className="h-6 w-1/2 bg-white/10 rounded-lg" />
+                    <div className="h-6 w-16 bg-white/5 rounded-full" />
+                  </div>
+                  <div className="h-4 w-1/3 bg-white/5 rounded" />
+                  <div className="h-16 w-full bg-white/5 rounded-xl" />
+                  <div className="h-4 w-1/4 bg-white/5 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : visibleAchievements.length > 0 ? (
             <div className={isSingleAchievement ? "mx-auto grid grid-cols-1 max-w-4xl gap-6" : "grid grid-cols-1 md:grid-cols-2 gap-6"}>
               {visibleAchievements.map((achievement, index) => {
                 return (

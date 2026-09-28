@@ -1,26 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "react-router";
 import { fetchProfile } from "../../services/profileApi";
 
 /**
  * Shared profile query used by Navbar, Footer, Hero, About, Contact.
  *
- * On the homepage route, fetching is disabled because the aggregated
- * /api/v1/homepage endpoint already includes profile data and seeds
- * this cache via queryClient.setQueryData.  The hook still subscribes
- * to the ["profile"] cache key, so it re-renders automatically once
- * HomePage populates the cache — without ever firing a separate request.
+ * Runs immediately on mount across all pages. Resolves in ~900ms,
+ * allowing Hero, Navbar, and Footer to render above-the-fold content
+ * without waiting for any other slower section.
  *
- * On every other route, it fetches /api/v1/profile normally (or serves
- * from the 5-minute staleTime cache if the visitor came from the homepage).
+ * Stale time is 5 minutes, so repeated visits serve from cache instantly.
  */
 export function useProfile() {
-  const location = useLocation();
-  const isHomepage = location.pathname === "/";
-
   return useQuery({
     queryKey: ["profile"],
     queryFn: fetchProfile,
-    enabled: !isHomepage,
   });
 }
