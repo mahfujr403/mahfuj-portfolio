@@ -3,6 +3,7 @@ import { ExternalLink, ArrowRight, BookOpen, Star, FileText } from "lucide-react
 import { motion } from "motion/react";
 import { normalizePublication, getPublicationBySlug } from "../../services/publicationsApi";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "./ui/badge";
 
 interface PublicationCardProps {
   publication: any;
