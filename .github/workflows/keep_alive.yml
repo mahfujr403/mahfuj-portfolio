@@ -1,0 +1,25 @@
+name: Render Backend Keep-Alive
+
+on:
+  schedule:
+    # Runs every 14 minutes to prevent Render free-tier instance from sleeping (15-min idle timeout)
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions dashboard
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Ping Backend Health Endpoint
+        run: |
+          echo "Sending keep-alive ping to Render backend..."
+          HTTP_STATUS=$(curl -s -o response.txt -w "%{http_code}" --max-time 30 https://mahfuj-portfolio.onrender.com/health)
+          echo "Response code: $HTTP_STATUS"
+          cat response.txt || true
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "Backend is warm and active."
+          else
+            echo "Warning: Received HTTP $HTTP_STATUS"
+          fi
