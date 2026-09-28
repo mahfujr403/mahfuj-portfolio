@@ -39,14 +39,19 @@ The site is styled as a "Deep Space" AI theme — a dark (`#050814`) glassmorphi
 ## ✨ Highlights
 
 ### Frontend
+- **Instant 0ms Route Transitions** — Hovering over any project or publication card triggers TanStack Query prefetching in the background; navigation passes existing item data via React Router `location.state` for instant rendering with zero layout shift or false "Not Found" flashes.
+- **Progressive Shimmer Skeletons** — Every page and section (Homepage, All Publications, Project Detail, Publication Detail) mounts with tailored shimmer skeletons instead of blocking spinners or blank screens.
+- **Instant Hero & LCP Paint** — Preloaded hero profile image (`<link rel="preload">`), pre-filled typewriter headline to eliminate layout shifts, and zero opacity delays on initial render.
 - **Route-level code splitting** — every page is a lazily-loaded chunk (`React.lazy` + `Suspense`), so visitors only download what they navigate to.
-- **Smart data layer** — TanStack Query v5 with a 5-minute `staleTime` (matching the backend's `Cache-Control`), automatic de-duplication, and shared hooks (`useProfile`, `usePublications`) so Hero/About/Contact never fetch the profile twice. A promise-level dedupe at the service boundary guarantees a single profile request even before the cache warms up.
+- **Smart data layer** — TanStack Query v5 with a 5-minute `staleTime` (matching the backend's `Cache-Control`), automatic de-duplication, and shared hooks (`useProfile`, `useProjects`, `usePublications`) so sections never fetch the same resource twice. A promise-level dedupe at the service boundary guarantees a single profile request even before the cache warms up.
 - **Lightweight payloads** — list endpoints return slim schemas (heavy JSONB detail fields are excluded until the detail page needs them); a dedicated `/publications/{slug}/neighbors` endpoint replaced the old "fetch 200 rows to render prev/next" pattern.
 - **Production build tuning** — Brotli pre-compression (`.br` assets Vercel can serve directly), manual `vendor` chunking, `es2020` target, CSS code-splitting, and a bundle visualizer (`dist/stats.html`).
 - **Rich UI kit** — 46 prebuilt shadcn/ui components (Radix primitives), Motion (Framer Motion successor) animations, lucide icons, sonner toasts, Recharts, Embla carousels, canvas-confetti, and `DOMPurify`-sanitized blog HTML.
 - **Interactive contact form** with success confetti, plus blog comments & threaded replies.
 
-### Backend
+### Backend & Infrastructure
+- **Render Keep-Alive Automation** — GitHub Actions cron workflow (`.github/workflows/keep_alive.yml`) pings the `/health` endpoint every 14 minutes, keeping the Render free-tier instance warm and eliminating 50-second cold starts.
+- **Vercel Edge Reverse Proxy (`vercel.json`)** — Transparently rewrites `/api/*` requests to the Render backend, eliminating cross-origin CORS preflight latency and enforcing edge-level caching.
 - **Security-first mutations** — all `POST/PUT/DELETE` routes are gated by an `X-Admin-Token` header compared with `secrets.compare_digest` (constant time) and **fail closed** (HTTP 503) if no token is configured. Public `GET` routes stay open.
 - **Rate limiting** (slowapi) to protect free-tier compute: `10/min` for comments & replies, `5/min` for contact submissions.
 - **HTTP caching** — `Cache-Control: public, max-age=300, stale-while-revalidate=60` on lists, `max-age=600, swr=120` on detail routes; GZip compression for responses ≥ 500 bytes.
@@ -60,17 +65,19 @@ The site is styled as a "Deep Space" AI theme — a dark (`#050814`) glassmorphi
 
 ```
 ┌─────────────────────────────┐        ┌──────────────────────────────┐        ┌──────────────┐
-│   Frontend (Vercel)         │  JSON  │   API (Render)               │  SQL   │  PostgreSQL  │
+│   Frontend (Vercel Edge)    │        │   API (Render)               │  SQL   │  PostgreSQL  │
 │   React 18 + Vite 6 + TS    │───────▶│   FastAPI + SQLAlchemy       │───────▶│              │
-│   Tailwind 4 + shadcn/ui    │  CORS  │   slowapi · GZip · CORS      │        │  11 tables   │
-│   TanStack Query cache      │        │   X-Admin-Token auth         │        │              │
+│   Tailwind 4 + shadcn/ui    │ Reverse│   slowapi · GZip · CORS      │        │  11 tables   │
+│   TanStack Query cache      │ Proxy  │   X-Admin-Token auth         │        │              │
+│   Instant hover prefetch    │ /api/* │   /health (warm keep-alive)  │        │              │
 └─────────────────────────────┘        └──────────────────────────────┘        └──────────────┘
-        ▲                                          ▲
-        │ VITE_API_BASE_URL baked in at build      │ Swagger UI auto-served at /docs
-        └──────────────────────────────────────────┘
+            ▲                                          ▲
+            │ SPA rewrites & asset caching             │ Cron ping every 14 min
+            └────────── vercel.json ───────────────────┴── GitHub Actions ─────┘
 ```
 
-- The frontend talks to the API via `VITE_API_BASE_URL` (embedded at build time; defaults to same-origin `""` in dev).
+- The frontend talks to the API via `/api/*` reverse-proxied by Vercel edge rules in `vercel.json` (or via direct `VITE_API_BASE_URL` in local dev).
+- Render stays permanently warm via GitHub Actions cron pings, preventing instance spin-down.
 - The API serializes **camelCase JSON** (Pydantic `alias_generator`) while storing snake_case columns — both shapes are accepted on input.
 - Content is managed entirely through the API (see [Content Management](#🔐-content-management-admin-only)).
 
@@ -114,6 +121,10 @@ The site is styled as a "Deep Space" AI theme — a dark (`#050814`) glassmorphi
 
 ```
 mahfuj-portfolio/
+├── .github/
+│   └── workflows/
+│       └── keep_alive.yml          # GitHub Actions cron: pings Render /health every 14m
+│
 ├── Backend/                        # FastAPI application
 │   ├── app/
 │   │   ├── main.py                 # App entry: routes, CORS, rate limits, caching (~360 LOC)
@@ -126,7 +137,8 @@ mahfuj-portfolio/
 │   └── .env.example                # DATABASE_URL, ADMIN_TOKEN, ALLOWED_ORIGINS
 │
 ├── Frontent/                       # React SPA  (folder name is a known typo for "Frontend")
-│   ├── index.html
+│   ├── index.html                  # Hero image preload, SEO & OpenGraph tags
+│   ├── vercel.json                 # Edge reverse-proxy rules (/api/*) & immutable asset cache headers
 │   ├── vite.config.ts              # Figma asset resolver, Brotli, visualizer, chunking
 │   ├── package.json                # dev / build scripts
 │   └── src/
@@ -141,7 +153,7 @@ mahfuj-portfolio/
 │       │   │                       # Achievements, Articles, Contact, Navbar, Footer,
 │       │   │                       # AnimatedBackground, GradientOrbs, DataStream, …
 │       │   │   └── ui/             # 46 shadcn/ui components
-│       │   └── hooks/              # useProfile, usePublications (shared React Query hooks)
+│       │   └── hooks/              # useProfile, useProjects, usePublications (shared hooks with cache & prefetch)
 │       ├── services/               # apiClient + per-domain API modules
 │       ├── styles/                 # Tailwind 4 entry, theme tokens, fonts
 │       ├── types/                  # Blog/Comment TypeScript types
@@ -328,8 +340,9 @@ Both `camelCase` and `snake_case` keys are accepted on input (Pydantic `populate
 
 | Tier | Host | Key settings |
 |---|---|---|
-| Frontend | **Vercel** | Root directory: `Frontent` · Framework: Vite · Build: `npm run build` · Output: `dist` · Env: `VITE_API_BASE_URL` · SPA fallback rewrite for client-side routes (configured in the Vercel dashboard; no `vercel.json` in-repo) |
+| Frontend | **Vercel** | Root directory: `Frontent` · Framework: Vite · Build: `npm run build` · Output: `dist` · Edge routing: `Frontent/vercel.json` (SPA rewrites, transparent `/api/*` reverse-proxy to Render, immutable caching for `/assets/*`) |
 | API | **Render** | Root directory: `Backend` · Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT` · Env: `DATABASE_URL`, `ADMIN_TOKEN`, `ALLOWED_ORIGINS` |
+| Keep-Alive | **GitHub Actions** | Automated cron job (`.github/workflows/keep_alive.yml`) pings `https://mahfuj-portfolio.onrender.com/health` every 14 minutes to eliminate free-tier sleeping |
 | Database | **PostgreSQL** (managed) | Schema auto-created on API boot; GIN + slug indexes defined in models |
 
 The Brotli-precompressed assets produced by the build (`.br` files) are served directly by Vercel, and the API compresses dynamic responses ≥ 500 bytes with GZip.
@@ -348,8 +361,13 @@ The Brotli-precompressed assets produced by the build (`.br` files) are served d
 
 ## ⚡ Performance Notes
 
+- **Instant 0ms Route Transitions** — Hovering over project and publication links immediately prefetches detail queries into TanStack Query. In-memory data passing via React Router `location.state` renders target pages instantaneously without layout shift or false "Not Found" flashes.
+- **Zero Backend Cold Starts** — A lightweight GitHub Actions cron workflow pings `/health` every 14 minutes, preventing Render's 15-minute idle spin-down.
+- **Vercel Edge Reverse Proxy** — `/api/*` requests pass through Vercel's edge network directly to Render, eliminating browser CORS preflight overhead and accelerating initial response time.
+- **Hero & LCP Paint Optimization** — Profile image preload tag in `index.html`, zero render-blocking opacity delays, and pre-filled typewriter headline ensure instant Largest Contentful Paint.
+- **Progressive Shimmer Skeletons** — Every section and detail view mounts with responsive skeleton placeholders, avoiding blank screens or jarring shifts.
 - **Edge-to-DB caching alignment** — React Query `staleTime` (5 min) mirrors backend `Cache-Control: max-age=300`, so CDN, browser, and client caches expire together.
-- **Request de-duplication** at three levels: React Query key dedupe, shared `useProfile`/`usePublications` hooks, and a promise-level guard in `profileApi.ts`.
+- **Request de-duplication** at three levels: React Query key dedupe, shared `useProfile`/`useProjects`/`usePublications` hooks, and a promise-level guard in `profileApi.ts`.
 - **Payload slimming** — list responses strip heavy JSONB fields; `/stats` returns counts only; `/publications/{slug}/neighbors` replaces 200-row fetches with a slug+title pair.
 - **Query efficiency** — `selectinload` eliminates the skills N+1; `limit` is bounded server-side on every list route (caps of 50–1000 depending on endpoint, `ge=1` on projects/publications/blogs).
 - **Bundle** — route-level lazy chunks, vendor split, ES2020 target, Brotli pre-compression; inspect with `dist/stats.html` after building.
