@@ -1,14 +1,19 @@
 import PublicationCard from "../components/PublicationCard";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
-import { usePublications } from "../hooks/usePublications";
+import { useQuery } from "@tanstack/react-query";
+import { listPublications } from "../../services/publicationsApi";
 import { Link } from "react-router";
 
 
 export default function Publications({ publications: propPublications }: { publications?: any[] }) {
 
-    const { data: hookPublications } = usePublications(3, 0);
-    const featuredPublications = propPublications ?? hookPublications ?? [];
+    const { data: hookPublications = [] } = useQuery({
+        queryKey: ["publications", 3, 0],
+        queryFn: () => listPublications(3, 0),
+        enabled: !propPublications,
+    });
+    const featuredPublications = propPublications ?? hookPublications;
 
 
     return (
