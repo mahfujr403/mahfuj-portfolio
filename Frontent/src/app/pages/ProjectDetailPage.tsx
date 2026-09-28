@@ -1,46 +1,51 @@
-import { useParams, Link } from "react-router";
-import { useEffect, useState } from "react";
-import { getProjectBySlug } from "../../services/projectsApi";
+import { useParams, Link, useLocation } from "react-router";
+import { useEffect } from "react";
+import { useProjectDetail } from "../hooks/useProjects";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Github, ExternalLink, ArrowLeft, Database, Cpu, Rocket, Zap, AlertCircle, Lightbulb, Code } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { toast } from "sonner";
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
-  const [project, setProject] = useState<any | null>(null);
+  const location = useLocation();
+  const routeProject = (location.state as any)?.project;
+  const { project, loading, error } = useProjectDetail(slug, routeProject);
 
   useEffect(() => {
-    let mounted = true;
     try {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
     } catch (e) {
       // ignore in non-browser environments
     }
-
-    const load = async () => {
-      if (!slug) return;
-      try {
-        const p = await getProjectBySlug(slug);
-        if (mounted) setProject(p);
-      } catch (err) {
-        toast.error("Failed to load project details.");
-
-      }
-    };
-    load();
-
-    return () => {
-      mounted = false;
-    };
   }, [slug]);
 
-  if (!project) {
+  if (loading && !project) {
+    return (
+      <div className="min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-pulse">
+          <div className="h-6 w-32 bg-white/10 rounded-lg mb-8" />
+          <div className="w-full h-96 rounded-2xl bg-white/5 mb-8 border border-white/10" />
+          <div className="glass border border-white/10 rounded-2xl p-8 mb-8 space-y-4">
+            <div className="h-10 w-2/3 bg-white/10 rounded-xl" />
+            <div className="h-5 w-full bg-white/5 rounded-lg" />
+            <div className="h-5 w-4/5 bg-white/5 rounded-lg" />
+            <div className="flex gap-2 pt-4">
+              <div className="h-8 w-20 bg-white/10 rounded-lg" />
+              <div className="h-8 w-24 bg-white/10 rounded-lg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!project && !loading) {
     return (
       <div className="min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
           <h1 className="text-gray-100 mb-4">Project Not Found</h1>
+          {error && <p className="text-gray-400 mb-4">{error}</p>}
           <Link to="/" className="text-gray-400 hover:text-[#00f2fe] transition-colors inline-block">
             ← Back to Home
           </Link>

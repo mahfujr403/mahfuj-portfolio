@@ -1,5 +1,5 @@
 import DOMPurify from "dompurify";
-import { useParams, Link } from "react-router";
+import { useParams, Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
@@ -10,9 +10,11 @@ import { usePublicationDetail } from "../hooks/usePublications";
 
 export default function PublicationDetailPage() {
   const { slug } = useParams();
+  const location = useLocation();
+  const routePublication = (location.state as any)?.publication;
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const { publication, publications: allPublications, previousPublication, nextPublication, loading, error } = usePublicationDetail(slug, 200);
+  const { publication, publications: allPublications, previousPublication, nextPublication, loading, error } = usePublicationDetail(slug, routePublication);
 
   useEffect(() => {
     try {
@@ -22,18 +24,44 @@ export default function PublicationDetailPage() {
     }
   }, [slug]);
 
-  if (loading) {
+  if (loading && !publication) {
     return (
       <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h1 className="text-gray-100 mb-4">Loading publication...</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-pulse">
+          <div className="h-6 w-36 bg-white/10 rounded-lg mb-8" />
+          
+          <div className="glass border border-white/10 rounded-2xl p-8 mb-8 space-y-6">
+            <div className="flex gap-3">
+              <div className="h-6 w-24 bg-white/10 rounded-full" />
+              <div className="h-6 w-32 bg-white/5 rounded-full" />
+              <div className="h-6 w-16 bg-white/5 rounded-full" />
+            </div>
+            <div className="h-10 w-3/4 bg-white/10 rounded-xl" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="h-14 bg-white/5 rounded-lg" />
+              <div className="h-14 bg-white/5 rounded-lg" />
+              <div className="md:col-span-2 h-14 bg-white/5 rounded-lg" />
+            </div>
+            <div className="flex gap-3">
+              <div className="h-10 w-32 bg-white/10 rounded-lg" />
+              <div className="h-10 w-36 bg-white/10 rounded-lg" />
+            </div>
+          </div>
+
+          <div className="glass border border-white/10 rounded-2xl p-8 mb-8 space-y-4">
+            <div className="h-7 w-40 bg-white/10 rounded-lg" />
+            <div className="space-y-2">
+              <div className="h-4 w-full bg-white/5 rounded" />
+              <div className="h-4 w-5/6 bg-white/5 rounded" />
+              <div className="h-4 w-4/6 bg-white/5 rounded" />
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
-
-  if (error || !publication) {
+  if (!loading && (error || !publication)) {
     return (
       <div className="min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">

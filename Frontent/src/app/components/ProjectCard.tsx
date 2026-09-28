@@ -2,13 +2,26 @@ import { Link } from "react-router";
 import { Github, ExternalLink, ArrowRight, Sparkles, Folder } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { getProjectBySlug } from "../../services/projectsApi";
 
 interface ProjectCardProps {
   project: any;
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
+  const queryClient = useQueryClient();
   const isFeatured = project.tag === "featured";
+
+  const prefetchProject = () => {
+    if (project?.slug) {
+      queryClient.prefetchQuery({
+        queryKey: ["project", project.slug],
+        queryFn: () => getProjectBySlug(project.slug),
+        staleTime: 5 * 60 * 1000,
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -16,6 +29,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       whileHover={{ y: -10 }}
+      onMouseEnter={prefetchProject}
       transition={{ duration: 0.3 }}
       className="h-full flex flex-col relative group"
     >
@@ -25,7 +39,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       <div className="relative h-full flex flex-col glass rounded-2xl overflow-hidden border border-white/10 group-hover:border-[#00f2fe]/40 transition-all duration-300">
         {/* Image Section */}
         {project.imageUrl && (
-          <div className="relative w-full h-56 overflow-hidden">
+          <Link
+            to={`/projects/${project.slug}`}
+            state={{ project }}
+            className="relative w-full h-56 overflow-hidden block"
+          >
             {/* Gradient overlays */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#050814] via-[#050814]/60 to-transparent z-10" />
             <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#050814]/80 to-transparent z-10" />
@@ -66,7 +84,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 </span>
               </div>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Content Section */}
@@ -75,9 +93,15 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#00f2fe]/10 to-transparent rounded-bl-full opacity-50" />
 
           {/* Title */}
-          <h3 className="text-xl font-bold mb-3 gradient-text group-hover:scale-[1.02] transition-transform relative z-10 line-clamp-2">
-            {project.title}
-          </h3>
+          <Link
+            to={`/projects/${project.slug}`}
+            state={{ project }}
+            className="hover:opacity-90 transition-opacity"
+          >
+            <h3 className="text-xl font-bold mb-3 gradient-text group-hover:scale-[1.02] transition-transform relative z-10 line-clamp-2">
+              {project.title}
+            </h3>
+          </Link>
 
           {/* Description */}
           <p className="text-gray-400 mb-4 flex-1 leading-relaxed text-sm line-clamp-3">
@@ -140,6 +164,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
             <Link
               to={`/projects/${project.slug}`}
+              state={{ project }}
+              onMouseEnter={prefetchProject}
               className="inline-flex items-center gap-2 px-4 py-2 glass border border-white/20 text-gray-300 rounded-lg hover:border-[#8b5cf6]/60 hover:text-white transition-all text-sm ml-auto shrink-0 group/link"
             >
               Details

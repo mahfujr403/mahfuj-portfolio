@@ -1,11 +1,12 @@
 import PublicationCard from "../components/PublicationCard";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listPublications } from "../../services/publicationsApi";
 import { Link } from "react-router";
 
 export default function Publications({ publications: propPublications }: { publications?: any[] }) {
+  const queryClient = useQueryClient();
   const { data: hookPublications = [], isLoading } = useQuery({
     queryKey: ["publications", 3, 0],
     queryFn: () => listPublications(3, 0),
@@ -58,6 +59,13 @@ export default function Publications({ publications: propPublications }: { publi
         >
           <Link
             to="/publications"
+            onMouseEnter={() => {
+              queryClient.prefetchQuery({
+                queryKey: ["publications", 200, 0],
+                queryFn: () => listPublications(200, 0),
+                staleTime: 5 * 60 * 1000,
+              });
+            }}
             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold rounded-xl hover:shadow-[0_0_40px_rgba(0,242,254,0.5)] transition-all duration-300"
           >
             View All Publications

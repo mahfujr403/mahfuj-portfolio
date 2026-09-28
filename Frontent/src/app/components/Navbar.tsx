@@ -5,8 +5,11 @@ import { useProfile } from "../hooks/useProfile";
 import { motion } from "motion/react";
 import { toast } from "sonner";
 import { downloadAndOpen } from "../../utils/download";
+import { useQueryClient } from "@tanstack/react-query";
+import { listPublications } from "../../services/publicationsApi";
 
 export default function Navbar() {
+  const queryClient = useQueryClient();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
@@ -105,6 +108,15 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   to={link.href}
+                  onMouseEnter={() => {
+                    if (link.href === "/publications") {
+                      queryClient.prefetchQuery({
+                        queryKey: ["publications", 200, 0],
+                        queryFn: () => listPublications(200, 0),
+                        staleTime: 5 * 60 * 1000,
+                      });
+                    }
+                  }}
                   className="text-gray-300 hover:text-[#00f2fe] transition-colors relative group"
                 >
                   {link.label}
@@ -163,6 +175,15 @@ export default function Navbar() {
                   <Link
                     key={link.label}
                     to={link.href}
+                    onTouchStart={() => {
+                      if (link.href === "/publications") {
+                        queryClient.prefetchQuery({
+                          queryKey: ["publications", 200, 0],
+                          queryFn: () => listPublications(200, 0),
+                          staleTime: 5 * 60 * 1000,
+                        });
+                      }
+                    }}
                     className="text-gray-300 hover:text-[#00f2fe] transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >

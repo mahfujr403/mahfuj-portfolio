@@ -10,7 +10,7 @@ export default function AllPublicationsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDomain, setFilterDomain] = useState("all");
   const [sortBy, setSortBy] = useState("year-desc");
-  const { data: publications } = usePublications(200, 0);
+  const { data: publications, loading } = usePublications(200, 0);
 
   const domains = useMemo(() => {
     const uniqueDomains = Array.from(new Set(publications.map((p) => p.domain)));
@@ -61,7 +61,8 @@ export default function AllPublicationsPage() {
         <div className="mb-12">
           <h1 className="mb-4 gradient-text">All Publications</h1>
           <p className="text-xl text-gray-400">
-            Research contributions in machine learning, deep learning, and AI ({publications.length} publications)
+            Research contributions in machine learning, deep learning, and AI
+            {publications.length > 0 && ` (${publications.length} publications)`}
           </p>
         </div>
 
@@ -108,7 +109,9 @@ export default function AllPublicationsPage() {
 
           <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
             <p>
-              Showing {filteredAndSortedPublications.length} of {publications.length} publications
+              {loading && publications.length === 0
+                ? "Loading publications..."
+                : `Showing ${filteredAndSortedPublications.length} of ${publications.length} publications`}
             </p>
             {(searchQuery || filterDomain !== "all") && (
               <button
@@ -124,7 +127,20 @@ export default function AllPublicationsPage() {
           </div>
         </div>
 
-        {filteredAndSortedPublications.length === 0 ? (
+        {loading && publications.length === 0 ? (
+          <div className="space-y-6">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="glass border border-white/10 rounded-xl p-6 animate-pulse space-y-3">
+                <div className="flex justify-between items-center">
+                  <div className="h-6 w-1/2 bg-white/10 rounded-lg" />
+                  <div className="h-5 w-20 bg-white/5 rounded-full" />
+                </div>
+                <div className="h-4 w-1/4 bg-white/5 rounded" />
+                <div className="h-4 w-4/5 bg-white/5 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : filteredAndSortedPublications.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-gray-400 text-lg">No publications found matching your criteria.</p>
           </div>

@@ -6,43 +6,62 @@ import {
   listPublications,
 } from "../../services/publicationsApi";
 
-// React Query gives us caching + de-duplication for free: e.g. Publications
-// (homepage, limit=3) and AllPublicationsPage (limit=200) each declare their
-// own query, and navigating between them no longer triggers a redundant
-// fetch for data that's already in cache and still fresh.
 export function usePublications(limit = 10, offset = 0) {
+  const queryClient = useQueryClient();
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["publications", limit, offset],
     queryFn: () => listPublications(limit, offset),
+    initialData: () => {
+      // If we don't have this exact query cached yet, check if any publications query has items
+      const queries = queryClient.getQueriesData<any[]>({ queryKey: ["publications"] });
+      for (const [, list] of queries) {
+        if (Array.isArray(list) && list.length > 0) {
+          return list;
+        }
+      }
+      return undefined;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
   return {
     data: data ?? [],
-    loading: isLoading,
+    loading: isLoading && (!data || data.length === 0),
     error: error instanceof Error ? error.message : null,
     refresh: refetch,
   };
 }
 
-export function usePublicationDetail(slug?: string) {
+export function usePublicationDetail(slug?: string, initialPublication?: any) {
   const queryClient = useQueryClient();
 
   const detailQuery = useQuery({
     queryKey: ["publication", slug],
     queryFn: () => getPublicationBySlug(slug as string),
     enabled: !!slug,
+    initialData: () => {
+      if (initialPublication) return initialPublication;
+      // Search any cached publications lists (e.g. homepage limit=3 or all limit=200)
+      const queries = queryClient.getQueriesData<any[]>({ queryKey: ["publications"] });
+      for (const [, list] of queries) {
+        if (Array.isArray(list)) {
+          const found = list.find((p) => p.slug === slug);
+          if (found) return found;
+        }
+      }
+      return undefined;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Lightweight endpoint (just slug+title for prev/next) instead of the old
-  // pattern of fetching up to 200 full publication records on every visit.
+  // Lightweight endpoint for prev/next
   const neighborsQuery = useQuery({
     queryKey: ["publication-neighbors", slug],
     queryFn: () => getPublicationNeighbors(slug as string),
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
   });
 
-  // If the full list is already cached (e.g. visitor came from
-  // AllPublicationsPage), reuse it instead of an extra request.
   const cachedList = queryClient.getQueryData<any[]>(["publications", 200, 0]) ?? [];
 
   const currentIndex = useMemo(
@@ -57,7 +76,7 @@ export function usePublicationDetail(slug?: string) {
     nextPublication:
       neighborsQuery.data?.next ??
       (currentIndex >= 0 && currentIndex < cachedList.length - 1 ? cachedList[currentIndex + 1] : null),
-    loading: detailQuery.isLoading,
+    loading: detailQuery.isLoading && !detailQuery.data,
     error: detailQuery.error instanceof Error ? detailQuery.error.message : null,
   };
 }

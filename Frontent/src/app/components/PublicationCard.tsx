@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { ExternalLink, ArrowRight, BookOpen, Star, FileText } from "lucide-react";
 import { motion } from "motion/react";
-import { Badge } from "./ui/badge";
-import { normalizePublication } from "../../services/publicationsApi";
+import { normalizePublication, getPublicationBySlug } from "../../services/publicationsApi";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PublicationCardProps {
   publication: any;
@@ -10,8 +10,19 @@ interface PublicationCardProps {
 }
 
 export default function PublicationCard({ publication, compact = false }: PublicationCardProps) {
+  const queryClient = useQueryClient();
   const data = normalizePublication(publication);
   const keyResults = Array.isArray(data.keyResults) ? data.keyResults : [];
+
+  const prefetchPublication = () => {
+    if (data?.slug) {
+      queryClient.prefetchQuery({
+        queryKey: ["publication", data.slug],
+        queryFn: () => getPublicationBySlug(data.slug),
+        staleTime: 5 * 60 * 1000,
+      });
+    }
+  };
 
   if (compact) {
     return (
@@ -20,6 +31,7 @@ export default function PublicationCard({ publication, compact = false }: Public
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         whileHover={{ y: -5 }}
+        onMouseEnter={prefetchPublication}
         className="relative group"
       >
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-80" />
@@ -46,9 +58,11 @@ export default function PublicationCard({ publication, compact = false }: Public
                 </span>
               </div>
 
-              <h3 className="text-xl font-bold gradient-text mb-3 group-hover:scale-[1.01] transition-transform whitespace-normal break-words leading-snug">
-                {data.title}
-              </h3>
+              <Link to={`/publications/${data.slug}`} state={{ publication: data }}>
+                <h3 className="text-xl font-bold gradient-text mb-3 group-hover:scale-[1.01] transition-transform whitespace-normal break-words leading-snug hover:opacity-90">
+                  {data.title}
+                </h3>
+              </Link>
 
               <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400 mb-3">
                 <BookOpen size={14} className="text-[#8b5cf6]" />
@@ -100,6 +114,8 @@ export default function PublicationCard({ publication, compact = false }: Public
 
                 <Link
                   to={`/publications/${data.slug}`}
+                  state={{ publication: data }}
+                  onMouseEnter={prefetchPublication}
                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/15 bg-white/[0.04] text-gray-200 text-sm font-medium hover:border-[#8b5cf6]/50 hover:text-white transition-all"
                 >
                   Details
@@ -119,6 +135,7 @@ export default function PublicationCard({ publication, compact = false }: Public
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       whileHover={{ y: -10 }}
+      onMouseEnter={prefetchPublication}
       transition={{ duration: 0.3 }}
       className="h-full flex flex-col relative group"
     >
@@ -144,9 +161,11 @@ export default function PublicationCard({ publication, compact = false }: Public
             </div>
           </div>
 
-          <h3 className="text-xl font-bold gradient-text mb-3 group-hover:scale-[1.02] transition-transform relative z-10 whitespace-normal break-words leading-snug">
-            {data.title}
-          </h3>
+          <Link to={`/publications/${data.slug}`} state={{ publication: data }}>
+            <h3 className="text-xl font-bold gradient-text mb-3 group-hover:scale-[1.02] transition-transform relative z-10 whitespace-normal break-words leading-snug hover:opacity-90">
+              {data.title}
+            </h3>
+          </Link>
 
           <div className="flex items-center gap-2 text-sm text-gray-400 relative z-10">
             <BookOpen size={14} className="text-[#8b5cf6]" />
@@ -218,6 +237,8 @@ export default function PublicationCard({ publication, compact = false }: Public
 
             <Link
               to={`/publications/${data.slug}`}
+              state={{ publication: data }}
+              onMouseEnter={prefetchPublication}
               className="inline-flex items-center gap-2 px-4 py-2 glass border border-white/20 text-gray-300 rounded-lg hover:border-[#8b5cf6]/60 hover:text-white transition-all text-sm ml-auto shrink-0 group/link"
             >
               Details
