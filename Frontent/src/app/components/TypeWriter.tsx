@@ -17,9 +17,15 @@ export function Typewriter({
   deleteSpeed = 30,
   deleteDelay = 2000
 }: TypewriterProps) {
-  const [displayedText, setDisplayedText] = useState("");
+  const [displayedText, setDisplayedText] = useState(text || "");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [charIndex, setCharIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(text ? text.length : 0);
+
+  useEffect(() => {
+    setDisplayedText(text || "");
+    setCharIndex(text ? text.length : 0);
+    setIsDeleting(false);
+  }, [text]);
 
   useEffect(() => {
     if (!text) return;
