@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 export async function downloadFileFromUrl(url: string, filename?: string) {
   const resp = await fetch(url, { mode: "cors" });
   if (!resp.ok) throw new Error("Failed to fetch file");
@@ -36,6 +38,47 @@ export async function downloadAndOpen(url: string, filename?: string) {
 
   // revoke after short delay
   setTimeout(() => URL.revokeObjectURL(objectUrl), 3000);
+}
+
+export async function handleResumeDownload(resumeUrl?: string | null) {
+  const toastId = "resume-download-toast";
+  toast.loading("Downloading resume...", {
+    id: toastId,
+    description: "Preparing your file, please wait...",
+  });
+
+  const targetFilename = "Md_Mahfujur_Rahman_Resume.pdf";
+  const dbResume = resumeUrl?.trim();
+
+  if (dbResume) {
+    try {
+      await downloadAndOpen(dbResume, targetFilename);
+      toast.success("Download completed", {
+        id: toastId,
+        description: "Resume downloaded successfully.",
+        duration: 4000,
+      });
+      return;
+    } catch (err) {
+      console.warn("Database resume download failed, falling back to /resume.pdf", err);
+    }
+  }
+
+  try {
+    await downloadAndOpen("/resume.pdf", targetFilename);
+    toast.success("Download completed", {
+      id: toastId,
+      description: "Resume downloaded successfully.",
+      duration: 4000,
+    });
+  } catch (err) {
+    console.error("Resume download failed:", err);
+    toast.error("Download failed", {
+      id: toastId,
+      description: "Could not download resume. Please try again later.",
+      duration: 5000,
+    });
+  }
 }
 
 export default downloadFileFromUrl;

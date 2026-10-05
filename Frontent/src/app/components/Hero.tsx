@@ -1,8 +1,7 @@
 import { Github, Linkedin, Mail, Phone, Download, ArrowRight, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
 import { useProfile } from "../hooks/useProfile";
-import { toast } from "sonner";
-import { downloadAndOpen } from "../../utils/download";
+import { handleResumeDownload } from "../../utils/download";
 import { Typewriter } from "./TypeWriter";
 
 export default function Hero({ profile: propProfile }: { profile?: any }) {
@@ -115,24 +114,7 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
               <motion.button
                 onClick={async (e) => {
                   e.preventDefault();
-                  const dbResume = profile?.resumeUrl?.trim();
-                  if (dbResume) {
-                    try {
-                      toast("Downloading resume...");
-                      await downloadAndOpen(dbResume);
-                      toast.success("Resume download started");
-                      return;
-                    } catch (err) {
-                      console.warn("Database resume download failed, falling back to /resume.pdf", err);
-                    }
-                  }
-                  try {
-                    toast("Downloading resume...");
-                    await downloadAndOpen("/resume.pdf");
-                    toast.success("Resume download started");
-                  } catch (err) {
-                    toast.error("Download failed. Please contact via email.");
-                  }
+                  await handleResumeDownload(profile?.resumeUrl);
                 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

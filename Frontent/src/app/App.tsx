@@ -1,19 +1,12 @@
 import { RouterProvider } from "react-router";
-import {Toaster} from "sonner";
+import { Toaster } from "./components/ui/sonner";
 import { router } from "./routes";
 
 export default function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster
-        richColors
-        position="top-right"
-        toastOptions={{
-          className: "break-words max-w-[90vw] sm:max-w-md",
-          style: { wordBreak: "break-word" },
-        }}
-      />
+      <Toaster />
     </>
   );
 }

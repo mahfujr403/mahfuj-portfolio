@@ -3,8 +3,7 @@ import { Menu, X, FileText } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useProfile } from "../hooks/useProfile";
 import { motion } from "motion/react";
-import { toast } from "sonner";
-import { downloadAndOpen } from "../../utils/download";
+import { handleResumeDownload } from "../../utils/download";
 import { useQueryClient } from "@tanstack/react-query";
 import { listPublications } from "../../services/publicationsApi";
 
@@ -187,24 +186,7 @@ export default function Navbar() {
             <button
               onClick={async (e) => {
                 e.preventDefault();
-                const dbResume = profile?.resumeUrl?.trim();
-                if (dbResume) {
-                  try {
-                    toast("Downloading resume...");
-                    await downloadAndOpen(dbResume);
-                    toast.success("Resume download started");
-                    return;
-                  } catch (err) {
-                    console.warn("Database resume download failed, falling back to /resume.pdf", err);
-                  }
-                }
-                try {
-                  toast("Downloading resume...");
-                  await downloadAndOpen("/resume.pdf");
-                  toast.success("Resume download started");
-                } catch (err) {
-                  toast.error("Download failed. Please contact via email.");
-                }
+                await handleResumeDownload(profile?.resumeUrl);
               }}
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98]"
             >
@@ -273,26 +255,8 @@ export default function Navbar() {
               <button
                 onClick={async (e) => {
                   e.preventDefault();
-                  const dbResume = profile?.resumeUrl?.trim();
-                  if (dbResume) {
-                    try {
-                      toast("Downloading resume...");
-                      await downloadAndOpen(dbResume);
-                      toast.success("Resume download started");
-                      setIsMenuOpen(false);
-                      return;
-                    } catch (err) {
-                      console.warn("Database resume download failed, falling back to /resume.pdf", err);
-                    }
-                  }
-                  try {
-                    toast("Downloading resume...");
-                    await downloadAndOpen("/resume.pdf");
-                    toast.success("Resume download started");
-                  } catch (err) {
-                    toast.error("Download failed. Please contact via email.");
-                  }
                   setIsMenuOpen(false);
+                  await handleResumeDownload(profile?.resumeUrl);
                 }}
                 className="mt-2 flex items-center justify-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm cursor-pointer hover:bg-primary/90 transition-all"
               >
