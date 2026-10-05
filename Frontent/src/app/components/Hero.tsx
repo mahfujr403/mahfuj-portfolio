@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail, Phone, Download, ArrowRight, Sparkles, GraduationCap } from "lucide-react";
+import { Github, Linkedin, Mail, Phone, Download, ArrowRight, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
 import { useProfile } from "../hooks/useProfile";
 import { toast } from "sonner";
@@ -19,131 +19,97 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
   const profile = propProfile ?? hookProfile ?? { socialLinks: [] };
 
   return (
-    <section id="hero" className="relative py-16 lg:py-24 overflow-hidden">
-      {/* Hero-specific background effects */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#0a0f1e] via-[#050814] to-transparent" />
-
-      {/* Background ambient lighting - optimized */}
+    <section id="hero" className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+      {/* Background ambient lighting - architectural slate */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full opacity-20"
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 pointer-events-none"
           style={{
-            background: "radial-gradient(circle, rgba(0, 242, 254, 0.15) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 70%)",
-            filter: "blur(60px)",
+            background: "radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, rgba(14, 19, 27, 0) 70%)",
+            filter: "blur(80px)",
           }}
         />
       </div>
 
-      {/* Floating particles specific to hero - lightweight */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full"
-            style={{
-              left: `${(i * 18 + 10) % 100}%`,
-              top: `${(i * 15 + 20) % 100}%`,
-              background: i % 2 === 0 ? "rgba(0, 242, 254, 0.25)" : "rgba(139, 92, 246, 0.25)",
-              boxShadow: i % 2 === 0
-                ? "0 0 10px rgba(0, 242, 254, 0.4)"
-                : "0 0 10px rgba(139, 92, 246, 0.4)",
-            }}
-            animate={{
-              y: [0, -60, 0],
-              opacity: [0.2, 0.6, 0.2],
-            }}
-            transition={{
-              duration: 6 + i,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Grid overlay specific to hero */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-          maskImage: 'radial-gradient(ellipse at center, black 0%, transparent 70%)',
-          WebkitMaskImage: 'radial-gradient(ellipse at center, black 0%, transparent 70%)',
-        }}
-      />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
-          {/* Left column: Profile Image (1/3) */}
-          <div className="flex justify-center order-2 lg:order-1">
-            <div className="relative">
-              {/* Glow background - circular */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          {/* Profile Photo Column - First on mobile & desktop */}
+          <div className="lg:col-span-4 flex justify-center order-1">
+            <div className="relative group">
+              {/* Subtle architectural ambient aura */}
               <div
-                className="absolute inset-0 bg-gradient-to-r from-[#00f2fe]/30 via-[#38bdf8]/20 to-[#818cf8]/30 rounded-full blur-2xl opacity-40"
+                className="absolute inset-0 bg-primary/10 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"
               />
-              {/* Image container - circular */}
-              <div
-                className="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden glass border-2 border-white/25 glow-cyan transition-transform duration-300 hover:scale-105 shadow-2xl shadow-[#00f2fe]/10"
-              >
+              {/* Technical framed avatar */}
+              <div className="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-72 lg:h-72 rounded-full overflow-hidden border border-border/80 bg-secondary/30 ring-1 ring-primary/20 shadow-xl transition-all duration-300 group-hover:border-primary/50">
                 <img
                   src={profile.profileImage || "/images/profile-default.jpg"}
                   alt={profile.name || "Md. Mahfujur Rahman"}
                   width={320}
                   height={320}
                   loading="eager"
-                  fetchPriority="high"
                   decoding="async"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 transition-all duration-300"
                 />
+              </div>
+              {/* Telemetry live status tag on avatar */}
+              <div className="absolute bottom-1 right-2 sm:bottom-2 sm:right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0e131b]/95 border border-emerald-500/30 text-[11px] font-mono text-emerald-400 shadow-md">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Active</span>
               </div>
             </div>
           </div>
 
-          {/* Right column: Text Content (2/3) */}
-          <div className="lg:col-span-2 text-center lg:text-left max-w-3xl order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-white/10 mb-6">
-              <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-              <span className="text-xs font-mono text-gray-300 tracking-wide">Available for ML Engineer & AI Research Roles</span>
+          {/* Narrative Content Column */}
+          <div className="lg:col-span-8 text-center lg:text-left order-2">
+            {/* System Status Pill */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-5 max-w-full">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)] shrink-0" />
+              <span className="text-[11px] sm:text-xs font-mono text-emerald-300 font-medium whitespace-nowrap tracking-tight">
+                <span className="sm:hidden">Available for ML & AI Research</span>
+                <span className="hidden sm:inline">Available for ML Engineering & Applied AI Research</span>
+              </span>
             </div>
 
-            {/* Name from database - renders instantly for 0ms LCP */}
-            <h2 className="text-5xl lg:text-7xl font-bold font-display mb-4 gradient-text leading-tight tracking-tight">
+            {/* Semantic H1: Engineer Name */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-display mb-3 tracking-tight text-foreground leading-[1.1]">
               {profile.name || "Md. Mahfujur Rahman"}
-            </h2>
+            </h1>
 
-            {/* Tagline with infinite typewriter animation */}
-            <div className="text-2xl lg:text-3xl font-semibold font-display text-[#00f2fe] mb-6 min-h-[2.5rem]">
+            {/* Subtitle / Focus Domain with Typewriter */}
+            <div className="text-xl sm:text-2xl font-semibold font-display text-primary mb-4 min-h-[2rem]">
               <Typewriter
-                text={profile.tagline || "AI Engineer & Researcher"}
-                speed={80}
-                delay={400}
+                text={profile.tagline || "Machine Learning Engineer & Researcher"}
+                speed={70}
+                delay={300}
                 infinite={true}
-                deleteSpeed={40}
-                deleteDelay={2000}
+                deleteSpeed={35}
+                deleteDelay={2200}
               />
             </div>
 
-            {/* Headline */}
-            <h1 className="mb-6 text-xl lg:text-2xl font-medium leading-relaxed text-gray-300">
-              {profile.headline || "Transforming Complex Data into Intelligent Solutions"}
-            </h1>
+            {/* Headline statement */}
+            <h2 className="mb-4 text-base sm:text-lg font-medium leading-relaxed text-muted-foreground max-w-2xl mx-auto lg:mx-0">
+              {profile.headline || "Specializing in Deep Learning, Computer Vision, and Production ML Systems."}
+            </h2>
 
-            <p className="text-base lg:text-lg text-gray-400 mb-8 leading-relaxed">
-              {profile.impactStatement}
-            </p>
+            {/* Impact Statement */}
+            {profile.impactStatement && (
+              <p className="text-sm sm:text-base text-muted-foreground/90 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                {profile.impactStatement}
+              </p>
+            )}
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            {/* Action Bar with clear hierarchy */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-8">
               <motion.a
                 href="#projects"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-7 py-3.5 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] font-semibold rounded-xl inline-flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,242,254,0.4)] transition-all duration-300 text-sm"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-all shadow-sm"
               >
-                View Projects
-                <ArrowRight size={16} />
+                <span>Explore Projects</span>
+                <ArrowRight size={15} />
               </motion.a>
 
               <motion.button
@@ -168,25 +134,26 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
                     toast.error("Download failed. Please contact via email.");
                   }
                 }}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-7 py-3.5 glass border border-white/15 text-gray-200 font-semibold rounded-xl hover:border-[#00f2fe]/60 transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm cursor-pointer"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border bg-secondary/50 text-foreground text-sm font-medium hover:bg-secondary hover:border-border-active transition-all cursor-pointer"
               >
-                <Download size={16} />
-                Download Resume
+                <Download size={15} className="text-primary" />
+                <span>Download CV</span>
               </motion.button>
 
               <motion.a
                 href="#contact"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="px-7 py-3.5 glass border border-white/10 text-gray-300 font-semibold rounded-xl hover:border-white/30 transition-all duration-300 text-sm"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/40 rounded-lg transition-all"
               >
-                Contact Me
+                <span>Contact</span>
               </motion.a>
             </div>
 
-            <div className="flex flex-wrap gap-4">
+            {/* Social handles strip */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
               {(profile.socialLinks ?? []).map((social: any) => {
                 const Icon = socialIcons[social.icon as keyof typeof socialIcons];
                 return Icon ? (
@@ -195,11 +162,12 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
                     href={social.url}
                     target={social.platform !== "Email" && social.platform !== "Phone" ? "_blank" : undefined}
                     rel={social.platform !== "Email" && social.platform !== "Phone" ? "noopener noreferrer" : undefined}
-                    whileHover={{ scale: 1.1 }}
-                    className="p-4 glass border border-white/10 rounded-full hover:border-[#00f2fe]/50 hover:text-[#00f2fe] text-gray-400 transition-all duration-300 glow-hover-cyan"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 rounded-lg border border-border/80 bg-secondary/40 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-secondary transition-all"
                     aria-label={social.platform}
                   >
-                    <Icon size={20} />
+                    <Icon size={16} />
                   </motion.a>
                 ) : null;
               })}

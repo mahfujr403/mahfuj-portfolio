@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
 import { Input } from "../components/ui/input";
-import { ArrowLeft, Clock, Calendar, User, MessageCircle, Send } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, User, MessageCircle, Send, BookOpen } from "lucide-react";
 import { CommentFormData } from "../../types/blog";
 import { fetchBlogBySlug, fetchCommentsByBlogId, postComment as apiPostComment } from "../../services/blogApi";
 import { toast } from "sonner";
@@ -35,8 +35,8 @@ export default function BlogDetailPage() {
           const comm = await fetchCommentsByBlogId(b.id as any);
           if (mounted) setComments(comm ?? []);
         }
-      } catch (e) {
-        toast.error("Failed to load blog post or comments");
+      } catch {
+        toast.error("Failed to load article or discussion comments");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -47,12 +47,11 @@ export default function BlogDetailPage() {
     };
   }, [slug]);
 
-  // Ensure page is scrolled to top when navigating to a blog detail
   useEffect(() => {
     try {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    } catch (e) {
-      // No-op in non-browser environments
+    } catch {
+      // ignore
     }
   }, [slug]);
 
@@ -69,7 +68,7 @@ export default function BlogDetailPage() {
       setComments((c) => [...c, created]);
       setCommentForm({ author: "", authorEmail: "", content: "" });
       toast.success("Comment posted successfully!");
-    } catch (err) {
+    } catch {
       toast.error("Failed to post comment");
     } finally {
       setSubmitting(false);
@@ -78,9 +77,10 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h1 className="mb-4 text-gray-100">Loading...</h1>
+      <div className="min-h-screen pt-24 pb-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center animate-pulse">
+          <div className="h-8 w-48 bg-secondary/60 rounded-md mx-auto mb-4" />
+          <div className="h-4 w-72 bg-secondary/40 rounded-md mx-auto" />
         </div>
       </div>
     );
@@ -88,12 +88,12 @@ export default function BlogDetailPage() {
 
   if (!blog) {
     return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h1 className="mb-4 text-gray-100">Blog Post Not Found</h1>
-          <p className="text-gray-400 mb-6">The blog post you're looking for doesn't exist.</p>
-          <Link to="/" className="text-gray-400 hover:text-[#00f2fe] transition-colors inline-block">
-            ← Back to Home
+      <div className="min-h-screen pt-24 pb-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-xl">
+          <h1 className="text-2xl font-bold font-display text-foreground mb-3">Article Not Found</h1>
+          <p className="text-sm text-muted-foreground mb-6">The requested publication or technical article does not exist.</p>
+          <Link to="/" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm">
+            ← Return to Observatory
           </Link>
         </div>
       </div>
@@ -109,73 +109,95 @@ export default function BlogDetailPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#00f2fe] transition-colors mb-8">
-          <ArrowLeft size={20} />
-          Back to Home
+    <div className="min-h-screen pt-24 pb-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link
+          to="/#articles"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-8 group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Articles</span>
         </Link>
 
         {blog.imageUrl && (
-          <div className="w-full h-96 rounded-2xl overflow-hidden mb-8 border border-white/10">
-            <img src={blog.imageUrl} alt={blog.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          <div className="w-full h-72 sm:h-96 rounded-xl overflow-hidden mb-8 border border-border bg-secondary/30">
+            <img
+              src={blog.imageUrl}
+              alt={blog.title}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
 
-        <article className="glass border border-white/10 rounded-2xl p-8 mb-8">
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <Badge className="bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black border-0">{blog.category}</Badge>
-            {blog.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="border-white/20 text-gray-300">
+        <article className="bg-card border border-border rounded-xl p-6 sm:p-10 mb-8 shadow-xs">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <Badge variant="default" className="text-xs">
+              <BookOpen size={11} className="mr-1" />
+              {blog.category}
+            </Badge>
+            {blog.tags.map((tag: string) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
             ))}
           </div>
 
-          <h1 className="mb-6 gradient-text">{blog.title}</h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-display text-foreground tracking-tight mb-4 leading-tight">
+            {blog.title}
+          </h1>
 
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-8 pb-6 border-b border-white/10">
-            <div className="flex items-center gap-2">
-              <User size={16} className="text-[#00f2fe]" />
+          <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-muted-foreground mb-8 pb-5 border-b border-border/60">
+            <div className="flex items-center gap-1.5">
+              <User size={13} className="text-primary" />
               <span>{blog.author}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Calendar size={16} className="text-[#8b5cf6]" />
+            <span>•</span>
+            <div className="flex items-center gap-1.5">
+              <Calendar size={13} className="text-primary" />
               <span>{formatDate(blog.publishedDate)}</span>
             </div>
             {blog.readTime && (
-              <div className="flex items-center gap-2">
-                <Clock size={16} className="text-[#ec4899]" />
-                <span>{blog.readTime}</span>
-              </div>
+              <>
+                <span>•</span>
+                <div className="flex items-center gap-1.5">
+                  <Clock size={13} className="text-primary" />
+                  <span>{blog.readTime}</span>
+                </div>
+              </>
             )}
           </div>
 
-          <div className="prose prose-invert max-w-none">
-            <p className="text-xl text-gray-300 mb-6 leading-relaxed text-justify [text-justify:inter-word]">{blog.summary}</p>
+          <div className="space-y-6">
+            <p className="text-base sm:text-lg text-foreground font-medium leading-relaxed text-left">
+              {blog.summary}
+            </p>
+
             <div
-  className="prose prose-invert max-w-none prose-p:text-justify prose-p:[text-justify:inter-word] prose-img:rounded-xl prose-img:border prose-img:border-white/10 prose-a:text-[#00f2fe] prose-pre:bg-black/40 prose-code:text-[#00f2fe]"
-  dangerouslySetInnerHTML={{
-    __html: DOMPurify.sanitize(blog.content || ""),
-  }}
-/>
+              className="prose prose-invert max-w-none text-muted-foreground leading-relaxed text-left text-sm sm:text-base prose-headings:font-display prose-headings:text-foreground prose-a:text-primary hover:prose-a:underline prose-code:font-mono prose-code:text-primary prose-pre:bg-background prose-pre:border prose-pre:border-border prose-img:rounded-xl prose-img:border prose-img:border-border"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(blog.content || ""),
+              }}
+            />
           </div>
         </article>
 
-        <Card className="glass border-white/10">
+        {/* Discussion Card */}
+        <Card className="bg-card border-border shadow-xs">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-100">
-              <MessageCircle size={20} className="text-[#00f2fe]" />
-              Discussion ({comments.length})
+            <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+              <MessageCircle size={18} className="text-primary" />
+              <span>Discussion & Review ({comments.length})</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmitComment} className="mb-8">
+            <form onSubmit={handleSubmitComment} className="mb-8 p-4 rounded-xl bg-secondary/30 border border-border">
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="author" className="block text-sm font-medium text-gray-300 mb-2">
-                      Name <span className="text-[#00f2fe]">*</span>
+                    <label htmlFor="author" className="block text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1.5">
+                      Name <span className="text-primary">*</span>
                     </label>
                     <Input
                       id="author"
@@ -184,11 +206,10 @@ export default function BlogDetailPage() {
                       value={commentForm.author}
                       onChange={(e) => setCommentForm({ ...commentForm, author: e.target.value })}
                       required
-                      className="bg-black/30 border-white/10 text-gray-100 placeholder:text-gray-500"
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="email" className="block text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1.5">
                       Email (optional)
                     </label>
                     <Input
@@ -197,75 +218,69 @@ export default function BlogDetailPage() {
                       placeholder="your.email@example.com"
                       value={commentForm.authorEmail}
                       onChange={(e) => setCommentForm({ ...commentForm, authorEmail: e.target.value })}
-                      className="bg-black/30 border-white/10 text-gray-100 placeholder:text-gray-500"
                     />
                   </div>
                 </div>
                 <div>
-                  <label htmlFor="content" className="block text-sm font-medium text-gray-300 mb-2">
-                    Comment <span className="text-[#00f2fe]">*</span>
+                  <label htmlFor="content" className="block text-xs font-mono uppercase tracking-wider text-muted-foreground mb-1.5">
+                    Comment <span className="text-primary">*</span>
                   </label>
                   <Textarea
                     id="content"
-                    placeholder="Share your thoughts..."
+                    placeholder="Share your thoughts or technical perspectives..."
                     rows={4}
                     value={commentForm.content}
                     onChange={(e) => setCommentForm({ ...commentForm, content: e.target.value })}
                     required
-                    className="bg-black/30 border-white/10 text-gray-100 placeholder:text-gray-500"
                   />
                 </div>
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="w-full md:w-auto bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold hover:shadow-[0_0_30px_rgba(0,242,254,0.5)] transition-all"
+                  className="bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all text-xs"
                 >
                   {submitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2"></div>
-                      Posting...
-                    </>
+                    <span className="flex items-center gap-2">
+                      <span className="size-3.5 rounded-full border-2 border-primary-foreground border-t-transparent animate-spin" />
+                      <span>Posting...</span>
+                    </span>
                   ) : (
-                    <>
-                      <Send size={16} className="mr-2" />
-                      Post Comment
-                    </>
+                    <span className="flex items-center gap-1.5">
+                      <Send size={13} />
+                      <span>Post Comment</span>
+                    </span>
                   )}
                 </Button>
               </div>
             </form>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {comments.length === 0 ? (
-                <div className="text-center py-12 bg-black/20 border border-white/5 rounded-lg">
-                  <MessageCircle size={48} className="mx-auto mb-3 text-gray-600" />
-                  <p className="text-gray-500">No comments yet. Be the first to comment!</p>
+                <div className="text-center py-10 rounded-lg border border-border bg-secondary/20">
+                  <MessageCircle size={32} className="mx-auto mb-2 text-muted-foreground opacity-50" />
+                  <p className="text-xs font-mono text-muted-foreground">No commentary submitted yet.</p>
                 </div>
               ) : (
                 comments.map((comment) => (
-                  <div key={comment.id} className="border-l-2 border-[#00f2fe]/30 pl-4 py-2 bg-black/10 rounded-r-lg">
-                    <div className="flex items-start justify-between mb-2">
+                  <div key={comment.id} className="border-l-2 border-primary/50 pl-4 py-2 bg-secondary/20 rounded-r-lg">
+                    <div className="flex items-start justify-between mb-1">
                       <div>
-                        <p className="font-semibold text-gray-200">{comment.author}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="font-semibold text-foreground text-sm">{comment.author}</p>
+                        <p className="text-[11px] font-mono text-muted-foreground">
                           {formatDate(comment.createdAt)}
                         </p>
                       </div>
                     </div>
-                    <p className="text-gray-400 leading-relaxed">{comment.content}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{comment.content}</p>
                     {comment.replies && comment.replies.length > 0 && (
-                      <div className="mt-4 ml-6 space-y-4">
-                        {comment.replies.map((reply) => (
-                          <div key={reply.id} className="border-l-2 border-[#8b5cf6]/30 pl-4 py-2 bg-black/10 rounded-r-lg">
-                            <div className="flex items-start justify-between mb-2">
-                              <div>
-                                <p className="font-semibold text-gray-200">{reply.author}</p>
-                                <p className="text-xs text-gray-500">
-                                  {formatDate(reply.createdAt)}
-                                </p>
-                              </div>
-                            </div>
-                            <p className="text-gray-400 leading-relaxed">{reply.content}</p>
+                      <div className="mt-3 ml-4 space-y-3">
+                        {comment.replies.map((reply: any) => (
+                          <div key={reply.id} className="border-l-2 border-border pl-3 py-1.5 bg-secondary/30 rounded-r-lg">
+                            <p className="font-semibold text-foreground text-xs">{reply.author}</p>
+                            <p className="text-[10px] font-mono text-muted-foreground mb-1">
+                              {formatDate(reply.createdAt)}
+                            </p>
+                            <p className="text-muted-foreground text-xs leading-relaxed">{reply.content}</p>
                           </div>
                         ))}
                       </div>

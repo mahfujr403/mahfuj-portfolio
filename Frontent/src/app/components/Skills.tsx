@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchSkills } from "../../services/skillsApi";
 import { getSkillMeta } from "./skillIcons";
 import { getCategoryMeta } from "./categoryIcons";
+import { Cpu, Terminal } from "lucide-react";
 
 export default function Skills({ skills: propSkills }: { skills?: Array<{ category: string; skills: Array<{ name: string; level: number }> }> }) {
   const { data: hookSkills = [], isLoading } = useQuery({
@@ -15,171 +16,127 @@ export default function Skills({ skills: propSkills }: { skills?: Array<{ catego
   const showSkeleton = isLoading && !propSkills;
 
   return (
-    <section id="skills" className="py-32 relative overflow-hidden">
-      {/* Marquee keyframes, scoped to this section via unique class names.
-          Pausing on hover is handled with a plain CSS animation (not a
-          Framer Motion tween) so the strip freezes in place instead of
-          snapping back to its start position. */}
-      <style>{`
-        @keyframes skills-marquee-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-33.3333%); }
-        }
-        .skills-marquee-track {
-          animation-name: skills-marquee-scroll;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .skills-marquee-track {
-            animation: none;
-          }
-        }
-      `}</style>
-
+    <section id="skills" className="py-20 lg:py-28 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          transition={{ duration: 0.4 }}
+          className="text-center mb-14"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold font-display gradient-text mb-4">Skills & Technologies</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#818cf8] mx-auto mb-6" />
-          <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-            Technical expertise across the full ML lifecycle from research to production deployment
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/80 border border-border text-xs font-mono text-primary uppercase tracking-wider mb-3">
+            <Cpu size={13} />
+            Technical Capabilities
+          </div>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-foreground tracking-tight mb-3">
+            Skills & Technical Stack
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+            Comprehensive toolkit spanning mathematical model research, deep learning frameworks, and production MLOps systems.
           </p>
         </motion.div>
 
+        {/* Structured Capability Matrix */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {showSkeleton
             ? [1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-56 rounded-3xl border border-white/10 glass p-6 space-y-4 animate-pulse">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white/10" />
-                    <div className="h-6 w-48 bg-white/10 rounded-lg" />
+                <div key={i} className="rounded-xl border border-border bg-card p-6 sm:p-7 space-y-5 animate-pulse">
+                  <div className="flex items-center justify-between pb-4 border-b border-border/60">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-secondary/70" />
+                      <div className="space-y-1.5">
+                        <div className="h-5 w-40 bg-secondary/70 rounded" />
+                        <div className="h-3 w-24 bg-secondary/50 rounded" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-14 w-full bg-white/5 rounded-2xl" />
-                  <div className="flex gap-2">
-                    <div className="h-6 w-20 bg-white/5 rounded-full" />
-                    <div className="h-6 w-24 bg-white/5 rounded-full" />
+                  <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                    {[1, 2, 3, 4].map((j) => (
+                      <div key={j} className="h-12 rounded-lg bg-secondary/40 border border-border/40" />
+                    ))}
                   </div>
                 </div>
               ))
             : skills.map((skillCategory, index) => {
-            const { Icon: CategoryIcon, accent } = getCategoryMeta(skillCategory.category, index);
-            const duration = Math.max(18, skillCategory.skills.length * 4);
+                const { Icon: CategoryIcon, accent } = getCategoryMeta(skillCategory.category, index);
 
-            return (
-              <motion.div
-                key={skillCategory.category}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.5 }}
-                className="group relative"
-              >
-                {/* Ambient hover glow behind the card */}
-                <div
-                  className="absolute -inset-1 rounded-[2rem] opacity-0 group-hover:opacity-100 blur-2xl transition-opacity duration-500 pointer-events-none"
-                  style={{
-                    background: `linear-gradient(135deg, ${accent[0]}40, ${accent[1]}30)`,
-                  }}
-                />
-
-                <div className="relative overflow-hidden rounded-3xl border border-white/10 glass group-hover:border-white/20 transition-colors duration-300">
-                  {/* Top accent bar */}
-                  <div
-                    className="h-[3px] w-full opacity-80"
-                    style={{ background: `linear-gradient(90deg, ${accent[0]}, ${accent[1]})` }}
-                  />
-
-                  {/* Soft corner glow inside the card */}
-                  <div
-                    className="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-[0.15]"
-                    style={{ background: accent[0] }}
-                  />
-
-                  <div className="relative p-6 sm:p-8">
-                    {/* Category header */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <span
-                        className="flex items-center justify-center w-11 h-11 rounded-2xl shrink-0"
-                        style={{
-                          backgroundColor: `${accent[0]}1A`,
-                          boxShadow: `inset 0 0 0 1px ${accent[0]}40`,
-                        }}
-                      >
-                        <CategoryIcon className="w-5 h-5" style={{ color: accent[0] }} />
-                      </span>
-                      <h3 className="text-lg sm:text-xl font-semibold text-white">
-                        {skillCategory.category}
-                      </h3>
-                    </div>
-
-                    {/* Two independently-looping marquee rows, scrolling in
-                        opposite directions for a layered, "showcase" feel.
-                        Each row plays the full skill list in its original
-                        order (skill1 → skill2 → ... → skill1 → skill2 ...)
-                        repeated 3x, so the loop always has enough content to
-                        fill the row and never shows a blank gap. */}
-                    <div className="space-y-3">
-                      {[0, 1].map((rowIndex) => {
-                        const reverse = rowIndex === 1;
-
-                        return (
-                          <div
-                            key={rowIndex}
-                            className="relative overflow-hidden -mx-6 sm:-mx-8 px-6 sm:px-8 py-1"
+                return (
+                  <motion.div
+                    key={skillCategory.category}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.06, duration: 0.3 }}
+                    className="bg-card rounded-xl border border-border hover:border-primary/40 transition-all duration-200 p-4 sm:p-6 flex flex-col justify-between shadow-xs group"
+                  >
+                    <div>
+                      {/* Category Header */}
+                      <div className="flex items-center justify-between gap-3 mb-5 pb-4 border-b border-border/60">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="flex items-center justify-center w-10 h-10 rounded-lg shrink-0 border"
                             style={{
-                              maskImage:
-                                "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
-                              WebkitMaskImage:
-                                "linear-gradient(to right, transparent, black 6%, black 94%, transparent)",
+                              backgroundColor: `${accent[0]}15`,
+                              borderColor: `${accent[0]}35`,
                             }}
                           >
-                            <div
-                              className="skills-marquee-track flex w-max gap-3 group-hover:[animation-play-state:paused]"
-                              style={{
-                                animationDuration: `${duration}s`,
-                                animationDirection: reverse ? "reverse" : "normal",
-                              }}
-                            >
-                              {[...skillCategory.skills, ...skillCategory.skills, ...skillCategory.skills].map(
-                                (skill, skillIndex) => {
-                                  const { Icon, color } = getSkillMeta(skill.name);
-                                  return (
-                                    <div
-                                      key={`${skill.name}-${skillIndex}`}
-                                      className="shrink-0 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm pl-2.5 pr-5 py-2.5 transition-all duration-300 hover:border-white/25 hover:bg-white/[0.07] hover:-translate-y-0.5"
-                                      style={{ boxShadow: "0 1px 0 0 rgba(255,255,255,0.04) inset" }}
-                                    >
-                                      <span
-                                        className="flex items-center justify-center w-9 h-9 rounded-xl shrink-0"
-                                        style={{
-                                          backgroundColor: `${color}1A`,
-                                          boxShadow: `inset 0 0 0 1px ${color}40, 0 4px 14px -6px ${color}66`,
-                                        }}
-                                      >
-                                        <Icon className="w-[18px] h-[18px]" style={{ color }} />
-                                      </span>
-                                      <span className="text-sm font-semibold text-gray-100 whitespace-nowrap">
-                                        {skill.name}
-                                      </span>
-                                    </div>
-                                  );
-                                }
-                              )}
-                            </div>
+                            <CategoryIcon className="w-5 h-5" style={{ color: accent[0] }} />
+                          </span>
+                          <div>
+                            <h3 className="text-base sm:text-lg font-bold font-display text-foreground group-hover:text-primary transition-colors">
+                              {skillCategory.category}
+                            </h3>
+                            <span className="text-xs font-mono text-muted-foreground">
+                              {skillCategory.skills.length} core competencies
+                            </span>
                           </div>
-                        );
-                      })}
+                        </div>
+
+                        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary/60 border border-border text-[11px] font-mono text-muted-foreground">
+                          <Terminal size={11} className="text-primary" />
+                          <span>Production Ready</span>
+                        </div>
+                      </div>
+
+                      {/* Unified 2x2 Architectural Capability Tiles: 2 columns on all devices */}
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                        {skillCategory.skills.map((skill) => {
+                          const { Icon, color } = getSkillMeta(skill.name);
+                          return (
+                            <div
+                              key={skill.name}
+                              className="group/tile flex items-center gap-1.5 sm:gap-2 rounded-lg border border-border/70 bg-secondary/35 hover:bg-secondary/80 hover:border-primary/50 transition-all duration-200 px-2 py-2 sm:px-2.5 sm:py-2.5 select-none cursor-default shadow-xs min-w-0"
+                            >
+                              <span
+                                className="flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-md shrink-0 border transition-transform duration-200 group-hover/tile:scale-105"
+                                style={{
+                                  backgroundColor: `${color}15`,
+                                  borderColor: `${color}30`,
+                                }}
+                              >
+                                <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" style={{ color }} />
+                              </span>
+                              <span
+                                className="text-[11px] sm:text-xs font-medium text-foreground group-hover/tile:text-primary transition-colors tracking-tight whitespace-nowrap overflow-hidden text-ellipsis min-w-0"
+                                title={skill.name}
+                              >
+                                {skill.name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+
+                    {/* Telemetry bottom status indicator */}
+                    <div className="mt-5 pt-3 border-t border-border/50 flex items-center justify-between text-[11px] font-mono text-muted-foreground">
+                      <span>VERIFIED IN BENCHMARKS & CODEBASES</span>
+                      <span className="size-1.5 rounded-full bg-emerald-400" />
+                    </div>
+                  </motion.div>
+                );
+              })}
         </div>
       </div>
     </section>

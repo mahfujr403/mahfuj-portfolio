@@ -77,6 +77,7 @@ import {
   SiApachecassandra,
   SiLatex,
   SiGithub,
+  SiCloudinary,
 } from "react-icons/si";
 
 export type SkillMeta = {
@@ -211,6 +212,7 @@ const SKILL_MAP: Record<string, SkillMeta> = {
   gitgithub: { Icon: SiGithub, color: "#F2F2F2" },
 
   // --- Skills/tools with an official brand mark ---
+  cloudinary: { Icon: SiCloudinary, color: "#3448C5" },
   latex: { Icon: SiLatex, color: "#008080" },
   github: { Icon: SiGithub, color: "#F2F2F2" },
   // Generic SQL (as opposed to a specific engine like MySQL/Postgres) has
@@ -218,13 +220,13 @@ const SKILL_MAP: Record<string, SkillMeta> = {
   sql: { Icon: Database, color: "#4479A1" },
 
   // --- Concepts with no single official logo: neutral, semantic glyphs ---
-  datapreprocessing: { Icon: Filter, color: "#8b5cf6" },
-  deeplearning: { Icon: BrainCircuit, color: "#8b5cf6" },
-  transferlearning: { Icon: ArrowLeftRight, color: "#8b5cf6" },
-  cnn: { Icon: Layers, color: "#8b5cf6" },
-  convolutionalneuralnetworks: { Icon: Layers, color: "#8b5cf6" },
-  convolutionalneuralnetworkscnn: { Icon: Layers, color: "#8b5cf6" },
-  researchwriting: { Icon: PenTool, color: "#8b5cf6" },
+  datapreprocessing: { Icon: Filter, color: "#F59E0B" },
+  deeplearning: { Icon: BrainCircuit, color: "#00E5FF" },
+  transferlearning: { Icon: ArrowLeftRight, color: "#10B981" },
+  cnn: { Icon: Layers, color: "#6366F1" },
+  convolutionalneuralnetworks: { Icon: Layers, color: "#6366F1" },
+  convolutionalneuralnetworkscnn: { Icon: Layers, color: "#6366F1" },
+  researchwriting: { Icon: PenTool, color: "#00E5FF" },
 };
 
 // Falls back to a generic sparkle glyph so an unmapped skill name

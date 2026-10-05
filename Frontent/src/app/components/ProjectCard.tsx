@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
-import { Github, ExternalLink, ArrowRight, Sparkles, Folder } from "lucide-react";
+import { Github, ExternalLink, ArrowRight, Sparkles, Cpu } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { motion } from "motion/react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,8 +32,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       const children = Array.from(measure.children) as HTMLElement[];
       if (children.length === 0) return;
 
-      const gap = 8; // gap-2 = 8px
-      const moreBadgeWidth = 85; // approximate width of "+N more" badge
+      const gap = 8;
+      const moreBadgeWidth = 80;
       let totalWidth = 0;
       let fitCount = 0;
 
@@ -41,13 +41,11 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         const itemWidth = children[i].offsetWidth;
         const widthIfAdded = totalWidth + (i > 0 ? gap : 0) + itemWidth;
 
-        // If this is the last element and ALL items fit without a "+ more" badge:
         if (i === children.length - 1 && widthIfAdded <= containerWidth) {
           fitCount = children.length;
           break;
         }
 
-        // If adding this item still leaves room for the "+ more" badge:
         if (widthIfAdded + gap + moreBadgeWidth <= containerWidth) {
           totalWidth = widthIfAdded;
           fitCount = i + 1;
@@ -61,7 +59,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
     calculateFit();
 
-    // Use ResizeObserver for responsive recalculation
     const observer = new ResizeObserver(() => {
       calculateFit();
     });
@@ -80,32 +77,33 @@ export default function ProjectCard({ project }: ProjectCardProps) {
     }
   };
 
+  const getTagLabel = () => {
+    if (isFeatured) return "Featured Architecture";
+    if (project.tag && project.tag !== "Other") return project.tag;
+    return "Applied ML System";
+  };
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      whileHover={{ y: -10 }}
+      whileHover={{ y: -4 }}
       onMouseEnter={prefetchProject}
-      transition={{ duration: 0.3 }}
-      className="h-full flex flex-col relative group"
+      transition={{ duration: 0.2 }}
+      className="h-full flex flex-col group"
     >
-      {/* Gradient border effect */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#00f2fe]/20 via-[#8b5cf6]/20 to-[#ec4899]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl" />
-
-      <div className="relative h-full flex flex-col glass rounded-2xl overflow-hidden border border-white/10 group-hover:border-[#00f2fe]/40 transition-all duration-300">
-        {/* Image Section */}
+      <div className="relative h-full flex flex-col bg-card rounded-xl overflow-hidden border border-border group-hover:border-primary/50 transition-all duration-200 shadow-xs group-hover:shadow-md">
+        {/* Media / Preview Section */}
         {project.imageUrl && (
           <Link
             to={`/projects/${project.slug}`}
             state={{ project }}
-            className="relative w-full h-56 overflow-hidden block"
+            className="relative w-full h-52 sm:h-56 overflow-hidden block bg-secondary/30"
           >
-            {/* Gradient overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050814] via-[#050814]/60 to-transparent z-10" />
-            <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-[#050814]/80 to-transparent z-10" />
+            {/* Subtle contrast gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#080b10] via-transparent to-transparent z-10 opacity-80" />
 
-            {/* Image */}
             <img
               src={project.imageUrl}
               alt={project.title}
@@ -113,168 +111,152 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               height={224}
               loading="lazy"
               decoding="async"
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             />
 
-            {/* Tag badge */}
+            {/* Architectural System Tag */}
             <div className="absolute top-3 left-3 z-20">
               <div
-                className={
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono backdrop-blur-md border ${
                   isFeatured
-                    ? "flex items-center gap-1.5 glass px-3 py-1.5 rounded-lg border border-[#00f2fe]/40 backdrop-blur-md"
-                    : "flex items-center gap-1.5 glass px-3 py-1.5 rounded-lg border border-white/15 backdrop-blur-md"
-                }
+                    ? "bg-[#080b10]/85 border-primary/40 text-primary font-semibold"
+                    : "bg-[#080b10]/85 border-border text-muted-foreground font-medium"
+                }`}
               >
                 {isFeatured ? (
-                  <Sparkles size={12} className="text-[#00f2fe]" />
+                  <Sparkles size={11} className="text-primary" />
                 ) : (
-                  <Folder size={12} className="text-gray-400" />
+                  <Cpu size={11} className="text-emerald-400" />
                 )}
-                <span
-                  className={
-                    isFeatured
-                      ? "text-xs font-semibold text-[#00f2fe]"
-                      : "text-xs font-medium text-gray-300"
-                  }
-                >
-                  {isFeatured ? "Featured" : "Other"}
-                </span>
+                <span>{getTagLabel()}</span>
               </div>
             </div>
           </Link>
         )}
 
-        {/* Content Section */}
-        <div className="p-6 flex-1 flex flex-col relative">
-          {/* Decorative corner accent */}
-          <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-[#00f2fe]/10 to-transparent rounded-bl-full opacity-50" />
-
-          {/* Title */}
-          <Link
-            to={`/projects/${project.slug}`}
-            state={{ project }}
-            className="hover:opacity-90 transition-opacity"
-          >
-            <h3 className="text-xl font-bold font-display mb-2.5 text-white group-hover:text-[#00f2fe] transition-colors relative z-10 line-clamp-2">
-              {project.title}
-            </h3>
-          </Link>
-
-          {/* Description */}
-          <p className="text-gray-300/90 mb-4 flex-1 leading-relaxed text-sm line-clamp-3 text-justify [text-justify:inter-word]">
-            {project.summary}
-          </p>
-
-          {/* Tech Stack */}
-          <div className="mb-5">
-            <div className="flex items-center gap-2 mb-2.5">
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-              <span className="text-[11px] font-mono text-gray-400 uppercase tracking-wider">Tech Stack</span>
-              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            </div>
-
-            {/* Hidden measuring container to get exact pixel widths of all badges */}
-            <div
-              ref={measureRef}
-              aria-hidden="true"
-              className="fixed -left-[9999px] top-0 pointer-events-none opacity-0 flex gap-2"
-            >
-              {techList.map((tech: string) => (
-                <div
-                  key={tech}
-                  className="px-2.5 py-0.5 text-xs font-mono border whitespace-nowrap"
-                >
-                  {tech}
-                </div>
-              ))}
-            </div>
-
-            {/* Dynamic Tech Stack Container */}
-            <div
-              ref={containerRef}
-              className={`flex items-center gap-2 transition-all duration-300 ${
-                isExpanded ? "flex-wrap" : "overflow-hidden"
-              }`}
-            >
-              {(isExpanded ? techList : techList.slice(0, visibleCount)).map((tech: string) => (
-                <Badge
-                  key={tech}
-                  className="bg-[#00f2fe]/10 text-[#00f2fe] border-[#00f2fe]/25 hover:bg-[#00f2fe]/20 text-xs font-mono transition-all shrink-0 px-2.5 py-0.5"
-                >
-                  {tech}
-                </Badge>
-              ))}
-
-              {!isExpanded && techList.length > visibleCount && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsExpanded(true);
-                  }}
-                  title={techList.slice(visibleCount).join(", ")}
-                  className="bg-white/5 hover:bg-white/10 text-gray-300 border border-white/15 hover:border-[#00f2fe]/40 text-xs font-mono rounded-md px-2 py-0.5 shrink-0 transition-colors cursor-pointer"
-                >
-                  +{techList.length - visibleCount} more
-                </button>
-              )}
-
-              {isExpanded && techList.length > visibleCount && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setIsExpanded(false);
-                  }}
-                  className="bg-white/5 hover:bg-white/10 text-[#00f2fe] border border-[#00f2fe]/30 text-xs font-mono rounded-md px-2 py-0.5 shrink-0 transition-colors cursor-pointer"
-                >
-                  - less
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex gap-2 pt-4 border-t border-white/5">
-            {project.githubUrl && (
-              <motion.a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] font-semibold rounded-lg transition-all text-xs shadow-md shadow-[#00f2fe]/20 shrink-0"
-              >
-                <Github size={16} />
-                Code
-              </motion.a>
-            )}
-
-            {project.liveDemoUrl && (
-              <motion.a
-                href={project.liveDemoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-4 py-2 glass border border-white/20 text-gray-300 rounded-lg hover:border-[#00f2fe]/60 hover:text-white transition-all text-sm shrink-0"
-              >
-                <ExternalLink size={16} />
-                Try It
-              </motion.a>
-            )}
-
+        {/* Narrative & Specifications Body */}
+        <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
+          <div>
+            {/* Title */}
             <Link
               to={`/projects/${project.slug}`}
               state={{ project }}
-              onMouseEnter={prefetchProject}
-              className="inline-flex items-center gap-2 px-4 py-2 glass border border-white/20 text-gray-300 rounded-lg hover:border-[#8b5cf6]/60 hover:text-white transition-all text-sm ml-auto shrink-0 group/link"
+              className="block mb-2 group/title"
             >
-              Details
-              <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+              <h3 className="text-lg sm:text-xl font-bold font-display text-foreground group-hover/title:text-primary transition-colors leading-snug line-clamp-2">
+                {project.title}
+              </h3>
             </Link>
+
+            {/* Summary narrative without justify rivers */}
+            <p className="text-muted-foreground text-sm leading-relaxed mb-4 text-left line-clamp-3">
+              {project.summary}
+            </p>
+          </div>
+
+          <div>
+            {/* Tech Stack Strip */}
+            <div className="mb-5 pt-3 border-t border-border/60">
+              {/* Hidden measuring container */}
+              <div
+                ref={measureRef}
+                aria-hidden="true"
+                className="fixed -left-[9999px] top-0 pointer-events-none opacity-0 flex gap-2"
+              >
+                {techList.map((tech: string) => (
+                  <div
+                    key={tech}
+                    className="px-2.5 py-0.5 text-xs font-mono border whitespace-nowrap"
+                  >
+                    {tech}
+                  </div>
+                ))}
+              </div>
+
+              {/* Dynamic Tech Stack Badges */}
+              <div
+                ref={containerRef}
+                className={`flex items-center gap-1.5 transition-all duration-200 ${
+                  isExpanded ? "flex-wrap" : "overflow-hidden"
+                }`}
+              >
+                {(isExpanded ? techList : techList.slice(0, visibleCount)).map((tech: string) => (
+                  <Badge
+                    key={tech}
+                    variant="default"
+                    className="shrink-0 text-[11px]"
+                  >
+                    {tech}
+                  </Badge>
+                ))}
+
+                {!isExpanded && techList.length > visibleCount && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsExpanded(true);
+                    }}
+                    title={techList.slice(visibleCount).join(", ")}
+                    className="bg-secondary hover:bg-muted text-muted-foreground hover:text-foreground border border-border text-[11px] font-mono rounded-md px-2 py-0.5 shrink-0 transition-colors cursor-pointer"
+                  >
+                    +{techList.length - visibleCount} more
+                  </button>
+                )}
+
+                {isExpanded && techList.length > visibleCount && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsExpanded(false);
+                    }}
+                    className="bg-secondary hover:bg-muted text-primary border border-primary/30 text-[11px] font-mono rounded-md px-2 py-0.5 shrink-0 transition-colors cursor-pointer"
+                  >
+                    - less
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Action Bar */}
+            <div className="flex items-center gap-2 pt-3 border-t border-border/60">
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-secondary/50 text-foreground hover:bg-secondary hover:border-border-active text-xs font-medium transition-all"
+                >
+                  <Github size={13} />
+                  <span>Code</span>
+                </a>
+              )}
+
+              {project.liveDemoUrl && (
+                <a
+                  href={project.liveDemoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/25 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-medium transition-all"
+                >
+                  <ExternalLink size={13} />
+                  <span>Demo</span>
+                </a>
+              )}
+
+              <Link
+                to={`/projects/${project.slug}`}
+                state={{ project }}
+                onMouseEnter={prefetchProject}
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all ml-auto group/btn shadow-xs active:scale-[0.98]"
+              >
+                <span>Details</span>
+                <ArrowRight size={13} className="group-hover/btn:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
           </div>
         </div>
       </div>

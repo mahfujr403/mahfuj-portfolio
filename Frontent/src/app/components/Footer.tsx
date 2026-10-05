@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Github, Linkedin, Mail, Phone, ArrowUp, Sparkles, GraduationCap } from "lucide-react";
+import { Github, Linkedin, Mail, Phone, ArrowUp, GraduationCap } from "lucide-react";
 import { motion } from "motion/react";
 import { useProfile } from "../hooks/useProfile";
 
@@ -30,82 +30,84 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative pt-12 pb-6 mt-16 overflow-hidden">
-      {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0f1e] via-[#050814] to-transparent" />
-
-      {/* Decorative Top Border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00f2fe] to-transparent" />
-      <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-[#00f2fe]/5 to-transparent" />
-
+    <footer className="relative pt-16 pb-12 mt-20 border-t border-border/80 bg-[#080b10]/60 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Main Footer Content */}
-        <div className="mb-6">
-          {/* Top Section - Name and Tagline */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-6"
-          >
-            <h3 className="font-bold text-2xl mb-2 gradient-text flex items-center gap-2 justify-center">
-              <Sparkles size={20} className="text-[#00f2fe]" />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-12">
+          {/* Col 1: Bio / Focus */}
+          <div className="md:col-span-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+              <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-medium">
+                Systems Telemetry: Operational
+              </span>
+            </div>
+            <h3 className="font-display font-bold text-xl sm:text-2xl text-foreground tracking-tight">
               {profile.name || "Md. Mahfujur Rahman"}
             </h3>
-            <p className="text-gray-400 leading-relaxed text-sm">
-              {profile.tagline || "Machine Learning Engineer & Researcher"}
+            <p className="text-muted-foreground text-sm max-w-md leading-relaxed">
+              {profile.tagline || "Machine Learning Engineer & Researcher specializing in Deep Learning, Computer Vision, and Production ML Systems."}
             </p>
-          </motion.div>
+            {(profile.email || profile.phone) && (
+              <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-muted-foreground pt-1">
+                {profile.email && (
+                  <a
+                    href={`mailto:${profile.email}`}
+                    className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  >
+                    <Mail size={13} className="text-primary" />
+                    {profile.email}
+                  </a>
+                )}
+                {profile.email && profile.phone && <span>/</span>}
+                {profile.phone && (
+                  <a
+                    href={`tel:${profile.phone}`}
+                    className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  >
+                    <Phone size={13} className="text-primary" />
+                    {profile.phone}
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
 
-          {/* Middle Section - Others Links */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="mb-6"
-          >
-            <h4 className="font-semibold mb-3 text-gray-200 text-center text-sm">Others</h4>
-            <div className="flex flex-wrap items-center justify-center gap-5 max-w-3xl mx-auto">
-              {otherLinks.map((link, index) => (
-                <motion.div
-                  key={link.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 + index * 0.05 }}
-                >
-                  {link.href.startsWith("/#") ? (
-                    <a
-                      href={link.href}
-                      className="text-gray-400 hover:text-[#00f2fe] transition-all duration-300 text-sm font-medium relative group"
-                    >
-                      {link.label}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] group-hover:w-full transition-all duration-300" />
-                    </a>
-                  ) : (
-                    <Link
-                      to={link.href}
-                      className="text-gray-400 hover:text-[#00f2fe] transition-all duration-300 text-sm font-medium relative group"
-                    >
-                      {link.label}
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] group-hover:w-full transition-all duration-300" />
-                    </Link>
-                  )}
-                </motion.div>
-              ))}
+          {/* Col 2: Navigation Links (2 Columns) */}
+          <div className="md:col-span-4">
+            <div className="w-fit md:mx-auto space-y-3">
+              <h4 className="text-xs font-mono uppercase tracking-wider text-foreground font-semibold text-center">
+                Navigation
+              </h4>
+              <ul className="grid grid-cols-2 gap-x-8 gap-y-2">
+                {otherLinks.map((link) => (
+                  <li key={link.label}>
+                    {link.href.startsWith("/#") ? (
+                      <a
+                        href={link.href}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors inline-block"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={link.href}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors inline-block"
+                      >
+                        {link.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Bottom Section - Social and Contact */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col items-center gap-3"
-          >
-            <div className="flex flex-wrap gap-2.5 justify-center">
+          {/* Col 3: Network & Research Handles */}
+          <div className="md:col-span-3 space-y-3">
+            <h4 className="text-xs font-mono uppercase tracking-wider text-foreground font-semibold">
+              Connect & Repositories
+            </h4>
+            <div className="flex flex-wrap gap-2">
               {(profile.socialLinks ?? []).map((social: any) => {
                 const Icon = socialIcons[social.icon as keyof typeof socialIcons];
                 return Icon ? (
@@ -114,8 +116,9 @@ export default function Footer() {
                     href={social.url}
                     target={social.platform !== "Email" && social.platform !== "Phone" ? "_blank" : undefined}
                     rel={social.platform !== "Email" && social.platform !== "Phone" ? "noopener noreferrer" : undefined}
-                    whileHover={{ scale: 1.1, y: -3 }}
-                    className="p-2 glass border border-white/10 rounded-lg hover:border-[#00f2fe]/50 text-gray-400 hover:text-[#00f2fe] transition-all duration-300 glow-hover-cyan"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2.5 bg-secondary/50 border border-border rounded-lg text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-secondary transition-all"
                     aria-label={social.platform}
                   >
                     <Icon size={16} />
@@ -123,51 +126,25 @@ export default function Footer() {
                 ) : null;
               })}
             </div>
-            {(profile.email || profile.phone) && (
-              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400">
-                {profile.email && (
-                  <p className="flex items-center gap-2">
-                    <Mail size={12} className="text-[#00f2fe]" />
-                    {profile.email}
-                  </p>
-                )}
-                {profile.email && profile.phone && <span className="text-gray-600">•</span>}
-                {profile.phone && (
-                  <p className="flex items-center gap-2">
-                    <Phone size={12} className="text-[#00f2fe]" />
-                    {profile.phone}
-                  </p>
-                )}
-              </div>
-            )}
-          </motion.div>
+            <p className="text-xs text-muted-foreground pt-2">
+              Open to research collaborations, AI consulting, and technical advisory roles.
+            </p>
+          </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-5 border-t border-white/10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-2.5">
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-gray-400 text-xs"
-            >
-              &copy; {new Date().getFullYear()} {profile.name || "Md. Mahfujur Rahman"}. All rights reserved.
-            </motion.p>
+        <div className="pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-muted-foreground text-xs font-mono">
+            &copy; {new Date().getFullYear()} {profile.name || "Md. Mahfujur Rahman"}. All rights reserved.
+          </p>
 
-            <motion.button
-              onClick={scrollToTop}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-3 py-1.5 glass border border-white/10 rounded-lg text-gray-400 hover:text-[#00f2fe] hover:border-[#00f2fe]/50 transition-all duration-300 flex items-center gap-1.5 text-xs glow-hover-cyan"
-            >
-              <ArrowUp size={12} />
-              Back to Top
-            </motion.button>
-          </div>
+          <button
+            onClick={scrollToTop}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-secondary/40 text-muted-foreground hover:text-foreground hover:border-border-active text-xs font-medium transition-all cursor-pointer"
+          >
+            <ArrowUp size={13} />
+            Back to Top
+          </button>
         </div>
       </div>
     </footer>

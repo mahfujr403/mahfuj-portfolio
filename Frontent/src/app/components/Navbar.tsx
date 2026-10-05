@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { Menu, X } from "lucide-react";
+import { Menu, X, FileText } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useProfile } from "../hooks/useProfile";
 import { motion } from "motion/react";
@@ -32,7 +32,7 @@ export default function Navbar() {
           { id: "hero", name: "home" },
         ];
 
-        const scrollPosition = window.scrollY + 200;
+        const scrollPosition = window.scrollY + 180;
         for (const sec of sections) {
           const el = document.getElementById(sec.id);
           if (el) {
@@ -76,64 +76,56 @@ export default function Navbar() {
   const { data: profile = { name: "", resumeUrl: "", socialLinks: [] } } = useProfile();
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // If it's a hash link (section navigation)
     if (href.startsWith("/#")) {
       e.preventDefault();
-      const sectionId = href.substring(2); // Remove "/#"
+      const sectionId = href.substring(2);
 
-      // If we're on the homepage
       if (location.pathname === "/") {
-        // Scroll to the section
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
         }
       } else {
-        // Navigate to homepage and pass desired section id in navigation state
-        e.preventDefault();
         navigate("/", { state: { scrollTo: sectionId } });
-        setIsMenuOpen(false);
       }
       setIsMenuOpen(false);
     } else if (href === "/") {
-      // Home link - navigate and scroll to top
       e.preventDefault();
       navigate("/");
       window.scrollTo({ top: 0, behavior: "smooth" });
       setIsMenuOpen(false);
     }
-    // For other links (like /publications), let default navigation happen
   };
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
         scrolled
-          ? "glass border-b border-white/10 shadow-lg shadow-black/20"
+          ? "bg-[#080b10]/85 backdrop-blur-md border-b border-border/80 shadow-sm"
           : "bg-transparent border-b border-transparent"
       }`}
-      style={{
-        backdropFilter: scrolled ? "blur(20px)" : "blur(8px)",
-        WebkitBackdropFilter: scrolled ? "blur(20px)" : "blur(8px)",
-      }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link
             to="/"
-            className="font-bold text-xl gradient-text"
+            className="flex items-center gap-2 group cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
               navigate("/");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
-            {profile?.name || "Md. Mahfujur Rahman"}
+            <span className="size-2 rounded-full bg-primary/80 group-hover:bg-primary transition-colors shadow-[0_0_8px_rgba(0,229,255,0.6)]" />
+            <span className="font-display font-bold text-base sm:text-lg tracking-tight text-foreground group-hover:text-primary transition-colors">
+              {profile?.name || "Md. Mahfujur Rahman"}
+            </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-7">
             {navLinks.map((link) => {
               const active = isLinkActive(link.href);
               return link.href.startsWith("/#") || link.href === "/" ? (
@@ -150,16 +142,18 @@ export default function Navbar() {
                       });
                     }
                   }}
-                  className={`text-sm transition-all duration-200 relative group cursor-pointer ${
-                    active ? "text-[#00f2fe] font-semibold" : "text-gray-300 hover:text-white"
+                  className={`text-sm transition-colors duration-150 relative py-1 cursor-pointer font-medium ${
+                    active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {link.label}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#00f2fe] to-[#818cf8] transition-all duration-300 ${
-                      active ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
-                  />
+                  {active && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
                 </a>
               ) : (
                 <Link
@@ -174,20 +168,23 @@ export default function Navbar() {
                       });
                     }
                   }}
-                  className={`text-sm transition-all duration-200 relative group ${
-                    active ? "text-[#00f2fe] font-semibold" : "text-gray-300 hover:text-white"
+                  className={`text-sm transition-colors duration-150 relative py-1 font-medium ${
+                    active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {link.label}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-[#00f2fe] to-[#818cf8] transition-all duration-300 ${
-                      active ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
-                  />
+                  {active && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
                 </Link>
               );
             })}
-            <motion.button
+
+            <button
               onClick={async (e) => {
                 e.preventDefault();
                 const dbResume = profile?.resumeUrl?.trim();
@@ -209,31 +206,30 @@ export default function Navbar() {
                   toast.error("Download failed. Please contact via email.");
                 }
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] text-sm font-semibold rounded-lg hover:shadow-[0_0_25px_rgba(0,242,254,0.4)] transition-all duration-300 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98]"
             >
+              <FileText className="size-3.5" />
               Resume
-            </motion.button>
+            </button>
           </div>
 
           <button
-            className="md:hidden p-2 text-gray-300 hover:text-white"
+            className="md:hidden p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden py-4 border-t border-white/10"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="md:hidden py-4 border-t border-border/80 bg-[#0e131b]/95 backdrop-blur-xl rounded-b-xl px-2 mb-2"
           >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => {
                 const active = isLinkActive(link.href);
                 return link.href.startsWith("/#") || link.href === "/" ? (
@@ -241,10 +237,10 @@ export default function Navbar() {
                     key={link.label}
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.href)}
-                    className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer ${
+                    className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer font-medium ${
                       active
-                        ? "bg-[#00f2fe]/10 text-[#00f2fe] font-semibold"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                     }`}
                   >
                     {link.label}
@@ -262,10 +258,10 @@ export default function Navbar() {
                         });
                       }
                     }}
-                    className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                    className={`px-3 py-2 rounded-lg text-sm transition-colors font-medium ${
                       active
-                        ? "bg-[#00f2fe]/10 text-[#00f2fe] font-semibold"
-                        : "text-gray-300 hover:text-white hover:bg-white/5"
+                        ? "bg-primary/10 text-primary font-semibold"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -298,8 +294,9 @@ export default function Navbar() {
                   }
                   setIsMenuOpen(false);
                 }}
-                className="mt-2 px-4 py-2.5 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] font-semibold rounded-lg text-center text-sm cursor-pointer"
+                className="mt-2 flex items-center justify-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm cursor-pointer hover:bg-primary/90 transition-all"
               >
+                <FileText className="size-4" />
                 Download Resume
               </button>
             </div>

@@ -1,9 +1,9 @@
 import { useParams, Link, useLocation } from "react-router";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useProjectDetail } from "../hooks/useProjects";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Github, ExternalLink, ArrowLeft, Database, Cpu, Rocket, Zap, AlertCircle, Lightbulb, Code, Laptop, Server, Activity, Copy, Check, Layers, ArrowRight } from "lucide-react";
+import { Github, ExternalLink, ArrowLeft, Database, Cpu, Rocket, Zap, AlertCircle, Lightbulb, Code, Laptop, Server, Activity, Copy, Layers } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { toast } from "sonner";
 
@@ -16,25 +16,21 @@ export default function ProjectDetailPage() {
   useEffect(() => {
     try {
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    } catch (e) {
-      // ignore in non-browser environments
+    } catch {
+      // ignore
     }
   }, [slug]);
 
   if (loading && !project) {
     return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-pulse">
-          <div className="h-6 w-32 bg-white/10 rounded-lg mb-8" />
-          <div className="w-full h-96 rounded-2xl bg-white/5 mb-8 border border-white/10" />
-          <div className="glass border border-white/10 rounded-2xl p-8 mb-8 space-y-4">
-            <div className="h-10 w-2/3 bg-white/10 rounded-xl" />
-            <div className="h-5 w-full bg-white/5 rounded-lg" />
-            <div className="h-5 w-4/5 bg-white/5 rounded-lg" />
-            <div className="flex gap-2 pt-4">
-              <div className="h-8 w-20 bg-white/10 rounded-lg" />
-              <div className="h-8 w-24 bg-white/10 rounded-lg" />
-            </div>
+      <div className="min-h-screen pt-24 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-pulse">
+          <div className="h-6 w-32 bg-secondary/60 rounded-md mb-8" />
+          <div className="w-full h-80 sm:h-96 rounded-xl bg-secondary/40 mb-8 border border-border" />
+          <div className="bg-card border border-border rounded-xl p-8 mb-8 space-y-4">
+            <div className="h-8 w-2/3 bg-secondary/60 rounded-md" />
+            <div className="h-4 w-full bg-secondary/40 rounded" />
+            <div className="h-4 w-4/5 bg-secondary/40 rounded" />
           </div>
         </div>
       </div>
@@ -43,12 +39,15 @@ export default function ProjectDetailPage() {
 
   if (!project && !loading) {
     return (
-      <div className="min-h-screen">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
-          <h1 className="text-gray-100 mb-4">Project Not Found</h1>
-          {error && <p className="text-gray-400 mb-4">{error}</p>}
-          <Link to="/" className="text-gray-400 hover:text-[#00f2fe] transition-colors inline-block">
-            ← Back to Home
+      <div className="min-h-screen pt-24 pb-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-xl">
+          <h1 className="text-2xl font-bold font-display text-foreground mb-3">Project Dossier Not Located</h1>
+          {error && <p className="text-sm font-mono text-muted-foreground mb-6">{error}</p>}
+          <Link
+            to="/#projects"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm"
+          >
+            ← Return to Observatory
           </Link>
         </div>
       </div>
@@ -56,109 +55,157 @@ export default function ProjectDetailPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link to="/#projects" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#00f2fe] transition-colors mb-8">
-          <ArrowLeft size={20} />
-          Back to Home
+    <div className="min-h-screen pt-24 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Link
+          to="/#projects"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-8 group"
+        >
+          <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Projects</span>
         </Link>
 
+        {/* Hero Media Banner */}
         {project.imageUrl && (
-          <div className="w-full h-96 rounded-2xl overflow-hidden mb-8 border border-white/10">
-            <img src={project.imageUrl} alt={project.title} loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          <div className="w-full h-72 sm:h-96 rounded-xl overflow-hidden mb-8 border border-border bg-secondary/30">
+            <img
+              src={project.imageUrl}
+              alt={project.title}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
 
-        <div className="glass border border-white/10 rounded-2xl p-8 mb-8">
-          <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
-            <div className="flex-1">
-              <h1 className="mb-4 gradient-text">{project.title}</h1>
-              <p className="text-xl text-gray-300">{project.summary}</p>
+        {/* Header Hero Dossier */}
+        <div className="bg-card border border-border rounded-xl p-6 sm:p-8 mb-8 shadow-xs">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-3">
+                <Cpu size={12} />
+                <span>Production Architecture</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-display text-foreground tracking-tight mb-3">
+                {project.title}
+              </h1>
+              <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-3xl">
+                {project.summary}
+              </p>
             </div>
-            <div className="flex gap-3">
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold rounded-lg hover:shadow-[0_0_30px_rgba(0,242,254,0.5)] transition-all"
-              >
-                <Github size={20} />
-                GitHub
-              </a>
+
+            <div className="flex flex-wrap gap-2.5 shrink-0">
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-secondary/50 text-foreground hover:bg-secondary hover:border-border-active text-sm font-semibold transition-all"
+                >
+                  <Github size={16} />
+                  <span>GitHub Repository</span>
+                </a>
+              )}
               {project.liveDemoUrl && (
                 <a
                   href={project.liveDemoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 glass border-2 border-[#00f2fe] text-[#00f2fe] rounded-lg hover:bg-[#00f2fe]/10 transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-sm font-semibold transition-all"
                 >
-                  <ExternalLink size={20} />
-                  Live Demo
+                  <ExternalLink size={16} />
+                  <span>Live Deployment</span>
                 </a>
               )}
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-6">
-            {(project.techStack ?? []).map((tech) => (
-              <Badge key={tech} className="bg-white/5 border-white/10 text-gray-300">{tech}</Badge>
+          <div className="flex flex-wrap gap-1.5 pt-4 border-t border-border/60">
+            {(project.techStack ?? []).map((tech: string) => (
+              <Badge key={tech} variant="default" className="text-xs">
+                {tech}
+              </Badge>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
-            <Card className="glass border-white/10">
+        {/* 2-Column Technical Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Main Column */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Problem Statement */}
+            <Card className="bg-card border-border shadow-xs">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-100">
-                  <AlertCircle className="text-[#ec4899]" />
-                  Problem Statement
+                <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+                  <AlertCircle className="text-amber-400 size-5" />
+                  <span>Problem Statement & Clinical Objective</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-300 leading-relaxed text-justify [text-justify:inter-word]">{project.problemStatement}</p>
+                <p className="text-muted-foreground leading-relaxed text-sm sm:text-base text-left">
+                  {project.problemStatement}
+                </p>
               </CardContent>
             </Card>
 
-            <Card className="glass border-white/10">
+            {/* Dataset Details */}
+            <Card className="bg-card border-border shadow-xs">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-100">
-                  <Database className="text-[#00f2fe]" />
-                  Dataset Details
+                <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+                  <Database className="text-primary size-5" />
+                  <span>Dataset & Preprocessing Pipeline</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <p className="font-semibold text-gray-200">Name: <span className="font-normal text-gray-400">{project.dataset?.name ?? ""}</span></p>
-                  <p className="font-semibold text-gray-200">Size: <span className="font-normal text-gray-400">{project.dataset?.size ?? ""}</span></p>
-                  <p className="font-semibold text-gray-200">Source: <span className="font-normal text-gray-400">{project.dataset?.source ?? ""}</span></p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-3 rounded-lg bg-secondary/40 border border-border">
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Name</p>
+                    <p className="text-sm font-medium text-foreground">{project.dataset?.name ?? "N/A"}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/40 border border-border">
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Scale</p>
+                    <p className="text-sm font-medium text-foreground">{project.dataset?.size ?? "N/A"}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-secondary/40 border border-border">
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Origin</p>
+                    <p className="text-sm font-medium text-foreground">{project.dataset?.source ?? "N/A"}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-200 mb-2">Preprocessing:</p>
-                  <ul className="list-disc list-inside space-y-1 text-gray-400">
-                    {(project.dataset?.preprocessing ?? []).map((step, idx) => (
-                      <li key={idx}>{step}</li>
-                    ))}
-                  </ul>
-                </div>
+
+                {(project.dataset?.preprocessing ?? []).length > 0 && (
+                  <div>
+                    <p className="text-xs font-mono uppercase tracking-wider text-muted-foreground mb-2">
+                      Preprocessing Transformers:
+                    </p>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono text-muted-foreground">
+                      {(project.dataset?.preprocessing ?? []).map((step: string, idx: number) => (
+                        <li key={idx} className="flex items-center gap-2 p-2 rounded-md bg-secondary/30 border border-border">
+                          <span className="size-1.5 rounded-full bg-primary" />
+                          <span>{step}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
-            <Card className="glass border-white/10 overflow-hidden">
+            {/* Model & Architecture Flow */}
+            <Card className="bg-card border-border shadow-xs overflow-hidden">
               <CardHeader>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <CardTitle className="flex items-center gap-2 text-gray-100 font-display">
-                    <Cpu className="text-[#8b5cf6]" />
-                    Model & System Architecture
+                  <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+                    <Cpu className="text-indigo-400 size-5" />
+                    <span>Model & System Architecture</span>
                   </CardTitle>
                   <div className="flex flex-wrap gap-2">
                     {project.model?.architecture && (
-                      <Badge className="bg-[#8b5cf6]/10 text-[#a78bfa] border-[#8b5cf6]/25 font-mono text-xs">
+                      <Badge variant="indigo" className="text-xs">
                         {project.model.architecture}
                       </Badge>
                     )}
                     {project.model?.framework && (
-                      <Badge className="bg-[#00f2fe]/10 text-[#00f2fe] border-[#00f2fe]/25 font-mono text-xs">
+                      <Badge variant="default" className="text-xs">
                         {project.model.framework}
                       </Badge>
                     )}
@@ -167,41 +214,37 @@ export default function ProjectDetailPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {project.model?.details && (
-                  <p className="text-gray-300 leading-relaxed text-sm text-justify [text-justify:inter-word]">
+                  <p className="text-muted-foreground leading-relaxed text-sm text-left">
                     {project.model.details}
                   </p>
                 )}
 
-                {/* Interactive End-to-End Architecture Flow Diagram */}
+                {/* Pipeline Flow Stages */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Layers size={16} className="text-[#00f2fe]" />
-                    <h3 className="text-xs font-mono text-gray-300 uppercase tracking-wider">
+                    <Layers size={15} className="text-primary" />
+                    <span className="text-xs font-mono text-foreground font-semibold uppercase tracking-wider">
                       Interactive Pipeline Architecture Flow
-                    </h3>
+                    </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {[
                       {
                         step: "01",
-                        title: "Client & Ingestion",
-                        tech: "React 19 · TypeScript",
-                        desc: "Ingests input data, applies client-side validation, and streams chunks to endpoints.",
+                        title: "Client Ingestion",
+                        tech: "React · TypeScript",
+                        desc: "Ingests input data, applies client-side validation, and streams payload chunks.",
                         icon: Laptop,
-                        accent: "from-[#00f2fe]/15 to-transparent",
-                        borderColor: "border-[#00f2fe]/30",
-                        iconColor: "text-[#00f2fe]",
+                        iconColor: "text-primary",
                       },
                       {
                         step: "02",
                         title: "API Gateway",
                         tech: "FastAPI · Docker",
-                        desc: "Handles asynchronous request routing, rate limiting, and prepares tensors.",
+                        desc: "Handles asynchronous request routing, rate limiting, and prepares model input tensors.",
                         icon: Server,
-                        accent: "from-[#38bdf8]/15 to-transparent",
-                        borderColor: "border-[#38bdf8]/30",
-                        iconColor: "text-[#38bdf8]",
+                        iconColor: "text-emerald-400",
                       },
                       {
                         step: "03",
@@ -209,9 +252,7 @@ export default function ProjectDetailPage() {
                         tech: project.model?.framework || "PyTorch · ONNX",
                         desc: `Executes inference through ${project.model?.architecture || "neural networks"} with tensor acceleration.`,
                         icon: Cpu,
-                        accent: "from-[#818cf8]/15 to-transparent",
-                        borderColor: "border-[#818cf8]/30",
-                        iconColor: "text-[#818cf8]",
+                        iconColor: "text-indigo-400",
                       },
                       {
                         step: "04",
@@ -219,29 +260,27 @@ export default function ProjectDetailPage() {
                         tech: "JSON Stream · Heatmaps",
                         desc: "Emits class confidence probabilities, saliency attention maps, and clinical triage.",
                         icon: Activity,
-                        accent: "from-[#c084fc]/15 to-transparent",
-                        borderColor: "border-[#c084fc]/30",
-                        iconColor: "text-[#c084fc]",
+                        iconColor: "text-amber-400",
                       },
                     ].map((stage, idx) => {
                       const StageIcon = stage.icon;
                       return (
                         <div
                           key={stage.step}
-                          className={`relative glass rounded-xl p-4 border ${stage.borderColor} bg-gradient-to-br ${stage.accent} flex flex-col justify-between transition-all duration-300 hover:scale-[1.02]`}
+                          className="relative rounded-xl p-4 border border-border bg-secondary/30 flex flex-col justify-between transition-all duration-150 hover:border-primary/40 shadow-xs"
                         >
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-[11px] font-mono text-gray-500 font-bold">{stage.step}</span>
+                              <span className="text-[11px] font-mono text-muted-foreground font-bold">{stage.step}</span>
                               <StageIcon size={16} className={stage.iconColor} />
                             </div>
-                            <h4 className="text-sm font-bold text-white font-display mb-1">{stage.title}</h4>
-                            <p className="text-[11px] font-mono text-[#00f2fe] mb-2">{stage.tech}</p>
-                            <p className="text-xs text-gray-400 leading-relaxed">{stage.desc}</p>
+                            <h4 className="text-sm font-bold text-foreground font-display mb-1">{stage.title}</h4>
+                            <p className="text-[11px] font-mono text-primary mb-2 truncate">{stage.tech}</p>
+                            <p className="text-xs text-muted-foreground leading-relaxed">{stage.desc}</p>
                           </div>
                           {idx < 3 && (
-                            <div className="hidden lg:block absolute -right-2.5 top-1/2 -translate-y-1/2 z-20">
-                              <span className="w-5 h-5 rounded-full bg-[#060913] border border-white/20 flex items-center justify-center text-[10px] text-gray-300">
+                            <div className="hidden lg:block absolute -right-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                              <span className="size-4 rounded-full bg-background border border-border flex items-center justify-center text-[9px] text-muted-foreground font-mono">
                                 →
                               </span>
                             </div>
@@ -256,7 +295,7 @@ export default function ProjectDetailPage() {
                 {project.systemArchitecture && (
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                      <span className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
                         Architecture Specification
                       </span>
                       <button
@@ -269,57 +308,56 @@ export default function ProjectDetailPage() {
                             toast.error("Failed to copy");
                           }
                         }}
-                        className="inline-flex items-center gap-1.5 text-xs text-[#00f2fe] hover:underline cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline cursor-pointer font-mono"
                       >
                         <Copy size={12} />
                         Copy Spec
                       </button>
                     </div>
-                    <div className="bg-black/50 border border-white/10 p-4 rounded-xl overflow-x-auto">
-                      <p className="font-mono text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">
+                    <div className="bg-background border border-border p-4 rounded-xl overflow-x-auto">
+                      <pre className="font-mono text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
                         {project.systemArchitecture}
-                      </p>
+                      </pre>
                     </div>
                   </div>
                 )}
               </CardContent>
             </Card>
 
+            {/* Performance Metrics Visualization */}
             {(project.resultsVisualization ?? []).length > 0 && (
-              <Card className="glass border-white/10">
+              <Card className="bg-card border-border shadow-xs">
                 <CardHeader>
-                  <CardTitle className="text-gray-100">Performance Metrics</CardTitle>
+                  <CardTitle className="text-foreground font-display text-lg">Performance Metrics Telemetry</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {(project.resultsVisualization ?? []).map((viz, idx) => {
+                  {(project.resultsVisualization ?? []).map((viz: any, idx: number) => {
                     if (viz.type === "bar") {
                       const chartData = viz.data.labels.map((label: string, i: number) => ({
                         name: label,
-                        value: viz.data.values[i]
+                        value: viz.data.values[i],
                       }));
                       return (
-                        <ResponsiveContainer key={idx} width="100%" height={300}>
-                          <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                            <XAxis dataKey="name" stroke="#9ca3af" />
-                            <YAxis stroke="#9ca3af" />
-                            <Tooltip
-                              contentStyle={{
-                                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                                border: '1px solid rgba(255,255,255,0.1)',
-                                borderRadius: '8px',
-                                color: '#e5e7eb'
-                              }}
-                            />
-                            <Bar dataKey="value" fill="url(#colorGradient)" />
-                            <defs>
-                              <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#00f2fe" />
-                                <stop offset="100%" stopColor="#8b5cf6" />
-                              </linearGradient>
-                            </defs>
-                          </BarChart>
-                        </ResponsiveContainer>
+                        <div key={idx} className="w-full pt-2">
+                          <ResponsiveContainer width="100%" height={280}>
+                            <BarChart data={chartData}>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#1e2633" />
+                              <XAxis dataKey="name" stroke="#64748b" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
+                              <YAxis stroke="#64748b" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: '#0e131b',
+                                  border: '1px solid #1e2633',
+                                  borderRadius: '8px',
+                                  color: '#f1f5f9',
+                                  fontSize: '12px',
+                                  fontFamily: 'monospace',
+                                }}
+                              />
+                              <Bar dataKey="value" fill="#00e5ff" radius={[4, 4, 0, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
                       );
                     }
                     return null;
@@ -328,23 +366,28 @@ export default function ProjectDetailPage() {
               </Card>
             )}
 
+            {/* API Documentation */}
             {(project.apiDocs ?? []).length > 0 && (
-              <Card className="glass border-white/10">
+              <Card className="bg-card border-border shadow-xs">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-100">
-                    <Code className="text-[#6366f1]" />
-                    API Documentation
+                  <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+                    <Code className="text-primary size-5" />
+                    <span>REST API Endpoint Contracts</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {(project.apiDocs ?? []).map((api, idx) => (
-                      <div key={idx} className="border border-white/10 bg-black/20 rounded-lg p-4">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Badge variant="outline" className="border-[#00f2fe] text-[#00f2fe]">{api.method}</Badge>
-                          <code className="text-sm bg-black/40 border border-white/10 px-2 py-1 rounded text-gray-300">{api.endpoint}</code>
+                  <div className="space-y-3">
+                    {(project.apiDocs ?? []).map((api: any, idx: number) => (
+                      <div key={idx} className="border border-border bg-secondary/30 rounded-lg p-3.5">
+                        <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                          <Badge variant="default" className="text-xs font-mono">
+                            {api.method}
+                          </Badge>
+                          <code className="text-xs font-mono bg-background border border-border px-2 py-0.5 rounded text-foreground">
+                            {api.endpoint}
+                          </code>
                         </div>
-                        <p className="text-gray-400 text-sm">{api.description}</p>
+                        <p className="text-muted-foreground text-xs leading-relaxed">{api.description}</p>
                       </div>
                     ))}
                   </div>
@@ -353,120 +396,107 @@ export default function ProjectDetailPage() {
             )}
           </div>
 
-          <div className="space-y-6">
-            <Card className="glass border-white/10">
+          {/* Sidebar Column */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Key Metrics */}
+            <Card className="bg-card border-border shadow-xs">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-100">
-                  <Rocket className="text-[#10b981]" />
-                  Deployment & DevOps
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="rounded-xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-xs uppercase tracking-wider text-gray-500 mb-2">Platform</p>
-                  <p className="text-gray-300 leading-relaxed">{project.deployment ?? ""}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass border-white/10">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-100">
-                  <Zap className="text-[#fbbf24]" />
-                  Performance Optimization
-                </CardTitle>
+                <CardTitle className="text-foreground font-display text-base">Benchmark Telemetry</CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3">
-                  {(project.optimization ?? []).length > 0 ? (
-                    (project.optimization ?? []).map((opt, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-[#10b981] mt-1">✓</span>
-                        <span className="text-gray-400 leading-relaxed">{opt}</span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-gray-500 text-sm">No optimization details available.</li>
-                  )}
-                </ul>
-              </CardContent>
-            </Card>
-
-            <Card className="glass border-white/10">
-              <CardHeader>
-                <CardTitle className="text-gray-100">Key Metrics</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {(project.metrics ?? []).map((metric, idx) => (
-                    <div key={idx}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-gray-300">{metric.name}</span>
-                        <span className="text-sm font-bold text-[#00f2fe]">{metric.value}</span>
-                      </div>
-                      {idx < (project.metrics ?? []).length - 1 && <div className="border-t border-white/10 mt-4" />}
+                <div className="space-y-3">
+                  {(project.metrics ?? []).map((metric: any, idx: number) => (
+                    <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg bg-secondary/30 border border-border">
+                      <span className="text-xs text-muted-foreground">{metric.name}</span>
+                      <span className="text-xs font-mono font-bold text-primary">{metric.value}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="glass border-white/10">
+            {/* Deployment & DevOps */}
+            <Card className="bg-card border-border shadow-xs">
               <CardHeader>
-                <CardTitle className="text-gray-100">Tech Stack</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
+                  <Rocket className="text-emerald-400 size-4" />
+                  <span>Deployment & DevOps</span>
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {(project.techStack ?? []).map((tech) => (
-                    <Badge key={tech} className="bg-white/5 border-white/10 text-gray-300">
-                      {tech}
-                    </Badge>
-                  ))}
+                <div className="rounded-lg border border-border bg-secondary/30 p-3.5">
+                  <p className="text-[11px] uppercase tracking-wider font-mono text-muted-foreground mb-1.5">Target Platform</p>
+                  <p className="text-sm font-medium text-foreground">{project.deployment ?? "Dockerized Edge Container"}</p>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Optimization */}
+            <Card className="bg-card border-border shadow-xs">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
+                  <Zap className="text-amber-400 size-4" />
+                  <span>Inference Optimization</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2.5">
+                  {(project.optimization ?? []).length > 0 ? (
+                    (project.optimization ?? []).map((opt: string, idx: number) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs text-muted-foreground">
+                        <span className="text-emerald-400 mt-0.5 font-bold">✓</span>
+                        <span className="leading-relaxed">{opt}</span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-muted-foreground text-xs">No optimization records.</li>
+                  )}
+                </ul>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card className="glass border-white/10">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-100">
-                    <AlertCircle className="text-[#f97316]" />
-                    Challenges
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {(project.challenges ?? []).map((challenge, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-[#f97316] mt-1">•</span>
-                        <span className="text-gray-400">{challenge}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+        {/* Bottom Challenges & Learnings Grid */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-card border-border shadow-xs">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
+                <AlertCircle className="text-amber-400 size-4" />
+                <span>Engineering Challenges Solved</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+                {(project.challenges ?? []).map((challenge: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-amber-400 mt-0.5">•</span>
+                    <span className="leading-relaxed">{challenge}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
 
-              <Card className="glass border-white/10">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-100">
-                    <Lightbulb className="text-[#fbbf24]" />
-                    Key Learnings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {(project.learnings ?? []).map((learning, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-[#00f2fe] mt-1">→</span>
-                        <span className="text-gray-400">{learning}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
+          <Card className="bg-card border-border shadow-xs">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
+                <Lightbulb className="text-primary size-4" />
+                <span>Key Research Learnings</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+                {(project.learnings ?? []).map((learning: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-primary mt-0.5">→</span>
+                    <span className="leading-relaxed">{learning}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
