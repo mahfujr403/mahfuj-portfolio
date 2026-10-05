@@ -89,11 +89,11 @@ export default function BlogDetailPage() {
   if (!blog) {
     return (
       <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-xl">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-[10px]">
           <h1 className="text-2xl font-bold font-display text-foreground mb-3">Article Not Found</h1>
           <p className="text-sm text-muted-foreground mb-6">The requested publication or technical article does not exist.</p>
-          <Link to="/" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm">
-            ← Return to Observatory
+          <Link to="/#articles" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm">
+            ← Return to Articles
           </Link>
         </div>
       </div>

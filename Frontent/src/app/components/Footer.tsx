@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { Github, Linkedin, Mail, Phone, ArrowUp, GraduationCap } from "lucide-react";
-import { motion } from "motion/react";
 import { useProfile } from "../hooks/useProfile";
 
 export default function Footer() {
@@ -30,15 +29,15 @@ export default function Footer() {
   };
 
   return (
-    <footer className="relative pt-16 pb-12 mt-20 border-t border-border/80 bg-[#080b10]/60 overflow-hidden">
+    <footer className="relative pt-12 pb-12 border-t border-border-subtle bg-[#080b10]/60 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-12">
           {/* Col 1: Bio / Focus */}
           <div className="md:col-span-5 space-y-4">
-            <div className="flex items-center gap-2">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-              <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-medium">
-                Systems Telemetry: Operational
+            <div className="flex items-center gap-2 select-none" aria-hidden="true">
+              <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                Available for Engineering &amp; Research
               </span>
             </div>
             <h3 className="font-display font-bold text-xl sm:text-2xl text-foreground tracking-tight">
@@ -74,11 +73,11 @@ export default function Footer() {
 
           {/* Col 2: Navigation Links (2 Columns) */}
           <div className="md:col-span-4">
-            <div className="w-fit md:mx-auto space-y-3">
-              <h4 className="text-xs font-mono uppercase tracking-wider text-foreground font-semibold text-center">
+            <div className="space-y-3 md:max-w-[240px] md:mx-auto">
+              <h4 className="text-xs font-mono uppercase tracking-wider text-foreground font-semibold">
                 Navigation
               </h4>
-              <ul className="grid grid-cols-2 gap-x-8 gap-y-2">
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                 {otherLinks.map((link) => (
                   <li key={link.label}>
                     {link.href.startsWith("/#") ? (
@@ -105,35 +104,33 @@ export default function Footer() {
           {/* Col 3: Network & Research Handles */}
           <div className="md:col-span-3 space-y-3">
             <h4 className="text-xs font-mono uppercase tracking-wider text-foreground font-semibold">
-              Connect & Repositories
+              Connect &amp; Repositories
             </h4>
             <div className="flex flex-wrap gap-2">
               {(profile.socialLinks ?? []).map((social: any) => {
                 const Icon = socialIcons[social.icon as keyof typeof socialIcons];
                 return Icon ? (
-                  <motion.a
+                  <a
                     key={social.platform}
                     href={social.url}
                     target={social.platform !== "Email" && social.platform !== "Phone" ? "_blank" : undefined}
                     rel={social.platform !== "Email" && social.platform !== "Phone" ? "noopener noreferrer" : undefined}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2.5 bg-secondary/50 border border-border rounded-lg text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-secondary transition-all"
+                    className="p-2.5 bg-[#111620] border border-border rounded-md text-muted-foreground hover:text-foreground hover:border-border-active hover:bg-[#18202E] transition-colors focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
                     aria-label={social.platform}
                   >
                     <Icon size={16} />
-                  </motion.a>
+                  </a>
                 ) : null;
               })}
             </div>
-            <p className="text-xs text-muted-foreground pt-2">
+            <p className="text-xs text-muted-foreground pt-1 leading-relaxed">
               Open to research collaborations, AI consulting, and technical advisory roles.
             </p>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-muted-foreground text-xs font-mono">
             &copy; {new Date().getFullYear()} {profile.name || "Md. Mahfujur Rahman"}. All rights reserved.
           </p>

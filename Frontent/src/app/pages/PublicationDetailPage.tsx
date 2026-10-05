@@ -48,8 +48,8 @@ export default function PublicationDetailPage() {
   if (!loading && (error || !publication)) {
     return (
       <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-xl">
-          <h1 className="text-2xl font-bold font-display text-foreground mb-3">Publication Dossier Not Located</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-[10px]">
+          <h1 className="text-2xl font-bold font-display text-foreground mb-3">Publication Not Found</h1>
           {error && <p className="text-sm font-mono text-muted-foreground mb-6">{error}</p>}
           <Link
             to="/publications"
@@ -213,7 +213,7 @@ export default function PublicationDetailPage() {
             </Card>
           )}
 
-          {/* 2-Column Technical Dossier */}
+          {/* 2-Column Technical Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-6">
               {/* TL;DR */}
@@ -335,7 +335,7 @@ export default function PublicationDetailPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
                       <TrendingUp className="text-emerald-400 size-5" />
-                      <span>Quantitative Results Telemetry</span>
+                      <span>Quantitative Evaluation Results</span>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

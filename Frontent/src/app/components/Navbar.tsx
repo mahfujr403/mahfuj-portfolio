@@ -96,61 +96,61 @@ export default function Navbar() {
     }
   };
 
+  const prefetchPublications = () => {
+    queryClient.prefetchQuery({
+      queryKey: ["publications", 200, 0],
+      queryFn: () => listPublications(200, 0),
+      staleTime: 5 * 60 * 1000,
+    });
+  };
+
   return (
-    <motion.nav
-      initial={{ y: -60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
-        scrolled
-          ? "bg-[#080b10]/85 backdrop-blur-md border-b border-border/80 shadow-sm"
-          : "bg-transparent border-b border-transparent"
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 bg-[#0B0E14] border-b transition-colors duration-150 ${
+        scrolled ? "border-[#222C3D] shadow-xs" : "border-[#182232]"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Typographically clean brand / name */}
           <Link
             to="/"
-            className="flex items-center gap-2 group cursor-pointer"
+            className="flex items-center gap-2 group cursor-pointer focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm py-1"
             onClick={(e) => {
               e.preventDefault();
               navigate("/");
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
-            <span className="size-2 rounded-full bg-primary/80 group-hover:bg-primary transition-colors shadow-[0_0_8px_rgba(0,229,255,0.6)]" />
             <span className="font-display font-bold text-base sm:text-lg tracking-tight text-foreground group-hover:text-primary transition-colors">
               {profile?.name || "Md. Mahfujur Rahman"}
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-7">
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center h-full gap-7" aria-label="Main Navigation">
             {navLinks.map((link) => {
               const active = isLinkActive(link.href);
+              const linkClasses = `text-sm transition-colors duration-150 relative h-16 flex items-center cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm ${
+                active ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
+              }`;
+
               return link.href.startsWith("/#") || link.href === "/" ? (
                 <a
                   key={link.label}
                   href={link.href}
                   onClick={(e) => handleNavClick(e, link.href)}
                   onMouseEnter={() => {
-                    if (link.href.includes("publications")) {
-                      queryClient.prefetchQuery({
-                        queryKey: ["publications", 200, 0],
-                        queryFn: () => listPublications(200, 0),
-                        staleTime: 5 * 60 * 1000,
-                      });
-                    }
+                    if (link.href.includes("publications")) prefetchPublications();
                   }}
-                  className={`text-sm transition-colors duration-150 relative py-1 cursor-pointer font-medium ${
-                    active ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={linkClasses}
                 >
                   {link.label}
                   {active && (
                     <motion.span
                       layoutId="activeNavIndicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
+                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
                     />
                   )}
                 </a>
@@ -159,71 +159,64 @@ export default function Navbar() {
                   key={link.label}
                   to={link.href}
                   onMouseEnter={() => {
-                    if (link.href === "/publications") {
-                      queryClient.prefetchQuery({
-                        queryKey: ["publications", 200, 0],
-                        queryFn: () => listPublications(200, 0),
-                        staleTime: 5 * 60 * 1000,
-                      });
-                    }
+                    if (link.href === "/publications") prefetchPublications();
                   }}
-                  className={`text-sm transition-colors duration-150 relative py-1 font-medium ${
-                    active ? "text-primary" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={linkClasses}
                 >
                   {link.label}
                   {active && (
                     <motion.span
                       layoutId="activeNavIndicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary"
+                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
                     />
                   )}
                 </Link>
               );
             })}
 
+            {/* Restrained Resume Button */}
             <button
               onClick={async (e) => {
                 e.preventDefault();
                 await handleResumeDownload(profile?.resumeUrl);
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all duration-150 cursor-pointer shadow-xs active:scale-[0.98]"
+              className="inline-flex items-center gap-1.5 h-8 px-3.5 bg-secondary text-foreground border border-border text-xs font-medium rounded-md hover:bg-secondary/80 hover:border-border-active transition-colors duration-150 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
             >
-              <FileText className="size-3.5" />
-              Resume
+              <FileText className="size-3.5 text-muted-foreground" />
+              <span>Resume</span>
             </button>
-          </div>
+          </nav>
 
+          {/* Mobile menu trigger */}
           <button
-            className="md:hidden p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-secondary transition-colors"
+            className="md:hidden p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md hover:bg-secondary transition-colors focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMenuOpen}
           >
             {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
+        {/* Mobile Navigation Dropdown */}
         {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="md:hidden py-4 border-t border-border/80 bg-[#0e131b]/95 backdrop-blur-xl rounded-b-xl px-2 mb-2"
-          >
+          <div className="md:hidden py-4 border-t border-[#222C3D] bg-[#111620] px-2 mb-2 rounded-b-md">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => {
                 const active = isLinkActive(link.href);
+                const mobileClasses = `px-3 min-h-[44px] flex items-center text-sm font-medium transition-colors cursor-pointer rounded-sm ${
+                  active
+                    ? "text-foreground font-semibold border-l-2 border-primary bg-[#18202E]/60 pl-3"
+                    : "text-muted-foreground hover:text-foreground hover:bg-[#18202E]/40"
+                }`;
+
                 return link.href.startsWith("/#") || link.href === "/" ? (
                   <a
                     key={link.label}
                     href={link.href}
                     onClick={(e) => handleNavClick(e, link.href)}
-                    className={`px-3 py-2 rounded-lg text-sm transition-colors cursor-pointer font-medium ${
-                      active
-                        ? "bg-primary/10 text-primary font-semibold"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    }`}
+                    className={mobileClasses}
                   >
                     {link.label}
                   </a>
@@ -232,19 +225,9 @@ export default function Navbar() {
                     key={link.label}
                     to={link.href}
                     onTouchStart={() => {
-                      if (link.href === "/publications") {
-                        queryClient.prefetchQuery({
-                          queryKey: ["publications", 200, 0],
-                          queryFn: () => listPublications(200, 0),
-                          staleTime: 5 * 60 * 1000,
-                        });
-                      }
+                      if (link.href === "/publications") prefetchPublications();
                     }}
-                    className={`px-3 py-2 rounded-lg text-sm transition-colors font-medium ${
-                      active
-                        ? "bg-primary/10 text-primary font-semibold"
-                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                    }`}
+                    className={mobileClasses}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.label}
@@ -258,15 +241,15 @@ export default function Navbar() {
                   setIsMenuOpen(false);
                   await handleResumeDownload(profile?.resumeUrl);
                 }}
-                className="mt-2 flex items-center justify-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm cursor-pointer hover:bg-primary/90 transition-all"
+                className="mt-2 flex items-center justify-center gap-2 min-h-[44px] px-4 bg-primary text-white font-medium rounded-md text-sm cursor-pointer hover:bg-primary-hover transition-colors focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
               >
                 <FileText className="size-4" />
-                Download Resume
+                <span>Download Resume</span>
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
-    </motion.nav>
+    </header>
   );
 }

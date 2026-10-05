@@ -1,8 +1,6 @@
 import { Github, Linkedin, Mail, Phone, Download, ArrowRight, GraduationCap } from "lucide-react";
-import { motion } from "motion/react";
 import { useProfile } from "../hooks/useProfile";
 import { handleResumeDownload } from "../../utils/download";
-import { Typewriter } from "./TypeWriter";
 
 export default function Hero({ profile: propProfile }: { profile?: any }) {
   const socialIcons = {
@@ -18,143 +16,112 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
   const profile = propProfile ?? hookProfile ?? { socialLinks: [] };
 
   return (
-    <section id="hero" className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
-      {/* Background ambient lighting - architectural slate */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20 pointer-events-none"
-          style={{
-            background: "radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, rgba(14, 19, 27, 0) 70%)",
-            filter: "blur(80px)",
-          }}
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Profile Photo Column - First on mobile & desktop */}
-          <div className="lg:col-span-4 flex justify-center order-1">
-            <div className="relative group">
-              {/* Subtle architectural ambient aura */}
-              <div
-                className="absolute inset-0 bg-primary/10 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"
-              />
-              {/* Technical framed avatar */}
-              <div className="relative w-36 h-36 sm:w-48 sm:h-48 lg:w-72 lg:h-72 rounded-full overflow-hidden border border-border/80 bg-secondary/30 ring-1 ring-primary/20 shadow-xl transition-all duration-300 group-hover:border-primary/50">
-                <img
-                  src={profile.profileImage || "/images/profile-default.jpg"}
-                  alt={profile.name || "Md. Mahfujur Rahman"}
-                  width={320}
-                  height={320}
-                  loading="eager"
-                  decoding="async"
-                  className="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 transition-all duration-300"
-                />
-              </div>
-              {/* Telemetry live status tag on avatar */}
-              <div className="absolute bottom-1 right-2 sm:bottom-2 sm:right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#0e131b]/95 border border-emerald-500/30 text-[11px] font-mono text-emerald-400 shadow-md">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Active</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Narrative Content Column */}
-          <div className="lg:col-span-8 text-center lg:text-left order-2">
-            {/* System Status Pill */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-5 max-w-full">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)] shrink-0" />
-              <span className="text-[11px] sm:text-xs font-mono text-emerald-300 font-medium whitespace-nowrap tracking-tight">
-                <span className="sm:hidden">Available for ML & AI Research</span>
-                <span className="hidden sm:inline">Available for ML Engineering & Applied AI Research</span>
+    <section id="hero" className="relative pt-12 pb-16 lg:pt-20 lg:pb-24 border-b border-border-subtle">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          
+          {/* Content Column: Editorial Presentation */}
+          <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
+            
+            {/* Availability Status: Static emerald dot, no pulse, subtle neutral capsule */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111620] border border-border mb-6 select-none max-w-full">
+              <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-[11px] sm:text-xs font-mono text-emerald-400 font-medium tracking-tight whitespace-nowrap">
+                <span className="hidden sm:inline">Available for ML Engineering &amp; Applied AI Roles</span>
+                <span className="sm:hidden">Available for ML &amp; Applied AI</span>
               </span>
             </div>
 
-            {/* Semantic H1: Engineer Name */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-display mb-3 tracking-tight text-foreground leading-[1.1]">
+            {/* Display Name: clamp(2.5rem, 5vw, 3.75rem), font-extrabold */}
+            <h1 className="text-[clamp(2.25rem,4.5vw,3.75rem)] font-extrabold font-display tracking-tight text-foreground leading-[1.1] mb-3">
               {profile.name || "Md. Mahfujur Rahman"}
             </h1>
 
-            {/* Subtitle / Focus Domain with Typewriter */}
-            <div className="text-xl sm:text-2xl font-semibold font-display text-primary mb-4 min-h-[2rem]">
-              <Typewriter
-                text={profile.tagline || "Machine Learning Engineer & Researcher"}
-                speed={70}
-                delay={300}
-                infinite={true}
-                deleteSpeed={35}
-                deleteDelay={2200}
-              />
-            </div>
+            {/* Static Role / Specialization (No typewriter, no blinking cursor, no gradient) */}
+            <p className="text-xl sm:text-2xl font-semibold font-display text-primary tracking-tight mb-4">
+              {profile.tagline || "Machine Learning Engineer & Researcher"}
+            </p>
 
-            {/* Headline statement */}
-            <h2 className="mb-4 text-base sm:text-lg font-medium leading-relaxed text-muted-foreground max-w-2xl mx-auto lg:mx-0">
+            {/* Factual Positioning Headline */}
+            <h2 className="text-base sm:text-lg font-medium text-foreground/90 leading-relaxed max-w-xl mb-3">
               {profile.headline || "Specializing in Deep Learning, Computer Vision, and Production ML Systems."}
             </h2>
 
             {/* Impact Statement */}
             {profile.impactStatement && (
-              <p className="text-sm sm:text-base text-muted-foreground/90 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl mb-8">
                 {profile.impactStatement}
               </p>
             )}
 
-            {/* Action Bar with clear hierarchy */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-8">
-              <motion.a
+            {/* Action Hierarchy: Primary, Secondary, Link */}
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-2.5 sm:gap-4 mb-8">
+              <a
                 href="#projects"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-semibold rounded-lg hover:bg-primary/90 transition-all shadow-sm"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-sm font-semibold rounded-md hover:bg-primary-hover active:scale-[0.99] transition-colors shadow-xs select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] w-full sm:w-auto"
               >
                 <span>Explore Projects</span>
                 <ArrowRight size={15} />
-              </motion.a>
+              </a>
 
-              <motion.button
-                onClick={async (e) => {
-                  e.preventDefault();
-                  await handleResumeDownload(profile?.resumeUrl);
-                }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-border bg-secondary/50 text-foreground text-sm font-medium hover:bg-secondary hover:border-border-active transition-all cursor-pointer"
-              >
-                <Download size={15} className="text-primary" />
-                <span>Download CV</span>
-              </motion.button>
+              <div className="grid grid-cols-2 gap-2.5 sm:flex sm:items-center sm:gap-4 w-full sm:w-auto">
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    await handleResumeDownload(profile?.resumeUrl);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 bg-secondary text-foreground border border-border text-sm font-medium rounded-md hover:bg-secondary/80 hover:border-border-active active:scale-[0.99] transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] w-full sm:w-auto"
+                >
+                  <Download size={15} className="text-muted-foreground" />
+                  <span>Download CV</span>
+                </button>
 
-              <motion.a
-                href="#contact"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/40 rounded-lg transition-all"
-              >
-                <span>Contact</span>
-              </motion.a>
+                <a
+                  href="#contact"
+                  className="inline-flex items-center justify-center gap-2 px-3 sm:px-5 py-2.5 bg-secondary text-foreground border border-border text-sm font-medium rounded-md hover:bg-secondary/80 hover:border-border-active active:scale-[0.99] transition-colors select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] w-full sm:w-auto"
+                >
+                  <Mail size={15} className="text-muted-foreground" />
+                  <span>Contact</span>
+                </a>
+              </div>
             </div>
 
-            {/* Social handles strip */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+            {/* Social Links: Clean restrained icon links with accessible labels */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5" aria-label="Professional and Academic Profiles">
               {(profile.socialLinks ?? []).map((social: any) => {
                 const Icon = socialIcons[social.icon as keyof typeof socialIcons];
                 return Icon ? (
-                  <motion.a
+                  <a
                     key={social.platform}
                     href={social.url}
                     target={social.platform !== "Email" && social.platform !== "Phone" ? "_blank" : undefined}
                     rel={social.platform !== "Email" && social.platform !== "Phone" ? "noopener noreferrer" : undefined}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 rounded-lg border border-border/80 bg-secondary/40 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-secondary transition-all"
+                    className="size-9 sm:size-10 flex items-center justify-center rounded-md border border-border bg-[#111620] text-muted-foreground hover:text-foreground hover:border-border-active hover:bg-secondary transition-colors duration-150 focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
                     aria-label={social.platform}
                   >
                     <Icon size={16} />
-                  </motion.a>
+                  </a>
                 ) : null;
               })}
             </div>
+
           </div>
+
+          {/* Portrait Column: Architectural Editorial Frame */}
+          <div className="lg:col-span-5 xl:col-span-4 flex justify-center lg:justify-end order-1 lg:order-2">
+            <div className="w-48 sm:w-60 lg:w-full max-w-[340px] aspect-[4/5] rounded-[12px] overflow-hidden border border-border bg-[#111620] shadow-md">
+              <img
+                src={profile.profileImage || "/images/profile-default.jpg"}
+                alt={profile.name || "Md. Mahfujur Rahman"}
+                width={360}
+                height={450}
+                loading="eager"
+                decoding="async"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

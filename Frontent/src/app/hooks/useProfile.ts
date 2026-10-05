@@ -24,7 +24,7 @@ export const DEFAULT_PROFILE = {
   socialLinks: [
     { url: "https://linkedin.com/in/mahfujr403", icon: "linkedin", platform: "LinkedIn" },
     { url: "https://github.com/mahfujr403", icon: "github", platform: "GitHub" },
-    { url: "https://scholar.google.com/citations?user=ssuw-WEAAAAJ&hl=en", icon: "googleScholar", platform: "Google Scholar" }
+    { url: "https://scholar.google.com/citations?user=ssuw-WEAAAAJ&hl=en", icon: "googleScholar", platform: "Scholar" }
   ],
   contactCTA: "Let's build intelligent systems together."
 };

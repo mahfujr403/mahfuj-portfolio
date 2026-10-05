@@ -40,14 +40,14 @@ export default function ProjectDetailPage() {
   if (!project && !loading) {
     return (
       <div className="min-h-screen pt-24 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-xl">
-          <h1 className="text-2xl font-bold font-display text-foreground mb-3">Project Dossier Not Located</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center bg-card border border-border rounded-[10px]">
+          <h1 className="text-2xl font-bold font-display text-foreground mb-3">Project Not Found</h1>
           {error && <p className="text-sm font-mono text-muted-foreground mb-6">{error}</p>}
           <Link
             to="/#projects"
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-semibold rounded-lg text-sm"
           >
-            ← Return to Observatory
+            ← Return to Projects
           </Link>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function ProjectDetailPage() {
 
         {/* Hero Media Banner */}
         {project.imageUrl && (
-          <div className="w-full h-72 sm:h-96 rounded-xl overflow-hidden mb-8 border border-border bg-secondary/30">
+          <div className="w-full h-72 sm:h-96 rounded-[10px] overflow-hidden mb-8 border border-border bg-secondary/30">
             <img
               src={project.imageUrl}
               alt={project.title}
@@ -78,8 +78,8 @@ export default function ProjectDetailPage() {
           </div>
         )}
 
-        {/* Header Hero Dossier */}
-        <div className="bg-card border border-border rounded-xl p-6 sm:p-8 mb-8 shadow-xs">
+        {/* Header Hero Section */}
+        <div className="bg-card border border-border rounded-[10px] p-6 sm:p-8 mb-8 shadow-xs">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-6">
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-3">
@@ -328,7 +328,7 @@ export default function ProjectDetailPage() {
             {(project.resultsVisualization ?? []).length > 0 && (
               <Card className="bg-card border-border shadow-xs">
                 <CardHeader>
-                  <CardTitle className="text-foreground font-display text-lg">Performance Metrics Telemetry</CardTitle>
+                  <CardTitle className="text-foreground font-display text-lg">Performance Metrics & Evaluation</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {(project.resultsVisualization ?? []).map((viz: any, idx: number) => {
@@ -401,7 +401,7 @@ export default function ProjectDetailPage() {
             {/* Key Metrics */}
             <Card className="bg-card border-border shadow-xs">
               <CardHeader>
-                <CardTitle className="text-foreground font-display text-base">Benchmark Telemetry</CardTitle>
+                <CardTitle className="text-foreground font-display text-base">Key Metrics & Benchmarks</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

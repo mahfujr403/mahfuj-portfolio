@@ -58,25 +58,26 @@ export default function AllPublicationsPage() {
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-8 group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Observatory</span>
+          <span>Back to Publications</span>
         </Link>
 
         {/* Page Header */}
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/80 border border-border text-xs font-mono text-primary uppercase tracking-wider mb-3">
-            <BookOpen size={13} />
-            Academic Repository
+        <div className="mb-10 text-left">
+          <div className="flex items-center gap-2 mb-3 select-none" aria-hidden="true">
+            <span className="text-xs font-mono tracking-widest text-primary font-semibold">ARCHIVE</span>
+            <span className="text-xs text-border-active">/</span>
+            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Publications</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-display text-foreground tracking-tight mb-3">
+          <h1 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold font-display text-foreground tracking-tight mb-3">
             Complete Publications Index
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-3xl leading-relaxed">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-3xl leading-relaxed">
             Full bibliography of scientific papers in deep learning, medical imaging oncology, and computer vision published in peer-reviewed journals and international conference proceedings.
           </p>
         </div>
 
         {/* Filter and Search Toolbar */}
-        <div className="bg-card border border-border rounded-xl p-5 sm:p-6 mb-8 shadow-xs">
+        <div className="bg-[#111620] border border-border rounded-[10px] p-5 sm:p-6 mb-8 shadow-xs">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5">
             <div className="md:col-span-6 relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" size={17} />
@@ -143,24 +144,33 @@ export default function AllPublicationsPage() {
 
         {/* Publications List */}
         {loading && publications.length === 0 ? (
-          <div className="space-y-4">
+          <div className="w-full divide-y divide-border/60">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="bg-card border border-border rounded-xl p-6 animate-pulse space-y-3">
-                <div className="flex justify-between items-center">
-                  <div className="h-6 w-1/2 bg-secondary/70 rounded-lg" />
-                  <div className="h-5 w-20 bg-secondary/50 rounded-full" />
+              <div key={i} className="py-7 sm:py-8 space-y-3.5 animate-pulse">
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-20 bg-secondary/60 rounded" />
+                  <div className="h-4 w-24 bg-secondary/40 rounded" />
+                  <div className="h-4 w-16 bg-secondary/40 rounded" />
                 </div>
-                <div className="h-4 w-1/4 bg-secondary/40 rounded" />
-                <div className="h-4 w-4/5 bg-secondary/40 rounded" />
+                <div className="h-6 w-3/4 bg-secondary/70 rounded" />
+                <div className="h-4 w-1/2 bg-secondary/40 rounded" />
+                <div className="h-4 w-full bg-secondary/30 rounded" />
+                <div className="flex justify-between items-center pt-3 border-t border-border/40">
+                  <div className="h-4 w-44 bg-secondary/40 rounded" />
+                  <div className="flex gap-2">
+                    <div className="h-7 w-16 bg-secondary/50 rounded-md" />
+                    <div className="h-7 w-20 bg-secondary/50 rounded-md" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         ) : filteredAndSortedPublications.length === 0 ? (
-          <div className="text-center py-20 bg-card border border-border rounded-xl p-8">
+          <div className="text-center py-20 bg-card border border-border rounded-[10px] p-8">
             <p className="text-muted-foreground text-sm font-mono">No research papers match your current query.</p>
           </div>
         ) : (
-          <div className="divide-y divide-border/80 rounded-xl overflow-hidden bg-card border border-border shadow-xs">
+          <div className="w-full divide-y divide-border/60">
             {filteredAndSortedPublications.map((publication) => (
               <PublicationCard key={publication.id} publication={publication} compact />
             ))}

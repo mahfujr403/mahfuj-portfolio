@@ -36,8 +36,8 @@ export function normalizePublication(publication: any, fallback: any = {}) {
   return {
     id: source.id ?? fallbackSource.id,
     slug: source.slug ?? fallbackSource.slug ?? "",
-    title: source.title ?? fallbackSource.title ?? "Untitled Publication",
-    venue: source.venue ?? fallbackSource.venue ?? "Venue unavailable",
+    title: String(source.title ?? fallbackSource.title ?? "Untitled Publication").trim(),
+    venue: String(source.venue ?? fallbackSource.venue ?? "Venue unavailable").trim(),
     publisher: source.publisher ?? fallbackSource.publisher ?? "Publisher unavailable",
     type: source.type ?? fallbackSource.type ?? "Publication",
     year: source.year ?? fallbackSource.year ?? "N/A",

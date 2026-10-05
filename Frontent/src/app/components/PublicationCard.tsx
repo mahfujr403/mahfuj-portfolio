@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { ExternalLink, ArrowRight, BookOpen, Star, Quote, Copy, Check } from "lucide-react";
-import { motion } from "motion/react";
+import { ExternalLink, ArrowRight, BookOpen, Quote, Copy, Check } from "lucide-react";
 import { normalizePublication, getPublicationBySlug } from "../../services/publicationsApi";
 import { useQueryClient } from "@tanstack/react-query";
-import { Badge } from "./ui/badge";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -71,7 +69,7 @@ export default function PublicationCard({ publication, compact = false }: Public
 
   const renderCiteDialog = () => (
     <Dialog open={isCiteOpen} onOpenChange={setIsCiteOpen}>
-      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-xl max-h-[85vh] overflow-y-auto overflow-x-hidden bg-popover border border-border text-foreground p-5 sm:p-6 rounded-xl shadow-2xl">
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-xl max-h-[85vh] overflow-y-auto overflow-x-hidden bg-[#111620] border border-border text-foreground p-5 sm:p-6 rounded-[10px] shadow-2xl">
         <DialogHeader className="w-full min-w-0 text-left">
           <DialogTitle className="flex items-center gap-2 font-display text-base sm:text-lg text-foreground">
             <Quote size={17} className="text-primary shrink-0" />
@@ -89,13 +87,13 @@ export default function PublicationCard({ publication, compact = false }: Public
               <button
                 type="button"
                 onClick={() => handleCopy(getApaString(data), "apa")}
-                className="inline-flex items-center gap-1 text-xs font-mono text-primary hover:underline cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1 text-xs font-mono text-primary hover:underline cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm"
               >
                 {copiedType === "apa" ? <Check size={12} /> : <Copy size={12} />}
                 {copiedType === "apa" ? "Copied" : "Copy APA"}
               </button>
             </div>
-            <div className="p-3 rounded-lg bg-background border border-border text-xs text-foreground leading-relaxed font-sans select-all w-full min-w-0 break-words [overflow-wrap:anywhere]">
+            <div className="p-3 rounded-md bg-[#0B0E14] border border-border text-xs text-foreground leading-relaxed font-sans select-all w-full min-w-0 break-words [overflow-wrap:anywhere]">
               {getApaString(data)}
             </div>
           </div>
@@ -106,13 +104,13 @@ export default function PublicationCard({ publication, compact = false }: Public
               <button
                 type="button"
                 onClick={() => handleCopy(getBibtexString(data), "bibtex")}
-                className="inline-flex items-center gap-1 text-xs font-mono text-primary hover:underline cursor-pointer shrink-0"
+                className="inline-flex items-center gap-1 text-xs font-mono text-primary hover:underline cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm"
               >
                 {copiedType === "bibtex" ? <Check size={12} /> : <Copy size={12} />}
                 {copiedType === "bibtex" ? "Copied" : "Copy BibTeX"}
               </button>
             </div>
-            <pre className="p-3 rounded-lg bg-background border border-border text-[11px] font-mono text-foreground leading-relaxed overflow-x-auto whitespace-pre-wrap break-words max-w-full w-full min-w-0 select-all">
+            <pre className="p-3 rounded-md bg-[#0B0E14] border border-border text-[11px] font-mono text-foreground leading-relaxed overflow-x-auto whitespace-pre-wrap break-words max-w-full w-full min-w-0 select-all">
               {getBibtexString(data)}
             </pre>
           </div>
@@ -121,189 +119,229 @@ export default function PublicationCard({ publication, compact = false }: Public
     </Dialog>
   );
 
+  // 1. Editorial Research Ledger Entry (Used in Publications.tsx)
   if (compact) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 15 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+      <article
         onMouseEnter={prefetchPublication}
-        className="relative group transition-colors duration-150"
+        className="py-7 sm:py-8 transition-colors duration-150 group"
       >
-        <div className="relative px-5 sm:px-7 py-6 transition-all duration-200 hover:bg-secondary/20">
-          {/* Subtle left indicator hairline */}
-          <div className="absolute left-0 top-6 bottom-6 w-0.5 rounded-full bg-primary/40 group-hover:bg-primary group-hover:w-1 transition-all" />
+        {/* Metadata Strip: Publication Type, Domain, Publisher, Year */}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-2.5 select-none">
+          {data.type && (
+            <span className="text-xs font-mono font-semibold text-primary uppercase tracking-wider">
+              {data.type.trim()}
+            </span>
+          )}
+          {data.domain && (
+            <>
+              <span className="text-xs text-border-active" aria-hidden="true">·</span>
+              <span className="text-xs font-mono text-muted-foreground">
+                {data.domain}
+              </span>
+            </>
+          )}
+          {data.publisher && (
+            <>
+              <span className="text-xs text-border-active" aria-hidden="true">·</span>
+              <span className="text-xs font-mono text-muted-foreground">
+                {data.publisher}
+              </span>
+            </>
+          )}
+          {data.year && (
+            <>
+              <span className="text-xs text-border-active" aria-hidden="true">·</span>
+              <span className="text-xs font-mono text-foreground font-semibold">
+                {data.year}
+              </span>
+            </>
+          )}
+        </div>
 
-          <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-8">
-            <div className="flex-1 min-w-0 pl-2 sm:pl-3">
-              {/* Badges metadata strip */}
-              <div className="flex flex-wrap items-center gap-2 mb-3">
-                <Badge variant="indigo" className="text-[11px]">
-                  {data.type}
-                </Badge>
-                <Badge variant="default" className="text-[11px]">
-                  {data.domain}
-                </Badge>
-                <Badge variant="secondary" className="text-[11px]">
-                  {data.publisher}
-                </Badge>
-                <span className="text-xs font-mono text-muted-foreground ml-auto sm:ml-0 flex items-center gap-1">
-                  <Star size={11} className="text-amber-400" fill="currentColor" />
-                  {data.year}
-                </span>
-              </div>
+        {/* Primary Title */}
+        <Link
+          to={`/publications/${data.slug}`}
+          state={{ publication: data }}
+          className="block group/title mb-2.5"
+        >
+          <h3 className="text-lg sm:text-xl font-bold font-display text-foreground group-hover/title:text-primary transition-colors leading-snug">
+            {data.title}
+          </h3>
+        </Link>
 
-              {/* Title */}
-              <Link to={`/publications/${data.slug}`} state={{ publication: data }}>
-                <h3 className="text-base sm:text-lg font-bold font-display text-foreground group-hover:text-primary mb-2 transition-colors whitespace-normal break-words leading-snug">
-                  {data.title}
-                </h3>
-              </Link>
-
-              {/* Venue */}
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-3 font-medium">
-                <BookOpen size={14} className="text-primary shrink-0" />
-                <span className="truncate">{data.venue}</span>
-              </div>
-
-              {/* Contribution summary without justify rivers */}
-              <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-4 max-w-4xl text-left line-clamp-3">
-                {data.contributionSummary}
-              </p>
-
-              {/* Key Results */}
-              {keyResults.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {keyResults.slice(0, 2).map((result, idx) => (
-                    <Badge key={idx} variant="secondary" className="text-[11px]">
-                      {result}
-                    </Badge>
-                  ))}
-                  {keyResults.length > 2 && (
-                    <Badge variant="default" className="text-[11px]">
-                      +{keyResults.length - 2} more results
-                    </Badge>
-                  )}
-                </div>
+        {/* Authors & Venue: 1 line with ellipsis on mobile, natural inline flow on desktop */}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground mb-3">
+          {data.authors && data.authors.length > 0 && (
+            <span className="text-foreground/80 font-normal truncate block sm:inline max-w-full sm:max-w-none">
+              {data.authors.join(", ")}
+            </span>
+          )}
+          {data.venue && (
+            <div className="flex items-center gap-2 min-w-0">
+              {data.authors && data.authors.length > 0 && (
+                <span className="text-border-active hidden sm:inline" aria-hidden="true">—</span>
               )}
+              <span className="italic text-muted-foreground truncate">
+                {data.venue}
+              </span>
             </div>
+          )}
+        </div>
 
-            {/* Right action / DOI column */}
-            <div className="flex flex-col gap-3 lg:min-w-[240px] lg:items-end pl-2 sm:pl-3 lg:pl-0">
-              {data.doiUrl && (
-                <div className="w-full lg:text-right rounded-lg border border-border/80 bg-secondary/40 px-3 py-2">
-                  <p className="text-xs font-mono text-muted-foreground break-all leading-tight">
-                    <span className="text-[10px] uppercase tracking-wider text-primary mr-1.5">DOI</span>
-                    <span>{data.doiUrl}</span>
-                  </p>
-                </div>
-              )}
+        {/* Contribution Summary */}
+        {data.contributionSummary && data.contributionSummary !== "Summary unavailable" && (
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-4 max-w-4xl text-left line-clamp-3">
+            {data.contributionSummary}
+          </p>
+        )}
 
-              <div className="flex flex-wrap lg:justify-end gap-2 items-center pt-1">
-                <button
-                  type="button"
-                  onClick={() => setIsCiteOpen(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-secondary/50 text-foreground text-xs font-medium hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
-                >
-                  <Quote size={12} className="text-primary" />
-                  <span>Cite</span>
-                </button>
+        {/* Key Results Badges (if present) */}
+        {keyResults.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 mb-4">
+            {keyResults.map((result: string, idx: number) => (
+              <span
+                key={idx}
+                className="inline-flex items-center px-2 py-0.5 rounded-[4px] border border-border bg-[#18202E] text-[11px] font-mono text-muted-foreground"
+              >
+                {result}
+              </span>
+            ))}
+          </div>
+        )}
 
-                {data.paperUrl && (
-                  <a
-                    href={data.paperUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/25 bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-all"
-                  >
-                    <ExternalLink size={12} />
-                    <span>Paper</span>
-                  </a>
-                )}
+        {/* Action & Identifier Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-border/50">
+          {/* DOI Identifier */}
+          {data.doiUrl ? (
+            <a
+              href={data.doiUrl.startsWith("http") ? data.doiUrl : `https://doi.org/${data.doiUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm py-0.5"
+            >
+              <span className="text-[10px] uppercase font-semibold tracking-wider text-primary/80">DOI</span>
+              <span className="truncate max-w-[200px] sm:max-w-xs">{data.doiUrl.replace("https://doi.org/", "")}</span>
+              <ExternalLink size={11} className="shrink-0 text-muted-foreground/60" />
+            </a>
+          ) : (
+            <div />
+          )}
 
-                <Link
-                  to={`/publications/${data.slug}`}
-                  state={{ publication: data }}
-                  onMouseEnter={prefetchPublication}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all group/link"
-                >
-                  <span>Details</span>
-                  <ArrowRight size={12} className="group-hover/link:translate-x-0.5 transition-transform" />
-                </Link>
-              </div>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2.5 ml-auto">
+            <button
+              type="button"
+              onClick={() => setIsCiteOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-secondary text-foreground hover:bg-secondary/80 hover:border-border-active text-xs font-medium transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
+            >
+              <Quote size={12} className="text-primary" />
+              <span>Cite</span>
+            </button>
+
+            {data.paperUrl && (
+              <a
+                href={data.paperUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-semibold transition-colors select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
+              >
+                <ExternalLink size={12} />
+                <span>Paper</span>
+              </a>
+            )}
+
+            <Link
+              to={`/publications/${data.slug}`}
+              state={{ publication: data }}
+              onMouseEnter={prefetchPublication}
+              className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors group/link py-1 select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm"
+            >
+              <span>View Details</span>
+              <ArrowRight size={13} className="group-hover/link:translate-x-0.5 transition-transform" />
+            </Link>
           </div>
         </div>
+
         {renderCiteDialog()}
-      </motion.div>
+      </article>
     );
   }
 
-  /* Grid Card Layout (Used on AllPublicationsPage) */
+  // 2. Grid Card Layout (Used on AllPublicationsPage)
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -4 }}
+    <article
       onMouseEnter={prefetchPublication}
-      transition={{ duration: 0.2 }}
-      className="h-full flex flex-col group"
+      className="h-full flex flex-col rounded-[10px] border border-border bg-[#111620] overflow-hidden transition-all duration-200 hover:border-border-active shadow-xs group"
     >
-      <div className="relative h-full flex flex-col bg-card rounded-xl overflow-hidden border border-border group-hover:border-primary/50 transition-all duration-200 shadow-xs flex-1 justify-between p-5 sm:p-6">
+      <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between">
         <div>
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <Badge variant="indigo" className="text-[11px]">
-              {data.type}
-            </Badge>
-            <Badge variant="default" className="text-[11px]">
-              {data.domain}
-            </Badge>
-            <Badge variant="secondary" className="text-[11px]">
-              {data.publisher}
-            </Badge>
-            <div className="ml-auto flex items-center gap-1 text-amber-400 font-mono text-xs">
-              <Star size={11} fill="currentColor" />
-              <span>{data.year}</span>
-            </div>
+          {/* Metadata tags strip */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3 select-none">
+            {data.type && (
+              <span className="text-xs font-mono font-semibold text-primary uppercase tracking-wider">
+                {data.type.trim()}
+              </span>
+            )}
+            {data.domain && (
+              <>
+                <span className="text-xs text-border-active" aria-hidden="true">·</span>
+                <span className="text-xs font-mono text-muted-foreground">
+                  {data.domain}
+                </span>
+              </>
+            )}
+            {data.year && (
+              <span className="ml-auto text-xs font-mono text-foreground font-semibold">
+                {data.year}
+              </span>
+            )}
           </div>
 
+          {/* Title */}
           <Link to={`/publications/${data.slug}`} state={{ publication: data }}>
-            <h3 className="text-base sm:text-lg font-bold font-display text-foreground group-hover:text-primary mb-2.5 transition-colors line-clamp-2 leading-snug">
+            <h3 className="text-base sm:text-lg font-bold font-display text-foreground group-hover:text-primary mb-2 transition-colors line-clamp-2 leading-snug">
               {data.title}
             </h3>
           </Link>
 
+          {/* Venue */}
           <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mb-3 font-medium">
             <BookOpen size={14} className="text-primary shrink-0" />
             <span className="truncate">{data.venue}</span>
           </div>
 
+          {/* Summary narrative */}
           <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-4 text-left line-clamp-3">
             {data.contributionSummary}
           </p>
 
+          {/* Key Results */}
           {keyResults.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {keyResults.slice(0, 2).map((result, idx) => (
-                <Badge key={idx} variant="secondary" className="text-[11px]">
+                <span
+                  key={idx}
+                  className="inline-flex items-center px-2 py-0.5 rounded-[4px] border border-border bg-[#18202E] text-[11px] font-mono text-muted-foreground"
+                >
                   {result}
-                </Badge>
+                </span>
               ))}
               {keyResults.length > 2 && (
-                <Badge variant="default" className="text-[11px]">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] border border-border bg-[#18202E] text-[11px] font-mono text-muted-foreground">
                   +{keyResults.length - 2} more
-                </Badge>
+                </span>
               )}
             </div>
           )}
         </div>
 
+        {/* Action Bar */}
         <div className="pt-4 border-t border-border/60 flex items-center gap-2">
           <button
             type="button"
             onClick={() => setIsCiteOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-secondary/50 text-foreground text-xs font-medium hover:border-primary/40 hover:text-primary transition-all cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-secondary text-foreground text-xs font-medium hover:bg-secondary/80 hover:border-border-active transition-colors cursor-pointer select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
           >
             <Quote size={12} className="text-primary" />
             <span>Cite</span>
@@ -314,7 +352,7 @@ export default function PublicationCard({ publication, compact = false }: Public
               href={data.paperUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary/25 bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary-hover text-xs font-semibold transition-colors select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px]"
             >
               <ExternalLink size={12} />
               <span>Paper</span>
@@ -325,14 +363,15 @@ export default function PublicationCard({ publication, compact = false }: Public
             to={`/publications/${data.slug}`}
             state={{ publication: data }}
             onMouseEnter={prefetchPublication}
-            className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground text-xs font-semibold rounded-lg hover:bg-primary/90 transition-all ml-auto group/link"
+            className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors ml-auto group/link py-1 select-none focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm"
           >
             <span>Details</span>
-            <ArrowRight size={12} className="group-hover/link:translate-x-0.5 transition-transform" />
+            <ArrowRight size={13} className="group-hover/link:translate-x-0.5 transition-transform" />
           </Link>
         </div>
       </div>
       {renderCiteDialog()}
-    </motion.div>
+    </article>
   );
 }
+

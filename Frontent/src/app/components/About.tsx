@@ -1,10 +1,15 @@
-import { motion } from "motion/react";
-import { BookOpen, FolderGit2, Trophy, Activity, Cpu, ShieldCheck, Terminal, Compass } from "lucide-react";
+import { BookOpen, FolderGit2, Trophy, Activity, Cpu, ShieldCheck, Terminal } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useProfile } from "../hooks/useProfile";
 import { fetchPortfolioStats } from "../../services/statsApi";
 
-export default function About({ profile: propProfile, stats: propStats }: { profile?: any; stats?: { projects: number; publications: number } }) {
+export default function About({
+  profile: propProfile,
+  stats: propStats,
+}: {
+  profile?: any;
+  stats?: { projects: number; publications: number };
+}) {
   const { data: hookProfile } = useProfile();
   const profile = propProfile ?? hookProfile ?? {};
   const { data: hookStats } = useQuery({
@@ -19,21 +24,21 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
   const highlights = [
     {
       icon: BookOpen,
-      label: publicationCount === 1 ? "Peer-Reviewed Paper" : "Peer-Reviewed Papers",
       value: `${publicationCount}`,
-      subtext: "Published & Under Review",
+      label: publicationCount === 1 ? "Peer-Reviewed Paper" : "Peer-Reviewed Papers",
+      isNumeric: true,
     },
     {
       icon: FolderGit2,
-      label: projectCount === 1 ? "End-to-End System" : "End-to-End Systems",
       value: `${projectCount}`,
-      subtext: "Production ML Architectures",
+      label: projectCount === 1 ? "End-to-End System" : "End-to-End Systems",
+      isNumeric: true,
     },
     {
       icon: Trophy,
-      label: "Competitive Programming",
-      value: "Regionalist",
-      subtext: "ICPC Asia Regional Contest",
+      value: "Regional Contestant",
+      label: "ICPC",
+      isNumeric: false,
     },
   ];
 
@@ -43,84 +48,85 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
       desc: "Deep convolutional networks for early cancer diagnosis, histopathological classification, and automated clinical prediction.",
       tag: "PyTorch · Computer Vision · ResNet/DenseNet",
       icon: Activity,
-      accentColor: "text-primary",
-      iconBg: "bg-primary/10 border-primary/20",
+      accent: "from-[#00f2fe]/20 to-[#38bdf8]/10",
+      border: "hover:border-[#00f2fe]/40",
+      iconColor: "text-[#00f2fe]",
     },
     {
       title: "Aquatic Epidemiology",
       desc: "Applied deep learning pipelines for fish disease classification and ecological resilience modeling in aquaculture.",
       tag: "Deep Learning · Bio-Informatics · YOLOv8",
       icon: ShieldCheck,
-      accentColor: "text-emerald-400",
-      iconBg: "bg-emerald-500/10 border-emerald-500/20",
+      accent: "from-[#38bdf8]/20 to-[#818cf8]/10",
+      border: "hover:border-[#38bdf8]/40",
+      iconColor: "text-[#38bdf8]",
     },
     {
       title: "Production ML Systems",
       desc: "Ultra-low-latency FastAPI backends, ONNX runtime acceleration, Docker containerization, and edge inference pipelines.",
-      tag: "FastAPI · ONNX · Docker · PostgreSQL",
+      tag: "FastAPI · Docker · Render · PostgreSQL",
       icon: Cpu,
-      accentColor: "text-indigo-400",
-      iconBg: "bg-indigo-500/10 border-indigo-500/20",
+      accent: "from-[#818cf8]/20 to-[#c084fc]/10",
+      border: "hover:border-[#818cf8]/40",
+      iconColor: "text-[#818cf8]",
     },
     {
       title: "Algorithmic Foundation",
-      desc: "Competitive programming background in advanced graph theory, dynamic programming, and mathematical optimization.",
-      tag: "C++ · Algorithms · ICPC Regional Contest",
+      desc: "ICPC Asia Regional contestant with rigorous competitive programming background in graph theory & mathematical optimization.",
+      tag: "C++ · Data Structures · Algorithms",
       icon: Terminal,
-      accentColor: "text-amber-400",
-      iconBg: "bg-amber-500/10 border-amber-500/20",
+      accent: "from-[#c084fc]/20 to-[#00f2fe]/10",
+      border: "hover:border-[#c084fc]/40",
+      iconColor: "text-[#c084fc]",
     },
   ];
 
   return (
-    <section id="about" className="py-20 lg:py-28 relative">
+    <section id="about" className="py-16 sm:py-20 lg:py-28 border-b border-border-subtle relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-14"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/80 border border-border text-xs font-mono text-primary uppercase tracking-wider mb-3">
-            <Compass size={13} />
-            Background & Research Focus
+        
+        {/* Editorial Section Header: Left-aligned with 01 / ABOUT, identical to 02/Projects, 03/Publications */}
+        <div className="mb-10 sm:mb-12 lg:mb-16 text-left">
+          {/* Section Index Marker */}
+          <div className="flex items-center gap-2 mb-3 sm:mb-4 select-none" aria-hidden="true">
+            <span className="text-xs font-mono tracking-widest text-primary font-semibold">01</span>
+            <span className="text-xs text-border-active">/</span>
+            <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground">About</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-foreground tracking-tight mb-3">
-            Research & Engineering Dossier
+
+          {/* Section Heading */}
+          <h2 className="text-3xl sm:text-4xl lg:text-[2.75rem] font-bold font-display text-foreground tracking-tight leading-[1.15] mb-3 sm:mb-4">
+            About Me
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
+
+          {/* Subtext */}
+          <p className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
             Bridging algorithmic precision and clinical deep learning to deploy reliable artificial intelligence.
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* Left Column: Narrative & Metrics Highlights */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="lg:col-span-6 flex flex-col justify-between h-full space-y-6"
-          >
-            <div className="bg-card border border-border rounded-xl p-6 sm:p-7 shadow-xs">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-primary font-semibold mb-3">
-                Mission Statement
-              </h3>
+        {/* 2-Column Responsive Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+          
+          {/* Left Column: Biography & Compact Stat Badges */}
+          <div className="lg:col-span-6 flex flex-col justify-between text-left">
+            <div>
+              {/* Impact Statement */}
               {profile.impactStatement ? (
-                <p className="text-base sm:text-lg text-foreground font-medium mb-4 leading-relaxed">
+                <p className="text-base sm:text-lg text-foreground/90 font-medium leading-relaxed mb-4 sm:mb-5">
                   {profile.impactStatement}
                 </p>
               ) : (
-                <div className="h-6 w-5/6 bg-secondary/60 rounded animate-pulse mb-4" />
+                <div className="h-6 w-5/6 bg-secondary/50 rounded mb-4 animate-pulse" />
               )}
+
+              {/* Bio Narrative */}
               {profile.bio ? (
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed text-left">
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6 sm:mb-8">
                   {profile.bio}
                 </p>
               ) : (
-                <div className="space-y-2 animate-pulse">
+                <div className="space-y-2 mb-6 sm:mb-8 animate-pulse">
                   <div className="h-4 w-full bg-secondary/40 rounded" />
                   <div className="h-4 w-5/6 bg-secondary/40 rounded" />
                   <div className="h-4 w-4/6 bg-secondary/40 rounded" />
@@ -128,74 +134,70 @@ export default function About({ profile: propProfile, stats: propStats }: { prof
               )}
             </div>
 
-            {/* Metrics Highlights Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              {highlights.map((item, index) => {
+            {/* Compact Highlight Cards: 3 columns on all viewports, low scroll height */}
+            <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-border-subtle">
+              {highlights.map((item) => {
                 const ItemIcon = item.icon;
                 return (
-                  <motion.div
+                  <div
                     key={item.label}
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.08 }}
-                    className="bg-card rounded-xl p-4 sm:p-5 text-center border border-border hover:border-primary/40 transition-all flex flex-col justify-center shadow-xs"
+                    className="p-2 sm:p-2.5 rounded-[8px] bg-[#111620] border border-border hover:border-border-active transition-colors flex flex-col items-center justify-center text-center shadow-xs"
                   >
-                    <ItemIcon className="mx-auto mb-2 text-primary" size={20} />
-                    <p className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-0.5">
+                    <ItemIcon className="size-3.5 sm:size-4 text-primary shrink-0 mb-1" aria-hidden="true" />
+                    <span
+                      className={`${
+                        item.isNumeric
+                          ? "text-base sm:text-xl font-bold sm:font-extrabold"
+                          : "text-xs sm:text-sm font-bold"
+                      } font-display text-foreground tracking-tight leading-tight mb-1 text-center`}
+                    >
                       {item.value}
-                    </p>
-                    <p className="text-xs font-semibold text-foreground/90 font-mono">
+                    </span>
+                    <span className="text-[9px] sm:text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-muted-foreground/80 text-center leading-tight">
                       {item.label}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
-                      {item.subtext}
-                    </p>
-                  </motion.div>
+                    </span>
+                  </div>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
 
-          {/* Right Column: 4 Research & Engineering Pillars */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4"
-          >
-            {researchPillars.map((pillar, idx) => {
+          {/* Right Column: Research & Engineering Pillars in Compact 2x2 Grid */}
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left">
+            {researchPillars.map((pillar) => {
               const PillarIcon = pillar.icon;
               return (
-                <motion.div
+                <div
                   key={pillar.title}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.06 }}
-                  className="bg-card rounded-xl p-5 border border-border hover:border-primary/40 transition-all duration-200 group flex flex-col justify-between shadow-xs"
+                  className={`p-3.5 sm:p-5 rounded-[12px] bg-[#111620] border border-border ${pillar.border} transition-all duration-300 group hover:-translate-y-0.5 relative overflow-hidden flex flex-col justify-between shadow-xs`}
                 >
+                  {/* Decorative circle glow in top-right corner */}
+                  <div
+                    className={`absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br ${pillar.accent} rounded-bl-full pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
+                    aria-hidden="true"
+                  />
+
                   <div>
-                    <div className={`w-9 h-9 rounded-lg border flex items-center justify-center mb-3.5 ${pillar.iconBg}`}>
-                      <PillarIcon className={pillar.accentColor} size={18} />
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#18202E] border border-border flex items-center justify-center mb-2.5 group-hover:border-primary/40 transition-colors shrink-0">
+                      <PillarIcon className={pillar.iconColor} size={16} />
                     </div>
-                    <h3 className="font-display font-semibold text-base text-foreground mb-2 group-hover:text-primary transition-colors">
+                    <h3 className="font-display font-semibold text-sm sm:text-base text-foreground mb-1.5 group-hover:text-primary transition-colors leading-snug">
                       {pillar.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-4">
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">
                       {pillar.desc}
                     </p>
                   </div>
-                  <div className="pt-3 border-t border-border/60">
-                    <span className="text-[11px] font-mono text-muted-foreground group-hover:text-foreground transition-colors block truncate">
+                  <div className="pt-2 border-t border-border/50">
+                    <span className="text-[10px] sm:text-[11px] font-mono text-muted-foreground/80 group-hover:text-foreground transition-colors block truncate">
                       {pillar.tag}
                     </span>
                   </div>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.div>
+          </div>
+
         </div>
       </div>
     </section>

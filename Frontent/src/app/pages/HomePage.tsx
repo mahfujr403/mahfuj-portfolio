@@ -1,7 +1,6 @@
 import Hero from "../components/Hero";
 import About from "../components/About";
 import Skills from "../components/Skills";
-import Achievements from "../components/Achievements";
 import Articles from "../components/Articles";
 import Contact from "../components/Contact";
 import { useLocation, useNavigate } from "react-router";
@@ -59,7 +58,6 @@ export default function HomePage() {
       <Projects />
       <Publications />
       <Skills />
-      <Achievements />
       <Articles />
       <Contact />
     </div>
