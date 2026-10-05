@@ -85,8 +85,8 @@ export default function Contact({ profile: propProfile }: { profile?: any }) {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold gradient-text mb-4">Get In Touch</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] mx-auto mb-6" />
+          <h2 className="text-4xl lg:text-5xl font-bold font-display gradient-text mb-4">Get In Touch</h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#818cf8] mx-auto mb-6" />
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             {profile.contactCTA}
           </p>
@@ -167,7 +167,7 @@ export default function Contact({ profile: propProfile }: { profile?: any }) {
                   <Button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold hover:shadow-[0_0_30px_rgba(0,242,254,0.5)] transition-all"
+                    className="w-full bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] font-semibold hover:shadow-[0_0_25px_rgba(0,242,254,0.4)] transition-all py-3 rounded-xl cursor-pointer"
                   >
                     {submitting ? (
                       <>

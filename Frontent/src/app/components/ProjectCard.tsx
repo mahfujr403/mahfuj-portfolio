@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { Github, ExternalLink, ArrowRight, Sparkles, Folder } from "lucide-react";
 import { Badge } from "./ui/badge";
@@ -12,6 +13,62 @@ interface ProjectCardProps {
 export default function ProjectCard({ project }: ProjectCardProps) {
   const queryClient = useQueryClient();
   const isFeatured = project.tag === "featured";
+  const techList: string[] = project.techStack ?? [];
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(3);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const measure = measureRef.current;
+    if (!container || !measure || techList.length === 0) return;
+
+    const calculateFit = () => {
+      const containerWidth = container.offsetWidth;
+      if (containerWidth <= 0) return;
+
+      const children = Array.from(measure.children) as HTMLElement[];
+      if (children.length === 0) return;
+
+      const gap = 8; // gap-2 = 8px
+      const moreBadgeWidth = 85; // approximate width of "+N more" badge
+      let totalWidth = 0;
+      let fitCount = 0;
+
+      for (let i = 0; i < children.length; i++) {
+        const itemWidth = children[i].offsetWidth;
+        const widthIfAdded = totalWidth + (i > 0 ? gap : 0) + itemWidth;
+
+        // If this is the last element and ALL items fit without a "+ more" badge:
+        if (i === children.length - 1 && widthIfAdded <= containerWidth) {
+          fitCount = children.length;
+          break;
+        }
+
+        // If adding this item still leaves room for the "+ more" badge:
+        if (widthIfAdded + gap + moreBadgeWidth <= containerWidth) {
+          totalWidth = widthIfAdded;
+          fitCount = i + 1;
+        } else {
+          break;
+        }
+      }
+
+      setVisibleCount(Math.max(1, fitCount));
+    };
+
+    calculateFit();
+
+    // Use ResizeObserver for responsive recalculation
+    const observer = new ResizeObserver(() => {
+      calculateFit();
+    });
+    observer.observe(container);
+
+    return () => observer.disconnect();
+  }, [techList]);
 
   const prefetchProject = () => {
     if (project?.slug) {
@@ -98,36 +155,83 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             state={{ project }}
             className="hover:opacity-90 transition-opacity"
           >
-            <h3 className="text-xl font-bold mb-3 gradient-text group-hover:scale-[1.02] transition-transform relative z-10 line-clamp-2">
+            <h3 className="text-xl font-bold font-display mb-2.5 text-white group-hover:text-[#00f2fe] transition-colors relative z-10 line-clamp-2">
               {project.title}
             </h3>
           </Link>
 
           {/* Description */}
-          <p className="text-gray-400 mb-4 flex-1 leading-relaxed text-sm line-clamp-3">
+          <p className="text-gray-300/90 mb-4 flex-1 leading-relaxed text-sm line-clamp-3 text-justify [text-justify:inter-word]">
             {project.summary}
           </p>
 
           {/* Tech Stack */}
           <div className="mb-5">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2.5">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-              <span className="text-xs text-gray-500 uppercase tracking-wider">Tech Stack</span>
+              <span className="text-[11px] font-mono text-gray-400 uppercase tracking-wider">Tech Stack</span>
               <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             </div>
-            <div className="flex gap-2 overflow-hidden">
-              {(project.techStack ?? []).slice(0, 3).map((tech: string) => (
+
+            {/* Hidden measuring container to get exact pixel widths of all badges */}
+            <div
+              ref={measureRef}
+              aria-hidden="true"
+              className="fixed -left-[9999px] top-0 pointer-events-none opacity-0 flex gap-2"
+            >
+              {techList.map((tech: string) => (
+                <div
+                  key={tech}
+                  className="px-2.5 py-0.5 text-xs font-mono border whitespace-nowrap"
+                >
+                  {tech}
+                </div>
+              ))}
+            </div>
+
+            {/* Dynamic Tech Stack Container */}
+            <div
+              ref={containerRef}
+              className={`flex items-center gap-2 transition-all duration-300 ${
+                isExpanded ? "flex-wrap" : "overflow-hidden"
+              }`}
+            >
+              {(isExpanded ? techList : techList.slice(0, visibleCount)).map((tech: string) => (
                 <Badge
                   key={tech}
-                  className="bg-[#8b5cf6]/10 text-[#a78bfa] border-[#8b5cf6]/20 hover:bg-[#8b5cf6]/20 text-xs transition-all shrink-0"
+                  className="bg-[#00f2fe]/10 text-[#00f2fe] border-[#00f2fe]/25 hover:bg-[#00f2fe]/20 text-xs font-mono transition-all shrink-0 px-2.5 py-0.5"
                 >
                   {tech}
                 </Badge>
               ))}
-              {(project.techStack ?? []).length > 3 && (
-                <Badge className="bg-white/5 text-gray-400 border-white/10 text-xs shrink-0">
-                  +{(project.techStack ?? []).length - 3} more
-                </Badge>
+
+              {!isExpanded && techList.length > visibleCount && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsExpanded(true);
+                  }}
+                  title={techList.slice(visibleCount).join(", ")}
+                  className="bg-white/5 hover:bg-white/10 text-gray-300 border border-white/15 hover:border-[#00f2fe]/40 text-xs font-mono rounded-md px-2 py-0.5 shrink-0 transition-colors cursor-pointer"
+                >
+                  +{techList.length - visibleCount} more
+                </button>
+              )}
+
+              {isExpanded && techList.length > visibleCount && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setIsExpanded(false);
+                  }}
+                  className="bg-white/5 hover:bg-white/10 text-[#00f2fe] border border-[#00f2fe]/30 text-xs font-mono rounded-md px-2 py-0.5 shrink-0 transition-colors cursor-pointer"
+                >
+                  - less
+                </button>
               )}
             </div>
           </div>
@@ -141,7 +245,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold rounded-lg transition-all text-sm shadow-lg shadow-[#00f2fe]/20 shrink-0"
+                className="inline-flex items-center gap-2 px-3.5 py-2 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] font-semibold rounded-lg transition-all text-xs shadow-md shadow-[#00f2fe]/20 shrink-0"
               >
                 <Github size={16} />
                 Code

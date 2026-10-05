@@ -3,25 +3,25 @@
 :root {
   --font-size: 16px;
 
-  /* AI Dark Theme - Deep Space */
-  --background: #050814;
-  --foreground: #e5e7eb;
+  /* Scientific Deep Slate Theme */
+  --background: #060913;
+  --foreground: #f8fafc;
 
-  /* Cards - Glassmorphism */
-  --card: rgba(15, 23, 42, 0.6);
-  --card-foreground: #e5e7eb;
+  /* Cards - Refined Glassmorphism */
+  --card: rgba(12, 18, 34, 0.7);
+  --card-foreground: #f8fafc;
 
   /* Popover */
-  --popover: rgba(15, 23, 42, 0.95);
-  --popover-foreground: #e5e7eb;
+  --popover: rgba(12, 18, 34, 0.95);
+  --popover-foreground: #f8fafc;
 
-  /* Primary - Cyan Neon */
+  /* Primary - Precision Teal */
   --primary: #00f2fe;
-  --primary-foreground: #050814;
+  --primary-foreground: #060913;
 
-  /* Secondary - Purple Neon */
-  --secondary: rgba(139, 92, 246, 0.2);
-  --secondary-foreground: #a78bfa;
+  /* Secondary - Deep Logic Indigo */
+  --secondary: rgba(99, 102, 241, 0.2);
+  --secondary-foreground: #a5b4fc;
 
   /* Muted */
   --muted: rgba(51, 65, 85, 0.5);
@@ -211,14 +211,14 @@
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #00f2fe 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #00f2fe 0%, #38bdf8 45%, #818cf8 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .gradient-text-alt {
-    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

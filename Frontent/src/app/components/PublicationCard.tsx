@@ -1,19 +1,63 @@
+import { useState } from "react";
 import { Link } from "react-router";
-import { ExternalLink, ArrowRight, BookOpen, Star, FileText } from "lucide-react";
+import { ExternalLink, ArrowRight, BookOpen, Star, FileText, Quote, Copy, Check, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { normalizePublication, getPublicationBySlug } from "../../services/publicationsApi";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "./ui/badge";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "./ui/dialog";
 
 interface PublicationCardProps {
   publication: any;
   compact?: boolean;
 }
 
+function getBibtexString(data: any): string {
+  const authorList = Array.isArray(data.authors) && data.authors.length > 0
+    ? data.authors.join(" and ")
+    : "Rahman, Md. Mahfujur and others";
+  const citeKey = `rahman${data.year || "2024"}${data.slug ? data.slug.split("-")[0] : "research"}`;
+  
+  return `@article{${citeKey},
+  title = {${data.title || "Research Publication"}},
+  author = {${authorList}},
+  journal = {${data.venue || data.publisher || "Peer-Reviewed Publication"}},
+  year = {${data.year || "2024"}}${data.doiUrl ? `,\n  doi = {${data.doiUrl.replace("https://doi.org/", "")}}` : ""}${data.paperUrl ? `,\n  url = {${data.paperUrl}}` : ""}
+}`;
+}
+
+function getApaString(data: any): string {
+  const authorList = Array.isArray(data.authors) && data.authors.length > 0
+    ? data.authors.join(", ")
+    : "Rahman, M. M., et al.";
+  return `${authorList} (${data.year || "2024"}). ${data.title}. ${data.venue || data.publisher || "Peer-Reviewed Publication"}.${data.doiUrl ? ` ${data.doiUrl}` : ""}`;
+}
+
 export default function PublicationCard({ publication, compact = false }: PublicationCardProps) {
   const queryClient = useQueryClient();
   const data = normalizePublication(publication);
   const keyResults = Array.isArray(data.keyResults) ? data.keyResults : [];
+
+  const [isCiteOpen, setIsCiteOpen] = useState(false);
+  const [copiedType, setCopiedType] = useState<"bibtex" | "apa" | null>(null);
+
+  const handleCopy = async (text: string, type: "bibtex" | "apa") => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedType(type);
+      toast.success(type === "bibtex" ? "BibTeX citation copied to clipboard!" : "APA citation copied to clipboard!");
+      setTimeout(() => setCopiedType(null), 2000);
+    } catch {
+      toast.error("Failed to copy citation");
+    }
+  };
 
   const prefetchPublication = () => {
     if (data?.slug) {
@@ -24,6 +68,58 @@ export default function PublicationCard({ publication, compact = false }: Public
       });
     }
   };
+
+  const renderCiteDialog = () => (
+    <Dialog open={isCiteOpen} onOpenChange={setIsCiteOpen}>
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-xl max-h-[85vh] overflow-y-auto overflow-x-hidden glass border border-white/15 bg-[#0c1222]/98 text-slate-100 backdrop-blur-2xl p-5 sm:p-6 rounded-2xl shadow-2xl">
+        <DialogHeader className="w-full min-w-0 text-left">
+          <DialogTitle className="flex items-center gap-2 font-display text-lg text-white break-words">
+            <Quote size={18} className="text-[#00f2fe] shrink-0" />
+            <span>Cite this Publication</span>
+          </DialogTitle>
+          <DialogDescription className="text-gray-400 text-xs break-words mt-1">
+            Export academic citation in standard BibTeX or APA formats
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 pt-2 w-full min-w-0">
+          <div className="w-full min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+              <span className="text-xs font-mono text-gray-300 uppercase tracking-wider">APA Format</span>
+              <button
+                type="button"
+                onClick={() => handleCopy(getApaString(data), "apa")}
+                className="inline-flex items-center gap-1 text-xs text-[#00f2fe] hover:underline cursor-pointer shrink-0"
+              >
+                {copiedType === "apa" ? <Check size={12} /> : <Copy size={12} />}
+                {copiedType === "apa" ? "Copied!" : "Copy APA"}
+              </button>
+            </div>
+            <div className="p-3 rounded-lg bg-black/40 border border-white/10 text-xs text-gray-300 leading-relaxed font-sans select-all w-full min-w-0 break-words [overflow-wrap:anywhere]">
+              {getApaString(data)}
+            </div>
+          </div>
+
+          <div className="w-full min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+              <span className="text-xs font-mono text-gray-300 uppercase tracking-wider">BibTeX Format</span>
+              <button
+                type="button"
+                onClick={() => handleCopy(getBibtexString(data), "bibtex")}
+                className="inline-flex items-center gap-1 text-xs text-[#00f2fe] hover:underline cursor-pointer shrink-0"
+              >
+                {copiedType === "bibtex" ? <Check size={12} /> : <Copy size={12} />}
+                {copiedType === "bibtex" ? "Copied!" : "Copy BibTeX"}
+              </button>
+            </div>
+            <pre className="p-3 rounded-lg bg-black/50 border border-white/10 text-[11px] font-mono text-gray-300 leading-relaxed overflow-x-auto whitespace-pre-wrap break-words sm:break-normal max-w-full w-full min-w-0 select-all">
+              {getBibtexString(data)}
+            </pre>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   if (compact) {
     return (
@@ -60,17 +156,17 @@ export default function PublicationCard({ publication, compact = false }: Public
               </div>
 
               <Link to={`/publications/${data.slug}`} state={{ publication: data }}>
-                <h3 className="text-xl font-bold gradient-text mb-3 group-hover:scale-[1.01] transition-transform whitespace-normal break-words leading-snug hover:opacity-90">
+                <h3 className="text-xl font-bold font-display text-white group-hover:text-[#00f2fe] mb-3 group-hover:scale-[1.005] transition-all whitespace-normal break-words leading-snug hover:opacity-95">
                   {data.title}
                 </h3>
               </Link>
 
               <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400 mb-3">
-                <BookOpen size={14} className="text-[#8b5cf6]" />
+                <BookOpen size={14} className="text-[#38bdf8]" />
                 <span className="font-medium text-gray-300">{data.venue}</span>
               </div>
 
-              <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-4xl">
+              <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-4xl text-justify [text-justify:inter-word]">
                 {data.contributionSummary}
               </p>
 
@@ -100,15 +196,24 @@ export default function PublicationCard({ publication, compact = false }: Public
                 </div>
               )}
 
-              <div className="flex flex-wrap lg:justify-end gap-2">
+              <div className="flex flex-wrap lg:justify-end gap-2 items-center">
+                <button
+                  type="button"
+                  onClick={() => setIsCiteOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-white/15 bg-white/[0.04] text-gray-300 text-xs font-medium hover:border-[#00f2fe]/40 hover:text-[#00f2fe] transition-all cursor-pointer"
+                >
+                  <Quote size={13} className="text-[#00f2fe]" />
+                  Cite / BibTeX
+                </button>
+
                 {data.paperUrl && (
                   <a
                     href={data.paperUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-[#00f2fe]/25 bg-[#00f2fe]/10 text-[#00f2fe] text-sm font-medium hover:bg-[#00f2fe]/15 hover:border-[#00f2fe]/40 transition-all"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#00f2fe]/25 bg-[#00f2fe]/10 text-[#00f2fe] text-xs font-medium hover:bg-[#00f2fe]/15 hover:border-[#00f2fe]/40 transition-all"
                   >
-                    <ExternalLink size={14} />
+                    <ExternalLink size={13} />
                     Read Paper
                   </a>
                 )}
@@ -117,15 +222,16 @@ export default function PublicationCard({ publication, compact = false }: Public
                   to={`/publications/${data.slug}`}
                   state={{ publication: data }}
                   onMouseEnter={prefetchPublication}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/15 bg-white/[0.04] text-gray-200 text-sm font-medium hover:border-[#8b5cf6]/50 hover:text-white transition-all"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/15 bg-white/[0.04] text-gray-200 text-xs font-medium hover:border-[#8b5cf6]/50 hover:text-white transition-all group/link"
                 >
                   Details
-                  <ArrowRight size={14} className="transition-transform group-hover/link:translate-x-1" />
+                  <ArrowRight size={13} className="transition-transform group-hover/link:translate-x-1" />
                 </Link>
               </div>
             </div>
           </div>
         </div>
+        {renderCiteDialog()}
       </motion.div>
     );
   }
@@ -163,7 +269,7 @@ export default function PublicationCard({ publication, compact = false }: Public
           </div>
 
           <Link to={`/publications/${data.slug}`} state={{ publication: data }}>
-            <h3 className="text-xl font-bold gradient-text mb-3 group-hover:scale-[1.02] transition-transform relative z-10 whitespace-normal break-words leading-snug hover:opacity-90">
+            <h3 className="text-xl font-bold font-display text-white group-hover:text-[#00f2fe] mb-3 group-hover:scale-[1.01] transition-all relative z-10 whitespace-normal break-words leading-snug hover:opacity-95">
               {data.title}
             </h3>
           </Link>
@@ -183,7 +289,7 @@ export default function PublicationCard({ publication, compact = false }: Public
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Summary</span>
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
               </div>
-              <p className="text-gray-400 leading-relaxed text-sm">
+              <p className="text-gray-400 leading-relaxed text-sm text-justify [text-justify:inter-word]">
                 {data.contributionSummary}
               </p>
             </div>
@@ -221,7 +327,16 @@ export default function PublicationCard({ publication, compact = false }: Public
             )}
           </div>
 
-          <div className="flex gap-2 pt-4 border-t border-white/5">
+          <div className="flex flex-wrap gap-2 pt-4 border-t border-white/5 items-center">
+            <button
+              type="button"
+              onClick={() => setIsCiteOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 glass border border-white/15 text-gray-300 rounded-lg hover:border-[#00f2fe]/40 hover:text-[#00f2fe] transition-all text-xs font-medium cursor-pointer"
+            >
+              <Quote size={13} className="text-[#00f2fe]" />
+              Cite / BibTeX
+            </button>
+
             {data.paperUrl && (
               <motion.a
                 href={data.paperUrl}
@@ -248,6 +363,7 @@ export default function PublicationCard({ publication, compact = false }: Public
           </div>
         </div>
       </div>
+      {renderCiteDialog()}
     </motion.div>
   );
 }

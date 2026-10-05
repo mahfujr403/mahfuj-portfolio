@@ -52,10 +52,9 @@ export default function Footer() {
               <Sparkles size={20} className="text-[#00f2fe]" />
               {profile.name || "Md. Mahfujur Rahman"}
             </h3>
-            <p className="text-gray-400 leading-relaxed mb-1 text-sm">
+            <p className="text-gray-400 leading-relaxed text-sm">
               {profile.tagline || "Machine Learning Engineer & Researcher"}
             </p>
-            <p className="text-xs text-gray-500 italic">Powered by AI & Innovation</p>
           </motion.div>
 
           {/* Middle Section - Others Links */}

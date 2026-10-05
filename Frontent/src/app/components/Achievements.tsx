@@ -28,8 +28,8 @@ export default function Achievements({ achievements: propAchievements }: { achie
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl font-bold gradient-text mb-4">Achievements & Awards</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] mx-auto mb-6" />
+            <h2 className="text-4xl lg:text-5xl font-bold font-display gradient-text mb-4">Achievements & Awards</h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#818cf8] mx-auto mb-6" />
             <p className="text-gray-400 max-w-2xl mx-auto text-lg">
               Recognition for technical excellence, research contributions, and competitive programming
             </p>

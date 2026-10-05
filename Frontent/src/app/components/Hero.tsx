@@ -82,11 +82,11 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
             <div className="relative">
               {/* Glow background - circular */}
               <div
-                className="absolute inset-0 bg-gradient-to-r from-[#00f2fe] via-[#8b5cf6] to-[#00f2fe] rounded-full blur-2xl opacity-25"
+                className="absolute inset-0 bg-gradient-to-r from-[#00f2fe]/30 via-[#38bdf8]/20 to-[#818cf8]/30 rounded-full blur-2xl opacity-40"
               />
               {/* Image container - circular */}
               <div
-                className="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden glass border-2 border-white/30 glow-cyan transition-transform duration-300 hover:scale-105"
+                className="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden glass border-2 border-white/25 glow-cyan transition-transform duration-300 hover:scale-105 shadow-2xl shadow-[#00f2fe]/10"
               >
                 <img
                   src={profile.profileImage || "/images/profile-default.jpg"}
@@ -104,18 +104,18 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
 
           {/* Right column: Text Content (2/3) */}
           <div className="lg:col-span-2 text-center lg:text-left max-w-3xl order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border border-[#00f2fe]/30 mb-6">
-              <Sparkles className="text-[#00f2fe]" size={16} />
-              <span className="text-sm text-gray-300">Assalamu Alaikum</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass border border-white/10 mb-6">
+              <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+              <span className="text-xs font-mono text-gray-300 tracking-wide">Available for ML Engineer & AI Research Roles</span>
             </div>
 
             {/* Name from database - renders instantly for 0ms LCP */}
-            <h2 className="text-5xl lg:text-7xl font-bold mb-4 gradient-text leading-tight">
+            <h2 className="text-5xl lg:text-7xl font-bold font-display mb-4 gradient-text leading-tight tracking-tight">
               {profile.name || "Md. Mahfujur Rahman"}
             </h2>
 
             {/* Tagline with infinite typewriter animation */}
-            <div className="text-2xl lg:text-3xl font-semibold text-[#00f2fe] mb-6 min-h-[2.5rem]">
+            <div className="text-2xl lg:text-3xl font-semibold font-display text-[#00f2fe] mb-6 min-h-[2.5rem]">
               <Typewriter
                 text={profile.tagline || "AI Engineer & Researcher"}
                 speed={80}
@@ -127,50 +127,60 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
             </div>
 
             {/* Headline */}
-            <h1 className="mb-6 text-2xl lg:text-3xl font-semibold leading-tight text-gray-300">
+            <h1 className="mb-6 text-xl lg:text-2xl font-medium leading-relaxed text-gray-300">
               {profile.headline || "Transforming Complex Data into Intelligent Solutions"}
             </h1>
 
-            <p className="text-lg lg:text-xl text-gray-400 mb-8 leading-relaxed">
+            <p className="text-base lg:text-lg text-gray-400 mb-8 leading-relaxed">
               {profile.impactStatement}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <motion.a
                 href="#projects"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold rounded-xl inline-flex items-center justify-center lg:justify-start gap-2 transition-all duration-300"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-7 py-3.5 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] font-semibold rounded-xl inline-flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(0,242,254,0.4)] transition-all duration-300 text-sm"
               >
                 View Projects
-                <ArrowRight size={18} />
+                <ArrowRight size={16} />
               </motion.a>
 
               <motion.button
                 onClick={async (e) => {
                   e.preventDefault();
-                  if (!profile?.resumeUrl) return toast.error("Resume not available");
+                  const dbResume = profile?.resumeUrl?.trim();
+                  if (dbResume) {
+                    try {
+                      toast("Downloading resume...");
+                      await downloadAndOpen(dbResume);
+                      toast.success("Resume download started");
+                      return;
+                    } catch (err) {
+                      console.warn("Database resume download failed, falling back to /resume.pdf", err);
+                    }
+                  }
                   try {
-                    toast("Downloading...");
-                    await downloadAndOpen(profile.resumeUrl);
-                    toast.success("Download started");
+                    toast("Downloading resume...");
+                    await downloadAndOpen("/resume.pdf");
+                    toast.success("Resume download started");
                   } catch (err) {
-                    toast.error("Download failed");
+                    toast.error("Download failed. Please contact via email.");
                   }
                 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 glass border border-[#00f2fe]/50 text-gray-200 font-semibold rounded-xl hover:border-[#00f2fe] transition-all duration-300 inline-flex items-center justify-center gap-2 glow-hover-cyan"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-7 py-3.5 glass border border-white/15 text-gray-200 font-semibold rounded-xl hover:border-[#00f2fe]/60 transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm cursor-pointer"
               >
-                <Download size={18} />
+                <Download size={16} />
                 Download Resume
               </motion.button>
 
               <motion.a
                 href="#contact"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 glass border border-white/10 text-gray-300 font-semibold rounded-xl hover:border-white/30 transition-all duration-300"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-7 py-3.5 glass border border-white/10 text-gray-300 font-semibold rounded-xl hover:border-white/30 transition-all duration-300 text-sm"
               >
                 Contact Me
               </motion.a>

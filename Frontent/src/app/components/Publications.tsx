@@ -25,10 +25,10 @@ export default function Publications({ publications: propPublications }: { publi
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-5xl font-bold gradient-text mb-4">Featured Publications</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] mx-auto mb-6" />
+          <h2 className="text-4xl lg:text-5xl font-bold font-display gradient-text mb-4">Featured Publications</h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-[#00f2fe] to-[#818cf8] mx-auto mb-6" />
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-            Research contributions in deep learning, NLP, and federated learning published in top-tier venues
+            Research contributions in deep learning, computer vision, and healthcare published in peer-reviewed venues
           </p>
         </motion.div>
 
@@ -66,10 +66,10 @@ export default function Publications({ publications: propPublications }: { publi
                 staleTime: 5 * 60 * 1000,
               });
             }}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00f2fe] to-[#8b5cf6] text-black font-semibold rounded-xl hover:shadow-[0_0_40px_rgba(0,242,254,0.5)] transition-all duration-300"
+            className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-[#00f2fe] via-[#38bdf8] to-[#818cf8] text-[#060913] text-sm font-semibold rounded-xl hover:shadow-[0_0_25px_rgba(0,242,254,0.4)] transition-all duration-300"
           >
             View All Publications
-            <ArrowRight size={18} />
+            <ArrowRight size={16} />
           </Link>
         </motion.div>
       </div>

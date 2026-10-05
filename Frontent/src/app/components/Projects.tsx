@@ -29,7 +29,13 @@ export default function Projects({ projects: propProjects }: { projects?: any[] 
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div
+          className={
+            !showSkeleton && projectsList.length === 2
+              ? "grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+              : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          }
+        >
           {showSkeleton
             ? [1, 2, 3, 4, 5, 6].map((i) => (
                 <div

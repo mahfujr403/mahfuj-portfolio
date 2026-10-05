@@ -226,7 +226,7 @@ export default function PublicationDetailPage() {
                   <CardTitle className="text-gray-100">TL;DR</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-300 leading-relaxed">{publication.tldr}</p>
+                  <p className="text-gray-300 leading-relaxed text-justify [text-justify:inter-word]">{publication.tldr}</p>
                 </CardContent>
               </Card>
 
@@ -238,7 +238,7 @@ export default function PublicationDetailPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-300 leading-relaxed">{publication.problem}</p>
+                  <p className="text-gray-300 leading-relaxed text-justify [text-justify:inter-word]">{publication.problem}</p>
                 </CardContent>
               </Card>
 

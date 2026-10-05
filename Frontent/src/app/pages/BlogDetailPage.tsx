@@ -152,9 +152,9 @@ export default function BlogDetailPage() {
           </div>
 
           <div className="prose prose-invert max-w-none">
-            <p className="text-xl text-gray-300 mb-6 leading-relaxed">{blog.summary}</p>
+            <p className="text-xl text-gray-300 mb-6 leading-relaxed text-justify [text-justify:inter-word]">{blog.summary}</p>
             <div
-  className="prose prose-invert max-w-none prose-img:rounded-xl prose-img:border prose-img:border-white/10 prose-a:text-[#00f2fe] prose-pre:bg-black/40 prose-code:text-[#00f2fe]"
+  className="prose prose-invert max-w-none prose-p:text-justify prose-p:[text-justify:inter-word] prose-img:rounded-xl prose-img:border prose-img:border-white/10 prose-a:text-[#00f2fe] prose-pre:bg-black/40 prose-code:text-[#00f2fe]"
   dangerouslySetInnerHTML={{
     __html: DOMPurify.sanitize(blog.content || ""),
   }}

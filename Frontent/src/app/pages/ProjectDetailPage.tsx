@@ -1,10 +1,11 @@
 import { useParams, Link, useLocation } from "react-router";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useProjectDetail } from "../hooks/useProjects";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Github, ExternalLink, ArrowLeft, Database, Cpu, Rocket, Zap, AlertCircle, Lightbulb, Code } from "lucide-react";
+import { Github, ExternalLink, ArrowLeft, Database, Cpu, Rocket, Zap, AlertCircle, Lightbulb, Code, Laptop, Server, Activity, Copy, Check, Layers, ArrowRight } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { toast } from "sonner";
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
@@ -115,7 +116,7 @@ export default function ProjectDetailPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-300 leading-relaxed">{project.problemStatement}</p>
+                <p className="text-gray-300 leading-relaxed text-justify [text-justify:inter-word]">{project.problemStatement}</p>
               </CardContent>
             </Card>
 
@@ -143,22 +144,144 @@ export default function ProjectDetailPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass border-white/10">
+            <Card className="glass border-white/10 overflow-hidden">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-100">
-                  <Cpu className="text-[#8b5cf6]" />
-                  Model & Architecture
-                </CardTitle>
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2 text-gray-100 font-display">
+                    <Cpu className="text-[#8b5cf6]" />
+                    Model & System Architecture
+                  </CardTitle>
+                  <div className="flex flex-wrap gap-2">
+                    {project.model?.architecture && (
+                      <Badge className="bg-[#8b5cf6]/10 text-[#a78bfa] border-[#8b5cf6]/25 font-mono text-xs">
+                        {project.model.architecture}
+                      </Badge>
+                    )}
+                    {project.model?.framework && (
+                      <Badge className="bg-[#00f2fe]/10 text-[#00f2fe] border-[#00f2fe]/25 font-mono text-xs">
+                        {project.model.framework}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                {project.model?.details && (
+                  <p className="text-gray-300 leading-relaxed text-sm text-justify [text-justify:inter-word]">
+                    {project.model.details}
+                  </p>
+                )}
+
+                {/* Interactive End-to-End Architecture Flow Diagram */}
                 <div>
-                  <p className="font-semibold text-gray-200">Architecture: <span className="font-normal text-gray-400">{project.model?.architecture ?? ""}</span></p>
-                  <p className="font-semibold text-gray-200">Framework: <span className="font-normal text-gray-400">{project.model?.framework ?? ""}</span></p>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Layers size={16} className="text-[#00f2fe]" />
+                    <h3 className="text-xs font-mono text-gray-300 uppercase tracking-wider">
+                      Interactive Pipeline Architecture Flow
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {[
+                      {
+                        step: "01",
+                        title: "Client & Ingestion",
+                        tech: "React 19 · TypeScript",
+                        desc: "Ingests input data, applies client-side validation, and streams chunks to endpoints.",
+                        icon: Laptop,
+                        accent: "from-[#00f2fe]/15 to-transparent",
+                        borderColor: "border-[#00f2fe]/30",
+                        iconColor: "text-[#00f2fe]",
+                      },
+                      {
+                        step: "02",
+                        title: "API Gateway",
+                        tech: "FastAPI · Docker",
+                        desc: "Handles asynchronous request routing, rate limiting, and prepares tensors.",
+                        icon: Server,
+                        accent: "from-[#38bdf8]/15 to-transparent",
+                        borderColor: "border-[#38bdf8]/30",
+                        iconColor: "text-[#38bdf8]",
+                      },
+                      {
+                        step: "03",
+                        title: "Inference Engine",
+                        tech: project.model?.framework || "PyTorch · ONNX",
+                        desc: `Executes inference through ${project.model?.architecture || "neural networks"} with tensor acceleration.`,
+                        icon: Cpu,
+                        accent: "from-[#818cf8]/15 to-transparent",
+                        borderColor: "border-[#818cf8]/30",
+                        iconColor: "text-[#818cf8]",
+                      },
+                      {
+                        step: "04",
+                        title: "Diagnostic Output",
+                        tech: "JSON Stream · Heatmaps",
+                        desc: "Emits class confidence probabilities, saliency attention maps, and clinical triage.",
+                        icon: Activity,
+                        accent: "from-[#c084fc]/15 to-transparent",
+                        borderColor: "border-[#c084fc]/30",
+                        iconColor: "text-[#c084fc]",
+                      },
+                    ].map((stage, idx) => {
+                      const StageIcon = stage.icon;
+                      return (
+                        <div
+                          key={stage.step}
+                          className={`relative glass rounded-xl p-4 border ${stage.borderColor} bg-gradient-to-br ${stage.accent} flex flex-col justify-between transition-all duration-300 hover:scale-[1.02]`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[11px] font-mono text-gray-500 font-bold">{stage.step}</span>
+                              <StageIcon size={16} className={stage.iconColor} />
+                            </div>
+                            <h4 className="text-sm font-bold text-white font-display mb-1">{stage.title}</h4>
+                            <p className="text-[11px] font-mono text-[#00f2fe] mb-2">{stage.tech}</p>
+                            <p className="text-xs text-gray-400 leading-relaxed">{stage.desc}</p>
+                          </div>
+                          {idx < 3 && (
+                            <div className="hidden lg:block absolute -right-2.5 top-1/2 -translate-y-1/2 z-20">
+                              <span className="w-5 h-5 rounded-full bg-[#060913] border border-white/20 flex items-center justify-center text-[10px] text-gray-300">
+                                →
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <p className="text-gray-400">{project.model?.details ?? ""}</p>
-                <div className="bg-black/30 border border-white/5 p-4 rounded-lg">
-                  <p className="font-mono text-sm text-gray-400">{project.systemArchitecture}</p>
-                </div>
+
+                {/* Raw Architecture Terminal Specification */}
+                {project.systemArchitecture && (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                        Architecture Specification
+                      </span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(project.systemArchitecture);
+                            toast.success("Architecture specification copied!");
+                          } catch {
+                            toast.error("Failed to copy");
+                          }
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs text-[#00f2fe] hover:underline cursor-pointer"
+                      >
+                        <Copy size={12} />
+                        Copy Spec
+                      </button>
+                    </div>
+                    <div className="bg-black/50 border border-white/10 p-4 rounded-xl overflow-x-auto">
+                      <p className="font-mono text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">
+                        {project.systemArchitecture}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
