@@ -28,7 +28,9 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const target = (location.state as any)?.scrollTo as string | undefined;
+    const stateTarget = (location.state as any)?.scrollTo as string | undefined;
+    const hashTarget = location.hash ? location.hash.replace(/^#/, "") : undefined;
+    const target = stateTarget || hashTarget;
     if (!target) return;
 
     // Attempt to scroll to element; retry briefly if not found yet
@@ -36,8 +38,10 @@ export default function HomePage() {
       const el = document.getElementById(target);
       if (el) {
         el.scrollIntoView({ behavior: "smooth" });
-        // clear navigation state so reloading doesn't re-scroll
-        navigate(location.pathname, { replace: true, state: {} });
+        if (stateTarget) {
+          // clear navigation state so reloading doesn't re-scroll
+          navigate(location.pathname + (location.hash || ""), { replace: true, state: {} });
+        }
         return true;
       }
       return false;
@@ -46,8 +50,8 @@ export default function HomePage() {
     if (!attemptScroll()) {
       const id = window.setTimeout(() => {
         attemptScroll();
-        window.clearTimeout(id);
-      }, 120);
+      }, 150);
+      return () => window.clearTimeout(id);
     }
   }, [location, navigate]);
 

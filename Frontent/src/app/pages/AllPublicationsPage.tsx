@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router";
 import PublicationCard from "../components/PublicationCard";
 import { Input } from "../components/ui/input";
@@ -11,6 +11,16 @@ export default function AllPublicationsPage() {
   const [filterDomain, setFilterDomain] = useState("all");
   const [sortBy, setSortBy] = useState("year-desc");
   const { data: publications, loading } = usePublications(200, 0);
+
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const domains = useMemo(() => {
     const uniqueDomains = Array.from(new Set(publications.map((p) => p.domain)));

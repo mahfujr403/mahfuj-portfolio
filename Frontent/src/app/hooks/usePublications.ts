@@ -12,10 +12,10 @@ export function usePublications(limit = 10, offset = 0) {
     queryKey: ["publications", limit, offset],
     queryFn: () => listPublications(limit, offset),
     initialData: () => {
-      // If we don't have this exact query cached yet, check if any publications query has items
+      // Only reuse cached list if it satisfies the requested limit
       const queries = queryClient.getQueriesData<any[]>({ queryKey: ["publications"] });
       for (const [, list] of queries) {
-        if (Array.isArray(list) && list.length > 0) {
+        if (Array.isArray(list) && list.length >= limit) {
           return list;
         }
       }
