@@ -12,21 +12,21 @@ import { fetchProfile } from "../../services/profileApi";
  */
 export const DEFAULT_PROFILE = {
   name: "Md. Mahfujur Rahman",
-  tagline: "ML Engineer & Researcher",
-  headline: "Transforming Complex Data into Intelligent Solutions",
-  impactStatement: "From model training to deployment — building AI systems that deliver impact",
-  bio: "I specialize in building end-to-end machine learning systems — from research and model development to scalable deployment and production integration. Passionate about transforming AI research into real-world applications using deep learning, computer vision, and intelligent automation.",
-  profileImage: "/images/profile-default.jpg",
-  resumeUrl: "",
+  tagline: "AI/ML Engineer & Researcher",
+  headline: "Building Production Ready Machine Learning Systems from Data to Deployment",
+  impactStatement: "From model training to deployment, building AI systems that deliver real world impact.",
+  bio: "I build end-to-end machine learning systems, from research and model development to scalable deployment and production integration. My work focuses on translating AI research into real-world applications across deep learning, computer vision, and intelligent automation.",
+  profileImage: "https://res.cloudinary.com/dmpjh1aqa/image/upload/v1763322584/team-members/jpxxzw55sdnkfbyjmong.jpg",
+  resumeUrl: "https://res.cloudinary.com/dmpjh1aqa/image/upload/v1778866131/Md__Mahfujur_Rahman_Resume_ML_Engineer_bc0r1i.pdf",
   email: "mahfujr403@gmail.com",
   phone: "+8801771431724",
   location: "Rajshahi, Bangladesh",
   socialLinks: [
     { url: "https://linkedin.com/in/mahfujr403", icon: "linkedin", platform: "LinkedIn" },
     { url: "https://github.com/mahfujr403", icon: "github", platform: "GitHub" },
-    { url: "https://scholar.google.com/citations?user=ssuw-WEAAAAJ&hl=en", icon: "googleScholar", platform: "Scholar" }
+    { url: "https://scholar.google.com/citations?user=ssuw-WEAAAAJ&hl=en", icon: "googleScholar", platform: "Google Scholar" }
   ],
-  contactCTA: "Let's build intelligent systems together."
+  contactCTA: "Let’s turn research into real-world systems."
 };
 
 export function useProfile() {

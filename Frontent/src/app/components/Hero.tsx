@@ -43,13 +43,13 @@ export default function Hero({ profile: propProfile }: { profile?: any }) {
             </p>
 
             {/* Factual Positioning Headline */}
-            <h2 className="text-base sm:text-lg font-medium text-foreground/90 leading-relaxed max-w-xl mb-3">
+            <h2 className="text-base sm:text-lg font-medium text-foreground/90 leading-snug tracking-normal [word-spacing:0.18em] max-w-2xl lg:max-w-3xl xl:max-w-4xl text-balance mb-3">
               {profile.headline || "Specializing in Deep Learning, Computer Vision, and Production ML Systems."}
             </h2>
 
             {/* Impact Statement */}
             {profile.impactStatement && (
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl mb-8">
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed tracking-normal [word-spacing:0.16em] max-w-2xl lg:max-w-3xl xl:max-w-4xl text-balance mb-8">
                 {profile.impactStatement}
               </p>
             )}

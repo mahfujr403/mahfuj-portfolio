@@ -84,7 +84,7 @@ export default function About({
   return (
     <section id="about" className="py-16 sm:py-20 lg:py-28 border-b border-border-subtle relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Editorial Section Header: Left-aligned with 01 / ABOUT, identical to 02/Projects, 03/Publications */}
         <div className="mb-10 sm:mb-12 lg:mb-16 text-left">
           {/* Section Index Marker */}
@@ -105,99 +105,101 @@ export default function About({
           </p>
         </div>
 
-        {/* 2-Column Responsive Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+        {/* Top Overview: Balanced 2-Column Narrative & Credentials */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-12 lg:mb-16">
           
-          {/* Left Column: Biography & Compact Stat Badges */}
-          <div className="lg:col-span-6 flex flex-col justify-between text-left">
-            <div>
-              {/* Impact Statement */}
-              {profile.impactStatement ? (
-                <p className="text-base sm:text-lg text-foreground/90 font-medium leading-relaxed mb-4 sm:mb-5">
-                  {profile.impactStatement}
-                </p>
-              ) : (
-                <div className="h-6 w-5/6 bg-secondary/50 rounded mb-4 animate-pulse" />
-              )}
+          {/* Bio Narrative */}
+          <div className="lg:col-span-7 text-left space-y-4">
+            {profile.impactStatement ? (
+              <p className="text-base sm:text-lg text-foreground/90 font-medium leading-relaxed tracking-normal [word-spacing:0.16em]">
+                {profile.impactStatement}
+              </p>
+            ) : (
+              <div className="h-6 w-5/6 bg-secondary/50 rounded animate-pulse" />
+            )}
 
-              {/* Bio Narrative */}
-              {profile.bio ? (
-                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-6 sm:mb-8">
-                  {profile.bio}
-                </p>
-              ) : (
-                <div className="space-y-2 mb-6 sm:mb-8 animate-pulse">
-                  <div className="h-4 w-full bg-secondary/40 rounded" />
-                  <div className="h-4 w-5/6 bg-secondary/40 rounded" />
-                  <div className="h-4 w-4/6 bg-secondary/40 rounded" />
-                </div>
-              )}
-            </div>
-
-            {/* Compact Highlight Cards: 3 columns on all viewports, low scroll height */}
-            <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-border-subtle">
-              {highlights.map((item) => {
-                const ItemIcon = item.icon;
-                return (
-                  <div
-                    key={item.label}
-                    className="p-2 sm:p-2.5 rounded-[8px] bg-[#111620] border border-border hover:border-border-active transition-colors flex flex-col items-center justify-center text-center shadow-xs"
-                  >
-                    <ItemIcon className="size-3.5 sm:size-4 text-primary shrink-0 mb-1" aria-hidden="true" />
-                    <span
-                      className={`${
-                        item.isNumeric
-                          ? "text-base sm:text-xl font-bold sm:font-extrabold"
-                          : "text-xs sm:text-sm font-bold"
-                      } font-display text-foreground tracking-tight leading-tight mb-1 text-center`}
-                    >
-                      {item.value}
-                    </span>
-                    <span className="text-[9px] sm:text-[10px] md:text-[11px] font-mono uppercase tracking-wider text-muted-foreground/80 text-center leading-tight">
-                      {item.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+            {profile.bio ? (
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed tracking-normal [word-spacing:0.16em]">
+                {profile.bio}
+              </p>
+            ) : (
+              <div className="space-y-2 animate-pulse">
+                <div className="h-4 w-full bg-secondary/40 rounded" />
+                <div className="h-4 w-5/6 bg-secondary/40 rounded" />
+                <div className="h-4 w-4/6 bg-secondary/40 rounded" />
+              </div>
+            )}
           </div>
 
-          {/* Right Column: Research & Engineering Pillars in Compact 2x2 Grid */}
-          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-left">
-            {researchPillars.map((pillar) => {
-              const PillarIcon = pillar.icon;
+          {/* Highlights / Stats: Clean Credential Cards */}
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5 sm:gap-3 text-left">
+            {highlights.map((item) => {
+              const ItemIcon = item.icon;
               return (
                 <div
-                  key={pillar.title}
-                  className={`p-3.5 sm:p-5 rounded-[12px] bg-[#111620] border border-border ${pillar.border} transition-all duration-300 group hover:-translate-y-0.5 relative overflow-hidden flex flex-col justify-between shadow-xs`}
+                  key={item.label}
+                  className="p-3 sm:p-3.5 rounded-[10px] bg-[#111620] border border-border hover:border-border-active transition-colors flex items-center gap-3.5 shadow-xs"
                 >
-                  {/* Decorative circle glow in top-right corner */}
-                  <div
-                    className={`absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br ${pillar.accent} rounded-bl-full pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
-                    aria-hidden="true"
-                  />
-
-                  <div>
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#18202E] border border-border flex items-center justify-center mb-2.5 group-hover:border-primary/40 transition-colors shrink-0">
-                      <PillarIcon className={pillar.iconColor} size={16} />
-                    </div>
-                    <h3 className="font-display font-semibold text-sm sm:text-base text-foreground mb-1.5 group-hover:text-primary transition-colors leading-snug">
-                      {pillar.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                      {pillar.desc}
-                    </p>
+                  <div className="size-9 rounded-lg bg-[#18202E] border border-border flex items-center justify-center shrink-0">
+                    <ItemIcon className="size-4 text-primary" aria-hidden="true" />
                   </div>
-                  <div className="pt-2 border-t border-border/50">
-                    <span className="text-[10px] sm:text-[11px] font-mono text-muted-foreground/80 group-hover:text-foreground transition-colors block truncate">
-                      {pillar.tag}
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-base sm:text-lg font-bold font-display text-foreground tracking-tight leading-tight">
+                      {item.value}
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-muted-foreground/80 truncate">
+                      {item.label}
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
 
+        </div>
+
+        {/* Section Divider & Pillars Label */}
+        <div className="flex items-center gap-3 mb-6 sm:mb-8 select-none" aria-hidden="true">
+          <span className="text-xs font-mono uppercase tracking-wider text-muted-foreground/70">
+            Core Research &amp; Engineering Focus
+          </span>
+          <div className="h-px flex-1 bg-border-subtle" />
+        </div>
+
+        {/* Research & Engineering Pillars: Full-Width 4-Column Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 text-left">
+          {researchPillars.map((pillar) => {
+            const PillarIcon = pillar.icon;
+            return (
+              <div
+                key={pillar.title}
+                className={`p-4 sm:p-5 rounded-[12px] bg-[#111620] border border-border ${pillar.border} transition-all duration-300 group hover:-translate-y-0.5 relative overflow-hidden flex flex-col justify-between shadow-xs`}
+              >
+                {/* Decorative circle glow in top-right corner */}
+                <div
+                  className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${pillar.accent} rounded-bl-full pointer-events-none opacity-40 group-hover:opacity-80 transition-opacity duration-300`}
+                  aria-hidden="true"
+                />
+
+                <div>
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#18202E] border border-border flex items-center justify-center mb-3 group-hover:border-primary/40 transition-colors shrink-0">
+                    <PillarIcon className={pillar.iconColor} size={16} />
+                  </div>
+                  <h3 className="font-display font-semibold text-sm sm:text-base text-foreground mb-1.5 group-hover:text-primary transition-colors leading-snug">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                    {pillar.desc}
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-border/50">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-muted-foreground/80 group-hover:text-foreground transition-colors block truncate">
+                    {pillar.tag}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
