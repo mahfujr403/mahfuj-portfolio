@@ -1,9 +1,11 @@
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { Github, Linkedin, Mail, Phone, ArrowUp, GraduationCap } from "lucide-react";
 import { useProfile } from "../hooks/useProfile";
 
 export default function Footer() {
   const { data: profile = { socialLinks: [] } } = useProfile();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const otherLinks = [
     { label: "Home", href: "/" },
@@ -14,6 +16,31 @@ export default function Footer() {
     { label: "Articles", href: "/#articles" },
     { label: "Contact", href: "/#contact" },
   ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("/#")) {
+      e.preventDefault();
+      const sectionId = href.substring(2);
+
+      if (location.pathname === "/") {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+          window.history.replaceState(null, "", href);
+        }
+      } else {
+        navigate({ pathname: "/", hash: `#${sectionId}` }, { state: { scrollTo: sectionId } });
+      }
+    } else if (href === "/") {
+      e.preventDefault();
+      if (location.pathname === "/") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.history.replaceState(null, "", "/");
+      } else {
+        navigate("/");
+      }
+    }
+  };
 
   const socialIcons = {
     github: Github,
@@ -80,10 +107,11 @@ export default function Footer() {
               <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
                 {otherLinks.map((link) => (
                   <li key={link.label}>
-                    {link.href.startsWith("/#") ? (
+                    {link.href.startsWith("/#") || link.href === "/" ? (
                       <a
                         href={link.href}
-                        className="text-muted-foreground hover:text-foreground text-sm transition-colors inline-block"
+                        onClick={(e) => handleNavClick(e, link.href)}
+                        className="text-muted-foreground hover:text-foreground text-sm transition-colors inline-block cursor-pointer"
                       >
                         {link.label}
                       </a>

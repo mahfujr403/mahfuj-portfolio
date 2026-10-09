@@ -24,6 +24,14 @@ export default function PublicationDetailPage() {
     }
   }, [slug]);
 
+  useEffect(() => {
+    if (publication?.title) {
+      document.title = `${publication.title} — Publications | Md. Mahfujur Rahman`;
+    } else {
+      document.title = "Publication Details — Md. Mahfujur Rahman";
+    }
+  }, [publication?.title]);
+
   if (loading && !publication) {
     return (
       <div className="min-h-screen pt-24 pb-20">
@@ -62,15 +70,24 @@ export default function PublicationDetailPage() {
     );
   }
 
-  const publicationDomain = publication.domain || "Deep Learning & Vision";
-  const authors: string[] = Array.isArray(publication.authors) ? publication.authors : [];
-  const eventPhotos: string[] = Array.isArray(publication.eventPhotos) ? publication.eventPhotos : [];
-  const experiments: string[] = Array.isArray(publication.experiments) ? publication.experiments : [];
-  const challenges: string[] = Array.isArray(publication.challenges) ? publication.challenges : [];
-  const insights: string[] = Array.isArray(publication.insights) ? publication.insights : [];
-  const keyResults: string[] = Array.isArray(publication.keyResults) ? publication.keyResults : [];
-  const resultsVisualization: any[] = Array.isArray(publication.resultsVisualization) ? publication.resultsVisualization : [];
-  const datasets: any[] = Array.isArray(publication.datasets) ? publication.datasets : [];
+  const publicationDomain = publication.domain?.trim() || "";
+  const authors: string[] = Array.isArray(publication.authors) ? publication.authors.filter(Boolean) : [];
+  const eventPhotos: string[] = Array.isArray(publication.eventPhotos) ? publication.eventPhotos.filter(Boolean) : [];
+  const experiments: string[] = Array.isArray(publication.experiments) ? publication.experiments.filter(Boolean) : [];
+  const challenges: string[] = Array.isArray(publication.challenges) ? publication.challenges.filter(Boolean) : [];
+  const insights: string[] = Array.isArray(publication.insights) ? publication.insights.filter(Boolean) : [];
+  const keyResults: string[] = Array.isArray(publication.keyResults) ? publication.keyResults.filter(Boolean) : [];
+  const resultsVisualization: any[] = Array.isArray(publication.resultsVisualization) ? publication.resultsVisualization.filter(Boolean) : [];
+  const datasets: any[] = Array.isArray(publication.datasets) ? publication.datasets.filter(Boolean) : [];
+
+  const hasKeyResults = keyResults.length > 0;
+  const hasCitationRegistry = Boolean(
+    publication.doiUrl || publication.type || publicationDomain || publication.year
+  );
+  const hasSidebar = hasKeyResults || hasCitationRegistry;
+  const hasChallenges = challenges.length > 0;
+  const hasInsights = insights.length > 0;
+  const hasHeaderMeta = Boolean(publication.venue || publication.publisher || authors.length > 0);
 
   return (
     <>
@@ -87,62 +104,80 @@ export default function PublicationDetailPage() {
           {/* Header Metadata Card */}
           <div className="bg-card border border-border rounded-xl p-6 sm:p-8 mb-8 shadow-xs">
             <div className="flex flex-wrap items-center gap-2.5 mb-4">
-              <Badge variant="indigo" className="text-xs">
-                {publication.type}
-              </Badge>
-              <Badge variant="default" className="text-xs">
-                {publicationDomain}
-              </Badge>
-              <span className="text-xs font-mono text-muted-foreground">•</span>
-              <span className="text-xs font-mono text-muted-foreground">{publication.year}</span>
+              {publication.type && (
+                <Badge variant="indigo" className="text-xs">
+                  {publication.type}
+                </Badge>
+              )}
+              {publicationDomain && (
+                <Badge variant="default" className="text-xs">
+                  {publicationDomain}
+                </Badge>
+              )}
+              {publication.year && (
+                <>
+                  <span className="text-xs font-mono text-muted-foreground">•</span>
+                  <span className="text-xs font-mono text-muted-foreground">{publication.year}</span>
+                </>
+              )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold font-display text-foreground tracking-tight mb-6 leading-tight">
               {publication.title}
             </h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="p-3.5 rounded-lg bg-secondary/40 border border-border">
-                <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Indexed Venue</p>
-                <p className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <BookOpen size={15} className="text-primary" />
-                  <span>{publication.venue}</span>
-                </p>
+            {hasHeaderMeta && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {publication.venue && (
+                  <div className="p-3.5 rounded-lg bg-secondary/40 border border-border">
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Indexed Venue</p>
+                    <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <BookOpen size={15} className="text-primary shrink-0" />
+                      <span>{publication.venue}</span>
+                    </p>
+                  </div>
+                )}
+                {publication.publisher && (
+                  <div className="p-3.5 rounded-lg bg-secondary/40 border border-border">
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Publisher</p>
+                    <p className="text-sm font-semibold text-foreground">{publication.publisher}</p>
+                  </div>
+                )}
+                {authors.length > 0 && (
+                  <div className={`${publication.venue && publication.publisher ? "md:col-span-2" : ""} p-3.5 rounded-lg bg-secondary/40 border border-border`}>
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Research Authors</p>
+                    <p className="text-sm text-foreground">
+                      {authors.join(", ")}
+                    </p>
+                  </div>
+                )}
               </div>
-              <div className="p-3.5 rounded-lg bg-secondary/40 border border-border">
-                <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Publisher</p>
-                <p className="text-sm font-semibold text-foreground">{publication.publisher}</p>
-              </div>
-              <div className="md:col-span-2 p-3.5 rounded-lg bg-secondary/40 border border-border">
-                <p className="text-xs font-mono uppercase text-muted-foreground mb-1">Research Authors</p>
-                <p className="text-sm text-foreground">
-                  {authors.length > 0 ? authors.join(", ") : "Md. Mahfujur Rahman et al."}
-                </p>
-              </div>
-            </div>
+            )}
 
-            <div className="flex flex-wrap gap-2.5">
-              {publication.paperUrl && (
-                <a
-                  href={publication.paperUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-sm font-semibold transition-all"
-                >
-                  <ExternalLink size={16} />
-                  <span>Read Paper</span>
-                </a>
-              )}
-              {publication.proofUrl && (
-                <button
-                  onClick={() => setIsProofModalOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-secondary/50 text-foreground hover:bg-secondary hover:border-border-active text-sm font-medium transition-all cursor-pointer"
-                >
-                  <Award size={16} className="text-amber-400" />
-                  <span>View Acceptance Proof</span>
-                </button>
-              )}
-            </div>
+            {(publication.paperUrl || publication.proofUrl) && (
+              <div className="flex flex-wrap gap-2.5">
+                {publication.paperUrl && (
+                  <a
+                    href={publication.paperUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 text-sm font-semibold transition-all"
+                  >
+                    <ExternalLink size={16} />
+                    <span>Read Paper</span>
+                  </a>
+                )}
+                {publication.proofUrl && (
+                  <button
+                    onClick={() => setIsProofModalOpen(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-secondary/50 text-foreground hover:bg-secondary hover:border-border-active text-sm font-medium transition-all cursor-pointer"
+                  >
+                    <Award size={16} className="text-amber-400" />
+                    <span>View Acceptance Proof</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Event Photos and Certificate Gallery */}
@@ -213,9 +248,9 @@ export default function PublicationDetailPage() {
             </Card>
           )}
 
-          {/* 2-Column Technical Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-8 space-y-6">
+          {/* 2-Column or 1-Column Technical Layout */}
+          <div className={`grid grid-cols-1 ${hasSidebar ? "lg:grid-cols-12" : ""} gap-8 items-start`}>
+            <div className={`${hasSidebar ? "lg:col-span-8" : "lg:col-span-12"} space-y-6`}>
               {/* TL;DR */}
               {publication.tldr && (
                 <Card className="bg-card border-border shadow-xs">
@@ -248,77 +283,93 @@ export default function PublicationDetailPage() {
               )}
 
               {/* Datasets */}
-              <Card className="bg-card border-border shadow-xs">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
-                    <Database className="text-primary size-5" />
-                    <span>Experimental Datasets</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {datasets.length > 0 ? (
-                    datasets.map((dataset: any, idx: number) => (
+              {datasets.length > 0 && (
+                <Card className="bg-card border-border shadow-xs">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+                      <Database className="text-primary size-5" />
+                      <span>Experimental Datasets</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {datasets.map((dataset: any, idx: number) => (
                       <div key={idx} className="bg-secondary/40 border border-border rounded-lg p-3.5 space-y-1 text-xs font-mono">
                         <div className="flex flex-wrap items-center gap-4">
-                          <p className="text-foreground">
-                            <span className="text-muted-foreground uppercase mr-1">Dataset:</span>
-                            <span className="font-semibold text-primary">{dataset.name}</span>
-                          </p>
-                          <p className="text-foreground">
-                            <span className="text-muted-foreground uppercase mr-1">Samples:</span>
-                            <span>{dataset.size}</span>
-                          </p>
+                          {dataset.name && (
+                            <p className="text-foreground">
+                              <span className="text-muted-foreground uppercase mr-1">Dataset:</span>
+                              <span className="font-semibold text-primary">{dataset.name}</span>
+                            </p>
+                          )}
+                          {dataset.size && (
+                            <p className="text-foreground">
+                              <span className="text-muted-foreground uppercase mr-1">Samples:</span>
+                              <span>{dataset.size}</span>
+                            </p>
+                          )}
                         </div>
-                        <p className="text-muted-foreground pt-1">
-                          <span className="uppercase mr-1">Source:</span>
-                          <span>{dataset.source}</span>
-                        </p>
+                        {dataset.source && (
+                          <p className="text-muted-foreground pt-1">
+                            <span className="uppercase mr-1">Source:</span>
+                            <span>{dataset.source}</span>
+                          </p>
+                        )}
+                        {dataset.description && (
+                          <p className="text-muted-foreground pt-1">
+                            <span className="uppercase mr-1">Description:</span>
+                            <span>{dataset.description}</span>
+                          </p>
+                        )}
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground text-sm">Dataset details described in paper text.</p>
-                  )}
-                </CardContent>
-              </Card>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Methodology */}
-              <Card className="bg-card border-border shadow-xs">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
-                    <Beaker className="text-indigo-400 size-5" />
-                    <span>Methodological Framework</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground text-sm leading-relaxed text-left">
-                    {publication.methodology ?? "Detailed in primary manuscript."}
-                  </p>
-                  {publication.architecture && (
-                    <div className="bg-background border border-border p-3.5 rounded-lg">
-                      <p className="font-mono text-xs text-primary mb-1 uppercase tracking-wider">Model Architecture:</p>
-                      <p className="font-mono text-xs text-foreground">{publication.architecture}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              {(publication.methodology || publication.architecture) && (
+                <Card className="bg-card border-border shadow-xs">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-foreground font-display text-lg">
+                      <Beaker className="text-indigo-400 size-5" />
+                      <span>Methodological Framework</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {publication.methodology && (
+                      <p className="text-muted-foreground text-sm leading-relaxed text-left">
+                        {publication.methodology}
+                      </p>
+                    )}
+                    {publication.architecture && (
+                      <div className="bg-background border border-border p-3.5 rounded-lg">
+                        <p className="font-mono text-xs text-primary mb-1 uppercase tracking-wider">Model Architecture:</p>
+                        <p className="font-mono text-xs text-foreground break-words">{publication.architecture}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Experiments */}
-              {experiments.length > 0 && (
+              {(experiments.length > 0 || publication.performanceAnalysis) && (
                 <Card className="bg-card border-border shadow-xs">
                   <CardHeader>
                     <CardTitle className="text-foreground font-display text-lg">Experiments & Benchmark Setup</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
-                      {experiments.map((exp: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-primary mt-0.5">•</span>
-                          <span className="leading-relaxed">{exp}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {experiments.length > 0 && (
+                      <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
+                        {experiments.map((exp: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="text-primary mt-0.5">•</span>
+                            <span className="leading-relaxed">{exp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     {publication.performanceAnalysis && (
-                      <div className="pt-3 border-t border-border/60">
+                      <div className={experiments.length > 0 ? "pt-3 border-t border-border/60" : ""}>
                         <p className="font-mono text-xs uppercase text-foreground mb-1">Performance Analysis:</p>
                         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                           {publication.performanceAnalysis}
@@ -340,7 +391,7 @@ export default function PublicationDetailPage() {
                   </CardHeader>
                   <CardContent>
                     {resultsVisualization.map((viz: any, idx: number) => {
-                      if (viz.type === "bar") {
+                      if (viz.type === "bar" && viz.data?.labels && viz.data?.values) {
                         const chartData = viz.data.labels.map((label: string, i: number) => ({
                           name: label,
                           value: viz.data.values[i],
@@ -395,90 +446,117 @@ export default function PublicationDetailPage() {
               )}
 
               {/* Challenges and Insights Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="bg-card border-border shadow-xs">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
-                      <AlertCircle className="text-amber-400 size-4" />
-                      <span>Key Challenges</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-xs text-muted-foreground">
-                      {challenges.map((challenge: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-amber-400 mt-0.5">•</span>
-                          <span className="leading-relaxed">{challenge}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
+              {(hasChallenges || hasInsights) && (
+                <div className={`grid gap-6 ${hasChallenges && hasInsights ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"}`}>
+                  {hasChallenges && (
+                    <Card className="bg-card border-border shadow-xs">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
+                          <AlertCircle className="text-amber-400 size-4" />
+                          <span>Key Challenges</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-2 text-xs text-muted-foreground">
+                          {challenges.map((challenge: string, idx: number) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-amber-400 mt-0.5">•</span>
+                              <span className="leading-relaxed">{challenge}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
 
-                <Card className="bg-card border-border shadow-xs">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
-                      <Lightbulb className="text-primary size-4" />
-                      <span>Key Insights</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-xs text-muted-foreground">
-                      {insights.map((insight: string, idx: number) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-primary mt-0.5">→</span>
-                          <span className="leading-relaxed">{insight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </div>
+                  {hasInsights && (
+                    <Card className="bg-card border-border shadow-xs">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-foreground font-display text-base">
+                          <Lightbulb className="text-primary size-4" />
+                          <span>Key Insights</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="space-y-2 text-xs text-muted-foreground">
+                          {insights.map((insight: string, idx: number) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-primary mt-0.5">→</span>
+                              <span className="leading-relaxed">{insight}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Sidebar Column */}
-            <div className="lg:col-span-4 space-y-6">
-              {/* Key Results */}
-              <Card className="bg-card border-border shadow-xs">
-                <CardHeader>
-                  <CardTitle className="text-foreground font-display text-base">Key Experimental Results</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2.5">
-                    {keyResults.map((result: string, idx: number) => (
-                      <div key={idx} className="p-3 rounded-lg bg-secondary/30 border border-border">
-                        <p className="text-xs font-mono text-foreground font-medium">{result}</p>
+            {hasSidebar && (
+              <div className="lg:col-span-4 space-y-6">
+                {/* Key Results */}
+                {hasKeyResults && (
+                  <Card className="bg-card border-border shadow-xs">
+                    <CardHeader>
+                      <CardTitle className="text-foreground font-display text-base">Key Experimental Results</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2.5">
+                        {keyResults.map((result: string, idx: number) => (
+                          <div key={idx} className="p-3 rounded-lg bg-secondary/30 border border-border">
+                            <p className="text-xs font-mono text-foreground font-medium">{result}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
+                )}
 
-              {/* Publication Meta Info */}
-              <Card className="bg-card border-border shadow-xs">
-                <CardHeader>
-                  <CardTitle className="text-foreground font-display text-base">Citation Registry</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 text-xs font-mono">
-                  <div>
-                    <p className="text-muted-foreground uppercase mb-1">DOI Identifier</p>
-                    <p className="text-primary break-all">{publication.doiUrl || "Available in indexed issue"}</p>
-                  </div>
-                  <div className="pt-2 border-t border-border/60">
-                    <p className="text-muted-foreground uppercase mb-1">Document Type</p>
-                    <p className="text-foreground">{publication.type}</p>
-                  </div>
-                  <div className="pt-2 border-t border-border/60">
-                    <p className="text-muted-foreground uppercase mb-1">Research Field</p>
-                    <p className="text-foreground">{publicationDomain}</p>
-                  </div>
-                  <div className="pt-2 border-t border-border/60">
-                    <p className="text-muted-foreground uppercase mb-1">Publication Year</p>
-                    <p className="text-foreground">{publication.year}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                {/* Publication Meta Info */}
+                {hasCitationRegistry && (
+                  <Card className="bg-card border-border shadow-xs">
+                    <CardHeader>
+                      <CardTitle className="text-foreground font-display text-base">Citation Registry</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3 text-xs font-mono">
+                      {publication.doiUrl && (
+                        <div>
+                          <p className="text-muted-foreground uppercase mb-1">DOI Identifier</p>
+                          <a
+                            href={publication.doiUrl.startsWith("http") ? publication.doiUrl : `https://doi.org/${publication.doiUrl}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary break-all hover:underline"
+                          >
+                            {publication.doiUrl}
+                          </a>
+                        </div>
+                      )}
+                      {publication.type && (
+                        <div className={publication.doiUrl ? "pt-2 border-t border-border/60" : ""}>
+                          <p className="text-muted-foreground uppercase mb-1">Document Type</p>
+                          <p className="text-foreground">{publication.type}</p>
+                        </div>
+                      )}
+                      {publicationDomain && (
+                        <div className={publication.doiUrl || publication.type ? "pt-2 border-t border-border/60" : ""}>
+                          <p className="text-muted-foreground uppercase mb-1">Research Field</p>
+                          <p className="text-foreground">{publicationDomain}</p>
+                        </div>
+                      )}
+                      {publication.year && (
+                        <div className={publication.doiUrl || publication.type || publicationDomain ? "pt-2 border-t border-border/60" : ""}>
+                          <p className="text-muted-foreground uppercase mb-1">Publication Year</p>
+                          <p className="text-foreground">{publication.year}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Previous / Next Navigation */}

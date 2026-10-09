@@ -32,6 +32,12 @@ export default function Contact({ profile: propProfile }: { profile?: any }) {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(contactForm.email.trim())) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     try {
       setSubmitting(true);
       await submitContact(contactForm);
@@ -45,7 +51,15 @@ export default function Contact({ profile: propProfile }: { profile?: any }) {
         message: "",
       });
     } catch {
-      toast.error("Failed to send message. Please try again or reach out via email.");
+      toast.error("Unable to deliver message right now. You can email directly.", {
+        action: {
+          label: "Email Directly",
+          onClick: () => {
+            const recipient = profile.email || "mahfujr403@gmail.com";
+            window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(contactForm.subject)}&body=${encodeURIComponent(contactForm.message)}`;
+          },
+        },
+      });
     } finally {
       setSubmitting(false);
     }

@@ -3,29 +3,18 @@ import About from "../components/About";
 import Skills from "../components/Skills";
 import Articles from "../components/Articles";
 import Contact from "../components/Contact";
-import { useLocation, useNavigate } from "react-router";
-import { useEffect } from "react";
+import { useLocation } from "react-router";
+import { useEffect, useRef } from "react";
 import Projects from "../components/Projects";
 import Publications from "../components/Publications";
 
-/**
- * HomePage with Progressive Section Loading:
- *
- * Rather than blocking the entire page behind a single slow aggregated query,
- * every section mounts immediately and loads its data concurrently:
- *  - Hero + Navbar + Footer: ~900ms via useProfile() (above the fold is instantly visible)
- *  - About stats: ~1s via usePortfolioStats()
- *  - Featured Projects: ~1s via listProjects()
- *  - Publications: ~1s via listPublications()
- *  - Articles / Blogs: ~1.2s via fetchArticles()
- *  - Skills & Achievements: ~1.5-2.2s
- *
- * Each section displays its own subtle shimmer skeleton while in flight,
- * so there is zero layout shift, zero blank screen, and no 4-second waiting freeze.
- */
 export default function HomePage() {
   const location = useLocation();
-  const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    document.title = "Md. Mahfujur Rahman — AI Engineer & Researcher";
+  }, []);
 
   useEffect(() => {
     const stateTarget = (location.state as any)?.scrollTo as string | undefined;
@@ -33,30 +22,78 @@ export default function HomePage() {
     const target = stateTarget || hashTarget;
     if (!target) return;
 
-    // Attempt to scroll to element; retry briefly if not found yet
-    const attemptScroll = () => {
-      const el = document.getElementById(target);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        if (stateTarget) {
-          // clear navigation state so reloading doesn't re-scroll
-          navigate(location.pathname + (location.hash || ""), { replace: true, state: {} });
-        }
-        return true;
-      }
-      return false;
+    if (target === "home" || target === "hero") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    let isCancelled = false;
+    let userScrolled = false;
+
+    const stopTracking = () => {
+      userScrolled = true;
     };
 
-    if (!attemptScroll()) {
-      const id = window.setTimeout(() => {
-        attemptScroll();
-      }, 150);
-      return () => window.clearTimeout(id);
+    window.addEventListener("wheel", stopTracking, { passive: true });
+    window.addEventListener("touchmove", stopTracking, { passive: true });
+
+    const scrollToTarget = (smooth = true) => {
+      if (isCancelled || userScrolled) return;
+      const el = document.getElementById(target);
+      if (!el) return;
+
+      const rect = el.getBoundingClientRect();
+      if (Math.abs(rect.top - 80) > 15) {
+        const targetY = Math.max(0, rect.top + window.scrollY - 80);
+        try {
+          window.scrollTo({
+            top: targetY,
+            behavior: smooth ? "smooth" : ("instant" as ScrollBehavior),
+          });
+        } catch {
+          window.scrollTo(0, targetY);
+        }
+        if (stateTarget && typeof window !== "undefined" && window.history?.replaceState) {
+          window.history.replaceState(null, "", location.pathname + (location.hash || `#${target}`));
+        }
+      }
+    };
+
+    // Immediate attempt
+    scrollToTarget(false);
+
+    // Observe container height changes as async query content loads
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && containerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        window.requestAnimationFrame(() => {
+          scrollToTarget(false);
+        });
+      });
+      resizeObserver.observe(containerRef.current);
     }
-  }, [location, navigate]);
+
+    // Safety fallback timeouts
+    const timeouts = [60, 150, 300, 600, 1000, 1500, 2200].map((delay) =>
+      window.setTimeout(() => scrollToTarget(true), delay)
+    );
+
+    const stopTimeout = window.setTimeout(() => {
+      if (resizeObserver) resizeObserver.disconnect();
+    }, 3500);
+
+    return () => {
+      isCancelled = true;
+      if (resizeObserver) resizeObserver.disconnect();
+      timeouts.forEach((id) => window.clearTimeout(id));
+      window.clearTimeout(stopTimeout);
+      window.removeEventListener("wheel", stopTracking);
+      window.removeEventListener("touchmove", stopTracking);
+    };
+  }, [location.pathname, location.hash, location.state]);
 
   return (
-    <div>
+    <div ref={containerRef}>
       <Hero />
       <About />
       <Projects />

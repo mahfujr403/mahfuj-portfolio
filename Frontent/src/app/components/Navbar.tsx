@@ -84,15 +84,20 @@ export default function Navbar() {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: "smooth" });
+          window.history.replaceState(null, "", href);
         }
       } else {
-        navigate("/", { state: { scrollTo: sectionId } });
+        navigate({ pathname: "/", hash: `#${sectionId}` }, { state: { scrollTo: sectionId } });
       }
       setIsMenuOpen(false);
     } else if (href === "/") {
       e.preventDefault();
-      navigate("/");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (location.pathname === "/") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.history.replaceState(null, "", "/");
+      } else {
+        navigate("/");
+      }
       setIsMenuOpen(false);
     }
   };
@@ -118,9 +123,11 @@ export default function Navbar() {
             to="/"
             className="flex items-center gap-2 group cursor-pointer focus-visible:outline-none focus-visible:ring-primary/40 focus-visible:ring-[2px] rounded-sm py-1"
             onClick={(e) => {
-              e.preventDefault();
-              navigate("/");
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              if (location.pathname === "/") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.history.replaceState(null, "", "/");
+              }
             }}
           >
             <span className="font-display font-bold text-base sm:text-lg tracking-tight text-foreground group-hover:text-primary transition-colors">

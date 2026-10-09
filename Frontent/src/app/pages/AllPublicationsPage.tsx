@@ -13,6 +13,7 @@ export default function AllPublicationsPage() {
   const { data: publications, loading } = usePublications(200, 0);
 
   useEffect(() => {
+    document.title = "Publications Index — Md. Mahfujur Rahman";
     try {
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       document.documentElement.scrollTop = 0;
@@ -68,7 +69,7 @@ export default function AllPublicationsPage() {
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-colors mb-8 group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          <span>Back to Publications</span>
+          <span>Back to Home</span>
         </Link>
 
         {/* Page Header */}

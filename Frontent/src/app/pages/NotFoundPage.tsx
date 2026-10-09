@@ -1,7 +1,11 @@
 import { Link } from "react-router";
 import { Home, AlertTriangle } from "lucide-react";
+import { useEffect } from "react";
 
 export default function NotFoundPage() {
+  useEffect(() => {
+    document.title = "404 Page Not Found — Md. Mahfujur Rahman";
+  }, []);
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="text-center max-w-md bg-card border border-border rounded-[10px] p-8 sm:p-10 shadow-2xl">

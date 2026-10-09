@@ -110,13 +110,9 @@ export default function About({
           
           {/* Bio Narrative */}
           <div className="lg:col-span-7 text-left space-y-4">
-            {profile.impactStatement ? (
-              <p className="text-base sm:text-lg text-foreground/90 font-medium leading-relaxed tracking-normal [word-spacing:0.16em]">
-                {profile.impactStatement}
-              </p>
-            ) : (
-              <div className="h-6 w-5/6 bg-secondary/50 rounded animate-pulse" />
-            )}
+            <h3 className="text-xl sm:text-2xl font-bold font-display text-foreground leading-snug">
+              Background &amp; Core Mission
+            </h3>
 
             {profile.bio ? (
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed tracking-normal [word-spacing:0.16em]">

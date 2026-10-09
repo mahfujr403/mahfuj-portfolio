@@ -5,17 +5,17 @@ import Footer from "../components/Footer";
 import AnimatedBackground from "../components/AnimatedBackground";
 
 export default function RootLayout() {
-  const { pathname, hash } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
     // Preserve in-page and cross-page anchor navigation (e.g. /#projects, /#about, /#contact)
-    if (hash) return;
+    if (location.hash || (location.state as any)?.scrollTo) return;
 
     // Reset scroll position instantly to top for page-level route changes
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-  }, [pathname, hash]);
+  }, [location.pathname, location.hash, location.state]);
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden isolate">
       {/* Global ML background layer shared by all pages */}

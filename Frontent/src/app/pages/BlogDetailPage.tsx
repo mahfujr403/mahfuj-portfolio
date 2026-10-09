@@ -55,6 +55,14 @@ export default function BlogDetailPage() {
     }
   }, [slug]);
 
+  useEffect(() => {
+    if (blog?.title) {
+      document.title = `${blog.title} — Articles | Md. Mahfujur Rahman`;
+    } else {
+      document.title = "Technical Writing — Md. Mahfujur Rahman";
+    }
+  }, [blog?.title]);
+
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!blog?.id || !commentForm.author.trim() || !commentForm.content.trim()) {
@@ -126,6 +134,9 @@ export default function BlogDetailPage() {
               alt={blog.title}
               loading="lazy"
               decoding="async"
+              onError={(e) => {
+                (e.currentTarget.parentElement as HTMLElement | null)?.style.setProperty('display', 'none');
+              }}
               className="w-full h-full object-cover"
             />
           </div>
